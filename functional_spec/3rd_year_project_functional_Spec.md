@@ -314,17 +314,9 @@ _Context Diagram_
 
 This diagram will depict how the different entities from outside of the system interact with the core system.
 
-
-
-
-
-_DFD (Data Flow Diagram)_
-
-
-
-
  ![](./ContextDiagram.png)
  
+_DFD (Data Flow Diagram)_
 
 This high level diagram details a portion of the flow of data that will occur within the application.
 
