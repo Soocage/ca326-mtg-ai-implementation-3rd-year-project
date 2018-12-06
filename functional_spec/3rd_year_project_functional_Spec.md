@@ -322,8 +322,11 @@ This high level diagram details a portion of the flow of data that will occur wi
 
 ![](./DFD.png)
 
+
 **6. Preliminary Schedule**
- ![](./Schedule.png)
+
+
+![](./Schedule.png)
 
 
 **N.B -** After each section of the application is implemented logically the UI will be worked on via Pygame.
