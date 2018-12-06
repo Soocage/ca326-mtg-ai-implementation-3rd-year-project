@@ -2,7 +2,7 @@ CA326 Functional Specification
 
 **0.Table of Contents**
 
-Section                                 Page
+    Section                                 Page
     1. Introduction
         1.1 Overview.                       2
         1.2 Glossary.                       3
