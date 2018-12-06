@@ -11,19 +11,22 @@ CA326 Functional Specification
         1. Introduction.
             1.1 Overview.                               2
             1.2 Glossary.                               3
+            
         2. General Description.
             2.1 Product System / Functions              3
             2.2 User Characteristics                    6
             2.3 Operational Scenarios                   7
             2.4 Constraints                             8
-        3. Functional Description
-            3.1 User Details                            9
-            3.2 Using the deck Creation tool            10
-            3.3 Fighting against an A.I                 11
-            3.4 Fighting against another Player         11
-            3.5 GUI Interaction                         12
-        4. System Architecture
-		    System Architecture diagram                 13
+            
+        3. Functional Description.
+            3.1 User Details.                           9
+            3.2 Using the deck Creation tool.           10
+            3.3 Fighting against an A.I.                11
+            3.4 Fighting against another Player.        11
+            3.5 GUI Interaction.                        12
+            
+        4. System Architecture.
+		    System Architecture diagram.                13
 	
         5. High Level Design
         	Context Diagram                             14
