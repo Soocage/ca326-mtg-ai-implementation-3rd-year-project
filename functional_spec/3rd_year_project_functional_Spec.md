@@ -48,9 +48,11 @@ _Python_
 Python is a high level programming language which can be used for Functional and Object Oriented Implementations. These are different methods to designing and writing a program.
 
 _Pygame_
+
 Pygame is a python based cross-platform designed for creating video-games. It consists of graphical and sound libraries.
 
 _A.I_
+
 Stands forArtificial intelligence. This means that an A.I opponent will have no user controlling its actions but instead is controlled by an algorithm working in the background.
 
 _Mulligan_
@@ -61,15 +63,18 @@ _GUI_
 
 The GUI (Graphical User Interface) is the method in which users can interact with a program through use of objects drawn onto the users screen such as text boxes, buttons, graphical icons, animations etc.
 
-1. **2.**** General Description
+**2. General Description**
 
-2.1 product / System Functions**
+**2.1 product / System Functions**
+
   _User access system functionality_
+  
 Firstly all users will have to download the application onto their Desktop device or Laptop. This can be done simply by allowing them to pull the current version of the game from a web based server. After downloading the game they can run the client application which will connect them to the server and ask them to either create an account, log into their already existing account. or the user may choose to log on as a guest.
 
 The server upon receiving new account information will store it into its database and encrypt it for safety. If an account already exists it will simply update that account whenever a change to that players data is made. These changes include things such as creating or deleting a decks, changing user names or passwords etc. If a player forgets either their username or password that player may request a reset via security question.
 
 _Matchmaking system functionality_
+
 In the lobby a player can select to either play against another player in an online 1v1 scenario, or play against an A.I opponent in a single player environment.
 
 
@@ -78,9 +83,11 @@ In a multiplayer scenario a player will be presented with a list of open lobbies
 In a single player game a player will be automatically put into a lobby. Once in a lobby he will select with which deck they would like to play from their own pool of decks. Then they will choose with which deck that the A.I shall play. After that the game will be launched.
 
 _Match System functionality_
+
 At the beginning of each match each player(A.I included) will receive the top 7 cards of their respective decks. After that the first player is chosen at random. That player chooses to keep their hand or mulligan. They then take their turn  playing a land card if possible, playing whatever cards they want and fighting with whatever available creatures they want. After that they end their turn and the second player begins their turn by drawing a card from their respective deck. From that point on this cycle repeats itself until either players health pool is reduced from 20 to 0 or one of the players is forced to draw when they have no more cards in their deck.
 
 _Database functionality_
+
 Whenever a user enters the game it will be using a personal account or a guest account. Both instances of these will be hosted on a database.
 
 When a user tries to enter the game using a personal account they will be asked to enter a username and a password. This will query our database to search for a player entry with this username and password. If the data provided doesn&#39;t match it will inform the player that no user with that username and password was found and be asked to re enter the information. Otherwise the database will send their details to them (such as a list of decks) and they will be presented with the welcome screen and the main menu of the game.
@@ -89,6 +96,7 @@ When a user tries to enter the game using a personal account they will be asked 
 When a user presses the play as guest button the program will query the database to see if there is a guest account that isn&#39;t currently in use. If one does it will send its details to that user and the user will be forwarded to the welcome screen and main menu of the game as a guest.
 
 _GUI functionality_
+
 The GUI for the application will be split among a number of different screens being:
 
 - Log in Screen
