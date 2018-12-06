@@ -1,47 +1,5 @@
 CA326 Functional Specification
 
-#0.Table of Contents.
-
-
-       
-
-  Section                                            Page
-        1. Introduction.
-            1. Overview.                               2
-            2. Glossary.                               3
-            
-        2. General Description.
-            1. Product System / Functions              3
-            2. User Characteristics                    6
-            3. Operational Scenarios                   7
-            4. Constraints                             8
-            
-        3. Functional Description.
-            1. User Details.                           9
-            2. Using the deck Creation tool.           10
-            3. Fighting against an A.I.                11
-            4. Fighting against another Player.        11
-            5. GUI Interaction.                        12
-            
-        4. System Architecture.
-		    1. System Architecture diagram.            13
-	
-        5. High Level Design
-        	1. Context Diagram                         14
-        	2. DFD (Data Flow Diagram)                 15
-        	
-	    6. Preliminary Schedule
-        	1. Schedule Diagram                        16
-        	
-	    7.Appendices
-        	1. Extra relevant information              16
-
-
-
-
-
-
-
 
 **1. Introduction**
 
@@ -49,7 +7,7 @@ CA326 Functional Specification
 
 Since this application will be hosting user&#39;s personal information such as passwords and usernames/emails this information will need to be encrypted using a strong encryption standard.
 
-**         1.2 Glossary**
+**1.2 Glossary**
 
 _Python_
 
