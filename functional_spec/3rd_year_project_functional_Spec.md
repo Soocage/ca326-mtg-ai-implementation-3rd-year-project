@@ -1,8 +1,8 @@
-﻿
+
 
 CA326 Functional Specification
 
-**    0.Table of Contents **
+**0.Table of Contents **
 
 
        
