@@ -1,5 +1,4 @@
 
-
 CA326 Functional Specification
 
 **0.Table of Contents **
@@ -45,8 +44,7 @@ CA326 Functional Specification
 
 
 
-
-1. **1.**** Introduction**
+**1. Introduction**
 
 **1.1 Overview** This application is an online implementation of the table top card collecting game called Magic The Gathering created by the company Wizards of the Coast. Currently there are no available applications for Magic the Gathering which allow single player games against an efficient A.I adversary. This application will allow its users to face off against one another in the form of 1v1 battles as well as face off against an A.I program in a single player game. Each user will either have a personal account or may log in using the guest feature which will discard that player data after they log out such as decks that the player has constructed as a guest. The personal account will store that particular users deck that they have previously constructed. A player can construct as many decks as they wish from a pool of predefined cards. The A.I adversary will be using one of 5 pre-made decks when facing against a user.
 
