@@ -24,12 +24,13 @@ CA326 Functional Specification
             3.5 GUI Interaction                         12
         4. System Architecture
 		    System Architecture diagram                 13
-	5. High Level Design
+	
+        5. High Level Design
         	Context Diagram                             14
         	DFD (Data Flow Diagram)                     15
-	6. Preliminary Schedule
+	    6. Preliminary Schedule
         	Schedule Diagram                            16
-	7.Appendices
+	    7.Appendices
         	Extra relevant information                  16
 
 
