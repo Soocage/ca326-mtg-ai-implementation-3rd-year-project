@@ -19,7 +19,7 @@ clock = pygame.time.Clock()
 bg = pygame.image.load("Menu_background.png")
 bg = pygame.transform.scale(bg, display_size)
 cardImage = pygame.image.load("cursor.png")
-cardImage = pygame.transform.scale(cardImage, (100, 150))
+cardImage = pygame.transform.scale(cardImage, (200, 200))
 
 
 x = (display_width * 0.4)
