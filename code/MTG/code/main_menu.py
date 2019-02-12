@@ -2,6 +2,7 @@ import sys
 
 sys.path.insert(0, '../')
 sys.path.insert(0, '../images')
+
 sys.path.append('../personal_decks')
 sys.path.append('../sound')
 sys.path.append('../testing')
@@ -10,7 +11,6 @@ import time
 import pygame
 from button import Button
 
-pygame.init()
 #Colours
 
 button_blue = (125,137,240)
@@ -30,6 +30,8 @@ volume_slider_colour = white
 pygame.init()
 pygame.mixer.init()
 pygame.display.set_caption("Magic The Gathering")
+pygame.mixer.music.load('sound/music_1.ogg')
+pygame.mixer.music.play(-1)
 clock = pygame.time.Clock()
 
 
