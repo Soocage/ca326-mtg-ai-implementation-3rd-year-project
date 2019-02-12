@@ -33,6 +33,7 @@ class Player():
         self.life = int(life)
         self.hand = hand
         self.graveyard = graveyard
+        
 
 class Deck():
 

@@ -10,6 +10,7 @@ sys.path.append('../testing')
 import time
 import pygame
 from button import Button
+import game
 
 #Colours
 
@@ -264,8 +265,8 @@ def draw_button(name, display_size, gameDisplay):
 
         if click[0] == 1 and name.action != None:
 
-            if name.action == "play vs ai":
-                game.play_vs_ai()
+            if name.action == "play_vs_ai":
+                game.game_initialise(gameDisplay, display_size)
 
             elif name.action == "quit":
                 my_quit()
