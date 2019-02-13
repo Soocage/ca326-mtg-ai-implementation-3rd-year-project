@@ -1,5 +1,6 @@
-4
+5
 [Goblin,Creature,R,R,../images/goblin_1.jpg,1,1]
 [Merfolk,Creature,U,U,../images/merfolk_1.jpg,1,1]
 [Divination,Sorcery,U,2U,../images/divination.jpg,player,2,Draw]
 [Shock,Instant,R,R,../images/shock.jpg,opponent,2,Damage]
+[Mountain,Land,R,0,../images/mountain.jpg,mana]

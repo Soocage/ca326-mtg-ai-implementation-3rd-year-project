@@ -238,3 +238,6 @@ def draw_board(display, display_w, display_h, player_1, player_2):
     player_2_life_rec.center = ((player_2_life_sec_x+(player_2_life_sec_w/2)), (player_2_life_sec_y+(player_2_life_sec_h/2)))
     display.blit(player_2_life_text, player_2_life_rec)
     ###################################################################################################################
+
+
+def draw_decks():

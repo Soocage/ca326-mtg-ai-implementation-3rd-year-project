@@ -24,8 +24,11 @@ class Sorcery(Card):
 class Instant(Card):
 	def __init__ (self, name, card_type, colour, mana_cost, texture, targets, value, effect):
 		Card.__init__(self, name, card_type, colour, mana_cost, texture)
-		self.targets
-		self.value
-		self.effect
+		self.targets = targets
+		self.value = value
+		self.effect = effect
 
-
+class Land(Card):
+	def __init__ (self, name, card_type, colour, mana_cost, texture, effect):
+		Card.__init__(self, name, card_type, colour, mana_cost, texture)
+		self.effect = effect

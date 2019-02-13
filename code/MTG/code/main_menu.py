@@ -266,7 +266,7 @@ def draw_button(name, display_size, gameDisplay):
         if click[0] == 1 and name.action != None:
 
             if name.action == "play_vs_ai":
-                game.game_initialise(gameDisplay, display_size)
+                game.run_game(gameDisplay, display_size)
 
             elif name.action == "quit":
                 my_quit()
