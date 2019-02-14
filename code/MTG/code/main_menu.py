@@ -11,7 +11,6 @@ import time
 import pygame
 from button import Button
 import game
-import deck_builder
 
 #Colours
 
@@ -242,6 +241,7 @@ def option(gameDisplay, display_size):
 
 
 def deck_tools(gameDisplay, display_size):
+    time.sleep(1)
     (display_width, display_height) = display_size
 
     #define deck_tools button dimentions
