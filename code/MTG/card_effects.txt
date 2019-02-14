@@ -1,0 +1,23 @@
+blue
+draw
+tap
+bounce
+
+red
+damage
+haste
+
+green
+increase damage/toughness
+fight another creature
+search land
+
+white
+gain life
+protection
+exile
+
+black
+destroy
+discard
+reanimate
