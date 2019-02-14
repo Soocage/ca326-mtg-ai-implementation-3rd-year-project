@@ -239,5 +239,3 @@ def draw_board(display, display_w, display_h, player_1, player_2):
     display.blit(player_2_life_text, player_2_life_rec)
     ###################################################################################################################
 
-
-def draw_decks():

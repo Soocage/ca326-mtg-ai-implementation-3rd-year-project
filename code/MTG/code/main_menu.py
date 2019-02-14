@@ -11,6 +11,7 @@ import time
 import pygame
 from button import Button
 import game
+import deck_builder
 
 #Colours
 
@@ -91,9 +92,9 @@ def game_intro(gameDisplay, display_size):
 
         quit = Button("Quit", exit_game_button_x, exit_game_button_y, button_width, button_height, button_blue, hover_button_blue, "quit")
 
-        option = Button("Option",option_button_x, option_button_y, button_width, button_height, button_blue, hover_button_blue, "option")
+        option = Button("Option",option_button_x, option_button_y, button_width, button_height, button_blue, hover_button_blue, "options")
 
-        deck_tool = Button("Deck Tools", deck_button_x, deck_button_y, button_width, button_height, button_blue, hover_button_blue, "deck_tools")
+        deck_tool = Button("Deck Tools", deck_button_x, deck_button_y, button_width, button_height, button_blue, hover_button_blue, "deck tools")
 
         login = Button("Login",login_button_x, login_button_y, button_width, button_height, button_blue, hover_button_blue, "login")
 
@@ -131,9 +132,6 @@ def option(gameDisplay, display_size):
 
     minus_button_width = volume_slider_width
     minus_button_height = volume_slider_height
-
-    #res_button_width = option_box_h / 7
-    #res_button_height = option_box_h / 7
 
     #button orientation in option menu
     volume_button_x = (option_box_x) + option_box_w*(1/20)
@@ -242,6 +240,51 @@ def option(gameDisplay, display_size):
         pygame.display.update()
 
 
+
+def deck_tools(gameDisplay, display_size):
+    (display_width, display_height) = display_size
+
+    #define deck_tools button dimentions
+    deck_tools_button_width = ((display_width/4)/2)
+    deck_tools_button_height = ((display_height/8)/2)
+
+    #deck_tools border
+    deck_tools_box_x = (display_width)*(1/20)
+    deck_tools_box_y = (display_height)*(1/20)
+    deck_tools_box_h = ((display_height)*(18/20))
+    deck_tools_box_w = ((display_width)*(18/20))
+
+    #deck tools button dimentions
+    back_button_x = deck_tools_box_x + (deck_tools_box_w / 2) - (deck_tools_button_width / 2)
+    back_button_y = deck_tools_box_y + (deck_tools_box_h*(6/7))
+
+    in_deck_tools = True
+    while in_deck_tools:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                myquit()
+
+            if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_ESCAPE:
+                    myquit()
+
+
+
+        pygame.draw.rect(gameDisplay, white, (deck_tools_box_x, deck_tools_box_y, deck_tools_box_w, deck_tools_box_h))
+        back_button = Button("Back", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
+
+        draw_button(back_button, display_size, gameDisplay)
+        pygame.display.update()
+
+
+
+
+
+
+
+
+
 def my_quit():
     pygame.quit()
     quit()
@@ -271,7 +314,7 @@ def draw_button(name, display_size, gameDisplay):
             elif name.action == "quit":
                 my_quit()
             
-            elif name.action == "option":
+            elif name.action == "options":
                 option(gameDisplay, display_size)
 
             elif name.action == "back":
@@ -290,6 +333,9 @@ def draw_button(name, display_size, gameDisplay):
                         display_size = (int(new_res[0]) ,int(new_res[1]))
                         pygame.display.set_mode(display_size)
                         option(gameDisplay, display_size)
+
+            elif name.action == "deck tools":
+                deck_tools(gameDisplay, display_size)
 
 
 
