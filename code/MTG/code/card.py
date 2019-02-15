@@ -8,12 +8,13 @@ class Card():
 
 
 class Creature(Card):
-	def __init__ (self, name, card_type, colour, mana_cost, texture, power, toughness, keyword = None, state = None):
+	def __init__ (self, name, card_type, colour, mana_cost, texture, power, toughness, keyword = None, state = None, power_modifier = 0, toughness_modifier = 0):
 		Card.__init__(self, name, card_type, colour, mana_cost, texture)
 		self.power = power
 		self.toughness = toughness
 		self.keyword = keyword
 		self.state = state
+		self.counter = ("", 0, 0)
 
 class Sorcery(Card):
 	def __init__ (self, name, card_type, colour, mana_cost, texture, targets, value, effect):
@@ -34,3 +35,4 @@ class Land(Card):
 		Card.__init__(self, name, card_type, colour, mana_cost, texture)
 		self.effect = effect
 		self.state = state
+

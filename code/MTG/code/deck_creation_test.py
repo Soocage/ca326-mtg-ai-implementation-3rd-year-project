@@ -60,15 +60,15 @@ for i in range(n):
     with open("../personal_decks/deck_1", "wb") as deck_1:
 
         if ver.colour == "R" and ver.card_type == "Creature":
-            for j in range(0,2):
+            for j in range(0,34):
                     card_deck.append(ver)
 
         if ver.colour == "R" and ver.card_type == "Sorcery":
-            for j in range(0,18):
+            for j in range(0,1):
                     card_deck.append(ver)
 
         if ver.colour == "R" and ver.card_type == "Instant":
-            for j in range(0,2):
+            for j in range(0,4):
                     card_deck.append(ver)
 
         if ver.colour == "R" and ver.card_type == "Land":
