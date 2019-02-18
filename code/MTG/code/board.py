@@ -3,6 +3,18 @@ import pygame
 pygame.init()
 pygame.mixer.init()
 
+
+class CardSprite(pygame.sprite.Sprite):
+    # sprite class for all teh cards
+    def __init__(self, card, x, y, w, h):
+            pygame.sprite.Sprite.__init__(self)
+            card_texture = pygame.image.load(card.texture)            
+            self.image = pygame.transform.scale(card_texture, (int(w), int(h)))
+            self.rect = self.image.get_rect()
+            self.rect.left = x
+            self.rect.top = y
+
+
 class BoardSection():
 
     def __init__(self, screen, name, x, y, w, h, colour, is_border=True):
@@ -44,6 +56,34 @@ class Board():
         self.player_1_life_sec = None
         self.player_2_life_sec = None
 
+    def draw_hand(self, player):
+        cards = player.hand
+        sprite_card_group = pygame.sprite.Group()
+        if player == self.player_1:
+            if len(cards) >= 7:
+                padding_w = (self.player_1_hand_box.w/8)/8
+                card_h = (self.player_1_hand_box.h/10)*8
+                card_w = (card_h*63)/88
+                i = 0
+                while i < len(cards):
+                    x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
+                    y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
+                    card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
+                    sprite_card_group.add(card_sprite)
+                    i += 1
+        else:
+            print("hi")
+
+        sprite_card_group.draw(self.display)
+        pygame.display.update()
+
+
+
+        cards = player.hand
+
+
+
+
 
     def draw_board(self):
         player_1 = self.player_1
@@ -53,77 +93,13 @@ class Board():
 
         display.fill((255,255,255))
 
-        #### Hands ####################################################
-        player_1_hand_x = 0
-        player_1_hand_y = display_h*(5/6)
-        player_1_hand_w = display_w*0.8
-        player_1_hand_h = display_h - (display_h*(5/6))
-        player_1_hand_colour = (37, 236, 247)
 
-        player_1_hand = BoardSection(display, "hand", player_1_hand_x, player_1_hand_y, player_1_hand_w, player_1_hand_h, player_1_hand_colour)
-        self.player_1_hand_box = player_1_hand
-        player_1_hand.draw()
-
-        player_2_hand_x = 0
-        player_2_hand_y = 0
-        player_2_hand_w = player_1_hand_w
-        player_2_hand_h = player_1_hand_h
-        player_2_hand_colour = player_1_hand_colour
-
-        player_2_hand = BoardSection(display, "hand", player_2_hand_x, player_2_hand_y, player_2_hand_w, player_2_hand_h, player_2_hand_colour)
-        self.player_2_hand_box = player_2_hand
-        player_2_hand.draw()
-        ###################################################################
-
-        ## Lands ###########################################################
-        player_1_lands_x = 0
-        player_1_lands_y = display_h*(4/6)
-        player_1_lands_w = player_1_hand.w
-        player_1_lands_h = player_1_hand_h
-        player_1_lands_colour = (0, 255, 0)
-
-        player_1_lands = BoardSection(display, "lands", player_1_lands_x, player_1_lands_y, player_1_lands_w, player_1_lands_h, player_1_lands_colour)
-        self.player_1_land_box = player_1_lands
-        player_1_lands.draw()
-
-        player_2_lands_x = player_1_lands_x
-        player_2_lands_y = display_h*(1/6)
-        player_2_lands_w = player_1_lands_w
-        player_2_lands_h = player_1_lands_h
-        player_2_lands_colour = player_1_lands_colour
-
-        player_2_lands = BoardSection(display, "lands", player_1_lands_x, player_2_lands_y, player_2_lands_w, player_2_lands_h, player_2_lands_colour)
-        self.player_2_land_box = player_2_lands
-        player_2_lands.draw()
-        #######################################################################
-
-        ## Battlefields####################################################################
-        player_1_battlefield_x = 0
-        player_1_battlefield_y = display_h*(3/6)
-        player_1_battlefield_w = player_1_hand.w*1.1
-        player_1_battlefield_h = (display_h/2) - player_1_hand.h - player_1_lands.h
-        player_1_battlefield_colour = (211, 132, 6)
-
-        player_1_battlefield = BoardSection(display, "battlefield", player_1_battlefield_x, player_1_battlefield_y, player_1_battlefield_w, player_1_battlefield_h, player_1_battlefield_colour)
-        self.player_1_battlefield_box = player_1_battlefield
-        player_1_battlefield.draw()
-
-        player_2_battlefield_x = 0
-        player_2_battlefield_y = display_h*(2/6)
-        player_2_battlefield_w = player_1_battlefield_w
-        player_2_battlefield_h = player_1_battlefield_h
-        player_2_battlefield_colour = player_1_battlefield_colour
-
-        player_2_battlefield = BoardSection(display, "battlefield", player_2_battlefield_x, player_2_battlefield_y, player_2_battlefield_w, player_2_battlefield_h, player_2_battlefield_colour)
-        self.player_2_battlefield_box = player_2_battlefield
-        player_2_battlefield.draw()
-        ######################################################################################
 
         ## Graveyards##########################################################################
-        player_1_graveyard_x = player_1_hand.w
-        player_1_graveyard_y = (display_h - player_1_hand.h)
-        player_1_graveyard_w = (display_w - player_1_hand.w)
-        player_1_graveyard_h = player_1_hand_h
+        player_1_graveyard_x = 0
+        player_1_graveyard_y = (display_h/8)*7
+        player_1_graveyard_w = (display_w/8)
+        player_1_graveyard_h = (display_h/8)
         player_1_graveyard_colour = (165, 165, 165)
 
         player_1_graveyard = BoardSection(display, "graveyard", player_1_graveyard_x, player_1_graveyard_y, player_1_graveyard_w, player_1_graveyard_h, player_1_graveyard_colour)
@@ -140,7 +116,7 @@ class Board():
         self.player_2_graveyard = player_2_graveyard
         player_2_graveyard.draw()
 
-        player_1_graveyard_box_w = player_1_graveyard_w*(0.3)
+        player_1_graveyard_box_w = player_1_graveyard_w*(0.33)
         player_1_graveyard_box_h = player_1_graveyard_box_w*(88/63)
         player_1_graveyard_box_x = player_1_graveyard_x + (player_1_graveyard_w*(0.5))
         player_1_graveyard_box_y = player_1_graveyard_y + ((player_1_graveyard_h-player_1_graveyard_box_h)/2)
@@ -172,9 +148,31 @@ class Board():
 
         ##############################################################################################
 
+        #### Hands ####################################################
+        player_1_hand_x = player_1_graveyard_x + player_1_graveyard_w
+        player_1_hand_y = player_1_graveyard_y
+        player_1_hand_w = (display_w/8)*6
+        player_1_hand_h = player_1_graveyard_h
+        player_1_hand_colour = (37, 236, 247)
+
+        player_1_hand = BoardSection(display, "hand", player_1_hand_x, player_1_hand_y, player_1_hand_w, player_1_hand_h, player_1_hand_colour)
+        self.player_1_hand_box = player_1_hand
+        player_1_hand.draw()
+
+        player_2_hand_x = player_2_graveyard_x + player_2_graveyard_w
+        player_2_hand_y = player_2_graveyard_y
+        player_2_hand_w = player_1_hand_w
+        player_2_hand_h = player_1_hand_h
+        player_2_hand_colour = player_1_hand_colour
+
+        player_2_hand = BoardSection(display, "hand", player_2_hand_x, player_2_hand_y, player_2_hand_w, player_2_hand_h, player_2_hand_colour)
+        self.player_2_hand_box = player_2_hand
+        player_2_hand.draw()
+        ###################################################################
+
         ## Decks ######################################################################################
-        player_1_deck_x = player_1_graveyard.x
-        player_1_deck_y = display_h - 2*(player_1_graveyard.h)
+        player_1_deck_x = player_1_hand_x + player_1_hand_w
+        player_1_deck_y = player_1_hand_y
         player_1_deck_w = player_1_graveyard_w
         player_1_deck_h = player_1_graveyard_h
         player_1_deck_colour = (0, 165, 165)
@@ -184,7 +182,7 @@ class Board():
         player_1_deck.draw()
         
         player_2_deck_x = player_1_deck_x
-        player_2_deck_y = player_1_deck_h
+        player_2_deck_y = player_2_hand_y
         player_2_deck_w = player_1_deck_w
         player_2_deck_h = player_1_deck_h
         player_2_deck_colour = player_1_deck_colour
@@ -192,8 +190,8 @@ class Board():
         player_2_deck = BoardSection(display, "deck", player_2_deck_x, player_2_deck_y, player_2_deck_w, player_2_deck_h, player_2_deck_colour)
         player_2_deck.draw()
 
-        player_1_deck_box_w = player_1_deck_w*(0.3)
-        player_1_deck_box_h = (player_1_deck_box_w*(88/63))
+        player_1_deck_box_w = player_1_graveyard_box_w
+        player_1_deck_box_h = player_1_graveyard_box_h
         player_1_deck_box_x = player_1_deck_x + (player_1_deck_w*(0.5))
         player_1_deck_box_y = player_1_deck_y + ((player_1_deck_h-player_1_deck_box_h)/2)
         player_1_deck_box_colour = (255,255,255)
@@ -223,11 +221,33 @@ class Board():
         display.blit(player_2_deck_text, player_2_deck_text_rec)
         #############################################################################################################################
 
+        ## Lands ###########################################################
+        player_1_lands_x = 0
+        player_1_lands_y = (display_h/8)*6
+        player_1_lands_w = (display_w/8)*7
+        player_1_lands_h = player_1_hand_h
+        player_1_lands_colour = (0, 255, 0)
+
+        player_1_lands = BoardSection(display, "lands", player_1_lands_x, player_1_lands_y, player_1_lands_w, player_1_lands_h, player_1_lands_colour)
+        self.player_1_land_box = player_1_lands
+        player_1_lands.draw()
+
+        player_2_lands_x = 0
+        player_2_lands_y = (display_h/8)
+        player_2_lands_w = player_1_lands_w
+        player_2_lands_h = player_1_lands_h
+        player_2_lands_colour = player_1_lands_colour
+
+        player_2_lands = BoardSection(display, "lands", player_1_lands_x, player_2_lands_y, player_2_lands_w, player_2_lands_h, player_2_lands_colour)
+        self.player_2_land_box = player_2_lands
+        player_2_lands.draw()
+        #######################################################################
+
         ## Life Sections ####################################################################################################
-        player_1_life_sec_x = player_1_battlefield_w
-        player_1_life_sec_y = display_h/2
-        player_1_life_sec_w = display_w - player_1_battlefield_w
-        player_1_life_sec_h = player_1_battlefield_h
+        player_1_life_sec_x = player_1_lands_x + player_1_lands_w
+        player_1_life_sec_y = player_1_lands_y
+        player_1_life_sec_w = player_1_deck_w
+        player_1_life_sec_h = player_1_lands_h
         player_1_life_sec_colour = (222, 188, 224)
 
         player_1_life_sec = BoardSection(display, "life_sec", player_1_life_sec_x, player_1_life_sec_y, player_1_life_sec_w, player_1_life_sec_h, player_1_life_sec_colour)
@@ -235,7 +255,7 @@ class Board():
         player_1_life_sec.draw()
 
         player_2_life_sec_x = player_1_life_sec_x
-        player_2_life_sec_y = display_h/2 - player_1_life_sec_h
+        player_2_life_sec_y = player_2_lands_y
         player_2_life_sec_w = player_1_life_sec_w
         player_2_life_sec_h = player_1_life_sec_h
         player_2_life_sec_colour = player_1_life_sec_colour
@@ -248,7 +268,7 @@ class Board():
         player_1_life_h = player_1_life_w
         player_1_life_x = player_1_life_sec_x + (player_1_life_w/2)
         player_1_life_y = player_1_life_sec.y + ((player_1_life_sec.h - player_1_life_h) / 2)
-        player_1_life_colour = (222, 188, 224)
+        player_1_life_colour = (255, 255, 255)
 
         player_1_life = BoardSection(display, "life", player_1_life_x, player_1_life_y, player_1_life_w, player_1_life_h, player_1_life_colour)
         player_1_life.draw()
@@ -274,6 +294,31 @@ class Board():
         player_2_life_rec.center = ((player_2_life_sec_x+(player_2_life_sec_w/2)), (player_2_life_sec_y+(player_2_life_sec_h/2)))
         display.blit(player_2_life_text, player_2_life_rec)
         ###################################################################################################################
+
+        ## Battlefields####################################################################
+        player_1_battlefield_x = 0
+        player_1_battlefield_y = display_h/2
+        player_1_battlefield_w = display_w
+        player_1_battlefield_h = (display_h/8)*2
+        player_1_battlefield_colour = (211, 132, 6)
+
+        player_1_battlefield = BoardSection(display, "battlefield", player_1_battlefield_x, player_1_battlefield_y, player_1_battlefield_w, player_1_battlefield_h, player_1_battlefield_colour)
+        self.player_1_battlefield_box = player_1_battlefield
+        player_1_battlefield.draw()
+
+        player_2_battlefield_x = 0
+        player_2_battlefield_y = (display_h/8)*2
+        player_2_battlefield_w = player_1_battlefield_w
+        player_2_battlefield_h = player_1_battlefield_h
+        player_2_battlefield_colour = player_1_battlefield_colour
+
+        player_2_battlefield = BoardSection(display, "battlefield", player_2_battlefield_x, player_2_battlefield_y, player_2_battlefield_w, player_2_battlefield_h, player_2_battlefield_colour)
+        self.player_2_battlefield_box = player_2_battlefield
+        player_2_battlefield.draw()
+        ######################################################################################
+
+
+
 
         pygame.display.update()
 

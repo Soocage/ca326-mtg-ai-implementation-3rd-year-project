@@ -36,12 +36,33 @@ class Game():
 
         gameBoard = board.Board(self.gameDisplay, self.display_size, self.player_1, self.player_2)
 
+        self.deal_cards(self.player_1, 7)
+        self.deal_cards(self.player_2, 7)
+
+
         gameBoard.draw_board()
+        gameBoard.draw_hand(self.player_1)
+        gameBoard.draw_hand(self.player_2)
+        time.sleep(30)
 
         self.current_player = random.choice([self.player_1, self.player_2])
 
         print(self.current_player.name)
+
+        self.game_loop()
         return
+
+    def game_loop(self):
+        while self.check_game_status():
+            return
+
+
+
+    def check_game_status(self):
+        lives = self.player_1.life > 0 and self.player_2.life > 0
+        decks = self.player_1.deck.size > 0 and self.player_2.deck.size > 0
+        ##has_quit =  self.player_1.has_quit()
+        return lives and decks### and has_quit 
 
     def deck_selection(self, player):
         f = open("./personal_decks/deck_1", "rb")
@@ -52,6 +73,14 @@ class Game():
 
     def shuffle_deck(self, player):
         shuffle(player.deck.cards)
+
+    def deal_cards(self, player, n):    
+        for i in range(n):
+            player.hand.append(player.deck.cards.pop(0))
+
+
+    def draw(player, gameDisplay, display_size):
+        player.hand.append(player.deck.cards.pop(0))
 
 
 def run_game(gameDisplay, display_size):
@@ -502,21 +531,10 @@ def mulligan(player, gameDisplay, display_size, n):#game_board):
             print("would you liek to muligan? yes/no")
             ans = input().lower()
 
-
-
-def deal_cards(player, gameDisplay, display_size, n,):# game_board):
-    
-    for i in range(n):
-        player.hand.append(player.deck.cards.pop(0))
-    #game_board.draw_hand(player, gameDisplay, display_size)
-
 def my_quit():
     pygame.quit()
     quit()
 
-def draw(player, gameDisplay, display_size): #, game_board):
-    player.hand.append(player.deck.cards.pop(0))
-    #game_board.draw_new_hand(player, gameDisplay, display_size)
 
 def untap(player, gameDisplay, display_size):#, game_board):
 
