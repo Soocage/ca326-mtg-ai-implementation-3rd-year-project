@@ -44,6 +44,7 @@ class Game():
         gameBoard.draw_hand(self.player_1)
         gameBoard.draw_hand(self.player_2)
         time.sleep(30)
+        
 
         self.current_player = random.choice([self.player_1, self.player_2])
 
