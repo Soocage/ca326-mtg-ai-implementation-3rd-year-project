@@ -11,6 +11,7 @@ import time
 import pygame
 from button import Button
 import game
+import player
 
 #Colours
 
@@ -309,7 +310,10 @@ def draw_button(name, display_size, gameDisplay):
         if click[0] == 1 and name.action != None:
 
             if name.action == "play_vs_ai":
-                game.run_game(gameDisplay, display_size)
+                player_1 = player.Player("Sean")
+                player_2 = player.Player("AI_Dusty")
+                game_1 = game.Game(gameDisplay, display_size, player_1, player_2)
+                game_1.run_game()
 
             elif name.action == "quit":
                 my_quit()

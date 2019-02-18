@@ -6,23 +6,58 @@ import deck
 import pickle
 import card
 from random import shuffle
+import random
+import time
 
 
 pygame.init()
 pygame.mixer.init()
 
+class Game():
+
+    def __init__(self, gameDisplay, display_size, player_1, player_2):
+        self.gameDisplay = gameDisplay
+        self.display_size = display_size
+        self.player_1 = player_1
+        self.player_2 = player_2
+        self.phase = None
+        self.turn = 0
+        self.current_player = None
+
+    def run_game(self):
+        player_1_deck_list = self.deck_selection(self.player_1)
+        player_2_deck_list = self.deck_selection(self.player_2)
+
+        self.player_1.deck = deck.Deck("gablins", player_1_deck_list)
+        self.player_2.deck = deck.Deck("gibluns", player_2_deck_list)
+
+        self.shuffle_deck(self.player_1)
+        self.shuffle_deck(self.player_2)
+
+        gameBoard = board.Board(self.gameDisplay, self.display_size, self.player_1, self.player_2)
+
+        gameBoard.draw_board()
+
+        self.current_player = random.choice([self.player_1, self.player_2])
+
+        print(self.current_player.name)
+        return
+
+    def deck_selection(self, player):
+        f = open("./personal_decks/deck_1", "rb")
+        player_deck = pickle.load(f)
+        f.close()
+
+        return player_deck
+
+    def shuffle_deck(self, player):
+        shuffle(player.deck.cards)
 
 
 def run_game(gameDisplay, display_size):
     (display_w, display_h) = display_size
     player_deck_list = deck_selection()
     opponent_deck_list = deck_selection()
-
-    player_deck = deck.Deck("gablins", player_deck_list)
-    opponent_deck = deck.Deck("gibluns", opponent_deck_list)
-
-    player_1 = player.Player("Sean", player_deck)
-    player_2 = player.Player("AI_Dusty", opponent_deck)
 
     
     #game_board = board.Board(gameDisplay, display_size, player_1, player_2)
@@ -475,21 +510,9 @@ def deal_cards(player, gameDisplay, display_size, n,):# game_board):
         player.hand.append(player.deck.cards.pop(0))
     #game_board.draw_hand(player, gameDisplay, display_size)
 
-def deck_selection():
-    f = open("./personal_decks/deck_1", "rb")
-    player_deck = pickle.load(f)
-    print(player_deck[0].state)
-    f.close()
-
-    return player_deck
-
 def my_quit():
     pygame.quit()
     quit()
-
-
-def shuffle_deck(player):
-    shuffle(player.deck.cards)
 
 def draw(player, gameDisplay, display_size): #, game_board):
     player.hand.append(player.deck.cards.pop(0))
