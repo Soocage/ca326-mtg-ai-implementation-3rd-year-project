@@ -39,6 +39,7 @@ class Game():
 
         self.deal_cards(self.player_1, 7)
         self.deal_cards(self.player_2, 7)
+        print(self.player_1.hand)
 
 
         gameBoard.draw_board()
@@ -58,13 +59,11 @@ class Game():
         while self.check_game_status(): 
 
             ########### TURNS LOGIC ################
-            self.untap(self.player_1)
+            self.untap(self.player_1, gameBoard)
             self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
 
 ############################# UPDATING SCREEN ######################################
-
-            self.my_quit()
 
 
 
@@ -72,7 +71,7 @@ class Game():
 
     def check_game_status(self):
         lives = self.player_1.life > 0 and self.player_2.life > 0
-        decks = self.player_1.deck.size > 0 and self.player_2.deck.size > 0
+        decks = len(self.player_1.deck.cards) > 0 and len(self.player_2.deck.cards) > 0
         ##has_quit =  self.player_1.has_quit()
         return lives and decks### and has_quit 
 
@@ -95,13 +94,23 @@ class Game():
         gameBoard.draw_hand(player)
         print("######################### Break ###########################")
 
-    def untap(self, player):
+    def untap(self, player, gameBoard):
 
         for creature in player.battlefield:
-            creature.status = "norm"
+            creature.state = "untapped"
+
 
         for land in player.land_zone:
-            land.status = "norm"
+            land.state = "untapped"
+
+        gameBoard.draw_land(player)
+        player.land_flag = False
+        self.clear_mana(player)
+
+    def add_mana(self, player, land):
+        land.state = "tapped"
+        player.mana += land.colour
+        player.mana = "".join(sorted(player.mana))
 
     def main_phase(self, current_player, next_player, gameBoard, display):
         pass_phase = False
@@ -119,13 +128,19 @@ class Game():
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    x = pos[0]
-                    y = pos[1]
 
                     if event.button == 1:
                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
                                 card.clicked = True
+
+                        if gameBoard.player_1_land_box.x + gameBoard.player_1_land_box.w > pos[0] > gameBoard.player_1_land_box.x and gameBoard.player_1_land_box.y + gameBoard.player_1_land_box.h > pos[1] > gameBoard.player_1_land_box.y:
+                            for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                                print (land.card.name)
+                                if land.rect.collidepoint(pos) and land.card.state != "tapped":
+                                    self.add_mana(current_player, land.card)
+                                    gameBoard.tap_mana(land)
+                                    print(current_player.mana)
 
                 if event.type == pygame.MOUSEBUTTONUP:
 
@@ -140,7 +155,7 @@ class Game():
                                         indx = current_player.hand.index(card.card)
                                         current_player.land_zone.append(current_player.hand.pop(indx))
                                         gameBoard.draw_hand(current_player)
-                                        print(current_player.land_zone)
+                                        gameBoard.draw_land(current_player) 
                                         current_player.land_flag = True
                          
 
@@ -154,18 +169,21 @@ class Game():
 
 
             gameBoard.draw_board()
+            board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
             pygame.display.update()
 
             clock.tick(60)
+        self.clear_mana(current_player)
 
 
+    def clear_mana(self, player):
+        player.mana = ""
 
     def my_quit(self):
         pygame.quit()
         quit()
-
 
 
 def run_game(gameDisplay, display_size):

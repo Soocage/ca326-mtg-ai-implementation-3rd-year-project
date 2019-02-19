@@ -73,13 +73,17 @@ class Board():
                 padding_w = (self.player_1_hand_box.w/8)/8
                 card_h = (self.player_1_hand_box.h/10)*8
                 card_w = (card_h*63)/88
-                i = 0
-                while i < len(cards):
-                    x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
-                    y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
-                    card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
-                    PLAYER_1_HAND_SPRITE_CARD_GROUP.add(card_sprite)
-                    i += 1
+            else:
+                padding_w = (self.player_1_hand_box.w/(len(cards)+1))/(len(cards)+2)
+                card_w = (self.player_1_hand_box.w/(len(cards)+1))
+                card_h = card_w * (88/63)
+            i = 0
+            while i < len(cards):
+                x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
+                card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
+                PLAYER_1_HAND_SPRITE_CARD_GROUP.add(card_sprite)
+                i += 1
             PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(self.display)
         else:
             PLAYER_2_HAND_SPRITE_CARD_GROUP.empty()
@@ -98,7 +102,48 @@ class Board():
 
 
     def draw_land(self, player):
-        return
+        lands = player.land_zone
+        if player == self.player_1:
+            PLAYER_1_LAND_SPRITE_CARD_GROUP.empty()
+            if len(lands) <= 15:
+                padding_w = (self.player_1_land_box.w/16)/16
+                card_h = (self.player_1_land_box.h/10)*8
+                card_w = (card_h*63)/88
+            else:
+                padding_w = (self.player_1_land_box.w/(len(lands)+1))/(len(lands)+2)
+                card_w = (self.player_1_land_box.w/(len(lands)+1))
+                card_h = card_w * (88/63)
+            i = 0
+            while i < len(lands):
+                x = self.player_1_land_box.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_1_land_box.y + (self.player_1_land_box.h - card_h)/2
+                land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
+                PLAYER_1_LAND_SPRITE_CARD_GROUP.add(land_sprite)
+                i += 1
+            PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
+        else:
+            PLAYER_2_LAND_SPRITE_CARD_GROUP.empty()
+            if len(lands) <= 15:
+                padding_w = (self.player_2_land_box.w/16)/16
+                card_h = (self.player_2_land_box.h/10)*8
+                card_w = (card_h*63)/88
+            else:
+                padding_w = (self.player_2_land_box.w/(len(lands)+1))/(len(lands)+2)
+                card_w = (self.player_2_land_box.w/(len(lands)+1))
+                card_h = card_w * (88/63)
+            i = 0
+            while i < len(lands):
+                x = self.player_2_land_box.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_2_land_box.y + (self.player_2_land_box.h - card_h)/2
+                land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
+                PLAYER_2_LAND_SPRITE_CARD_GROUP.add(land_sprite)
+                i += 1
+            PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
+
+
+
+    def tap_mana(self, land):
+        land.image = pygame.transform.rotate(land.image, 90).convert_alpha()
 
 
 
@@ -227,12 +272,12 @@ class Board():
 
         deck_font = pygame.font.Font(pygame.font.get_default_font(), int(player_1_deck_w*0.4))
 
-        player_1_deck_text = deck_font.render(str(player_1.deck.size), False, (0,0,0))
+        player_1_deck_text = deck_font.render(str(len(player_1.deck.cards)), False, (0,0,0))
         player_1_deck_text_rec = player_1_deck_text.get_rect()
         player_1_deck_text_rec.center = ((player_1_deck_x+(player_1_deck_w/4)), (player_1_deck_y+(player_1_deck_h/2)))
         display.blit(player_1_deck_text, player_1_deck_text_rec)
 
-        player_2_deck_text = deck_font.render(str(player_2.deck.size), False, (0,0,0))
+        player_2_deck_text = deck_font.render(str(len(player_2.deck.cards)), False, (0,0,0))
         player_2_deck_text_rec = player_2_deck_text.get_rect()
         player_2_deck_text_rec.center = ((player_2_deck_x+(player_2_deck_w/4)), (player_2_deck_y+(player_2_deck_h/2)))
         display.blit(player_2_deck_text, player_2_deck_text_rec)
