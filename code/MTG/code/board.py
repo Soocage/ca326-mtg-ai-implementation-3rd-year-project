@@ -2,17 +2,22 @@ import pygame
 
 pygame.init()
 pygame.mixer.init()
-
+SPRITE_CARD_GROUP = pygame.sprite.Group()
 
 class CardSprite(pygame.sprite.Sprite):
     # sprite class for all teh cards
-    def __init__(self, card, x, y, w, h):
+    def __init__(self, card, x, y, w, h, back_texture = None):
             pygame.sprite.Sprite.__init__(self)
-            card_texture = pygame.image.load(card.texture)            
-            self.image = pygame.transform.scale(card_texture, (int(w), int(h)))
+            if back_texture == None:
+                card_texture = pygame.image.load(card.texture)            
+            else:
+                card_texture = pygame.image.load(back_texture) 
+            self.image = pygame.transform.scale(card_texture,(int(w), int(h)))
             self.rect = self.image.get_rect()
-            self.rect.left = x
-            self.rect.top = y
+            self.rect.x = x
+            self.rect.y = y
+            self.clicked = False
+            self.card = card
 
 
 class BoardSection():
@@ -58,7 +63,6 @@ class Board():
 
     def draw_hand(self, player):
         cards = player.hand
-        sprite_card_group = pygame.sprite.Group()
         if player == self.player_1:
             if len(cards) <= 8:
                 padding_w = (self.player_1_hand_box.w/8)/8
@@ -69,17 +73,22 @@ class Board():
                     x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
                     y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
                     card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
-                    sprite_card_group.add(card_sprite)
+                    SPRITE_CARD_GROUP.add(card_sprite)
                     i += 1
         else:
-            print("hi")
+            if len(cards) <= 8:
+                padding_w = (self.player_1_hand_box.w/8)/8
+                card_h = (self.player_1_hand_box.h/10)*8
+                card_w = (card_h*63)/88
+                i = 0
+                while i < len(cards):
+                    x = self.player_2_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
+                    y = self.player_2_hand_box.y + (self.player_2_hand_box.h - card_h)/2
+                    card_sprite = CardSprite(cards[i], x, y, card_w, card_h, "./images/cardback.jpg")
+                    SPRITE_CARD_GROUP.add(card_sprite)
+                    i += 1
 
-        sprite_card_group.draw(self.display)
-        pygame.display.update()
-
-
-
-        cards = player.hand
+        SPRITE_CARD_GROUP.draw(self.display)
 
 
 
@@ -314,10 +323,4 @@ class Board():
         self.player_2_battlefield_box = player_2_battlefield
         player_2_battlefield.draw()
         ##############
-
-
-
-
-
-        pygame.display.update()
 

@@ -43,19 +43,61 @@ class Game():
         gameBoard.draw_board()
         gameBoard.draw_hand(self.player_1)
         gameBoard.draw_hand(self.player_2)
-        time.sleep(30)
+        pygame.display.update()
+        
         
 
         self.current_player = random.choice([self.player_1, self.player_2])
 
         print(self.current_player.name)
 
-        self.game_loop()
-        return
+        self.game_loop(self.gameDisplay, gameBoard)
 
-    def game_loop(self):
+    def game_loop(self, display, gameBoard):
         while self.check_game_status():
-            return
+
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    self.my_quit()
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    x = pos[0]
+                    y = pos[1]
+
+                    if event.button == 1:
+                        for card in board.SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.clicked = True
+
+                if event.type == pygame.MOUSEBUTTONUP:
+
+                    for card in board.SPRITE_CARD_GROUP:
+                        if card.clicked == True:
+                            card.clicked = False
+
+                            if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
+                                jaja = "jaja"
+                                
+############################# GAME LOGIC HERE#######################################
+
+            for card in board.SPRITE_CARD_GROUP:
+                if card.clicked == True:
+                    pos = pygame.mouse.get_pos()
+                    card.rect.x = pos[0] - (card.rect.width/2)
+                    card.rect.y = pos[1] - (card.rect.height/2)
+
+
+            ########### TURNS LOGIC ################
+
+
+############################# UPDATING SCREEN ######################################
+            gameBoard.draw_board()
+            board.SPRITE_CARD_GROUP.draw(display)
+            pygame.display.update()
+
+
 
 
 
@@ -82,6 +124,11 @@ class Game():
 
     def draw(player, gameDisplay, display_size):
         player.hand.append(player.deck.cards.pop(0))
+
+    def my_quit(self):
+        pygame.quit()
+        quit()
+
 
 
 def run_game(gameDisplay, display_size):
@@ -531,10 +578,6 @@ def mulligan(player, gameDisplay, display_size, n):#game_board):
             print("invalid anwser please write yes or no")
             print("would you liek to muligan? yes/no")
             ans = input().lower()
-
-def my_quit():
-    pygame.quit()
-    quit()
 
 
 def untap(player, gameDisplay, display_size):#, game_board):
