@@ -2,7 +2,11 @@ import pygame
 
 pygame.init()
 pygame.mixer.init()
-HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_1_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_2_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_1_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_2_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+
 
 class CardSprite(pygame.sprite.Sprite):
     # sprite class for all teh cards
@@ -64,6 +68,7 @@ class Board():
     def draw_hand(self, player):
         cards = player.hand
         if player == self.player_1:
+            PLAYER_1_HAND_SPRITE_CARD_GROUP.empty()
             if len(cards) <= 8:
                 padding_w = (self.player_1_hand_box.w/8)/8
                 card_h = (self.player_1_hand_box.h/10)*8
@@ -73,9 +78,11 @@ class Board():
                     x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
                     y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
                     card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
-                    HAND_SPRITE_CARD_GROUP.add(card_sprite)
+                    PLAYER_1_HAND_SPRITE_CARD_GROUP.add(card_sprite)
                     i += 1
+            PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(self.display)
         else:
+            PLAYER_2_HAND_SPRITE_CARD_GROUP.empty()
             if len(cards) <= 8:
                 padding_w = (self.player_1_hand_box.w/8)/8
                 card_h = (self.player_1_hand_box.h/10)*8
@@ -85,10 +92,13 @@ class Board():
                     x = self.player_2_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
                     y = self.player_2_hand_box.y + (self.player_2_hand_box.h - card_h)/2
                     card_sprite = CardSprite(cards[i], x, y, card_w, card_h, "./images/cardback.jpg")
-                    HAND_SPRITE_CARD_GROUP.add(card_sprite)
+                    PLAYER_2_HAND_SPRITE_CARD_GROUP.add(card_sprite)
                     i += 1
+            PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(self.display)
 
-        HAND_SPRITE_CARD_GROUP.draw(self.display)
+
+    def draw_land(self, player):
+        return
 
 
 

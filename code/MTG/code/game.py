@@ -12,6 +12,7 @@ import time
 
 pygame.init()
 pygame.mixer.init()
+clock = pygame.time.Clock()
 
 class Game():
 
@@ -54,17 +55,15 @@ class Game():
         self.game_loop(self.gameDisplay, gameBoard)
 
     def game_loop(self, display, gameBoard):
-        while self.check_game_status():                               
+        while self.check_game_status(): 
+
             ########### TURNS LOGIC ################
             self.untap(self.player_1)
-            self.draw(self.player_1)
-            gameBoard.draw_hand(self.player_1)
+            self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
 
 ############################# UPDATING SCREEN ######################################
-            gameBoard.draw_board()
-            board.HAND_SPRITE_CARD_GROUP.draw(display)
-            pygame.display.update()
+
             self.my_quit()
 
 
@@ -91,8 +90,9 @@ class Game():
         for i in range(n):
             player.hand.append(player.deck.cards.pop(0))
 
-    def draw(self, player):
+    def draw(self, player, gameBoard):
         player.hand.append(player.deck.cards.pop(0))
+        gameBoard.draw_hand(player)
         print("######################### Break ###########################")
 
     def untap(self, player):
@@ -123,27 +123,30 @@ class Game():
                     y = pos[1]
 
                     if event.button == 1:
-                        for card in board.HAND_SPRITE_CARD_GROUP:
+                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
                                 card.clicked = True
 
                 if event.type == pygame.MOUSEBUTTONUP:
 
-                    for card in board.HAND_SPRITE_CARD_GROUP:
+                    for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                         if card.clicked == True:
                             card.clicked = False
 
                             if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
+                                
                                 if card.card.card_type == "Land":
-                                    if current_player.land_flag < 1:
+                                    if current_player.land_flag == False:
                                         indx = current_player.hand.index(card.card)
                                         current_player.land_zone.append(current_player.hand.pop(indx))
+                                        gameBoard.draw_hand(current_player)
                                         print(current_player.land_zone)
-
+                                        current_player.land_flag = True
+                         
 
 ############################# GAME LOGIC HERE#######################################
 
-            for card in board.HAND_SPRITE_CARD_GROUP:
+            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                 if card.clicked == True:
                     pos = pygame.mouse.get_pos()
                     card.rect.x = pos[0] - (card.rect.width/2)
@@ -151,8 +154,11 @@ class Game():
 
 
             gameBoard.draw_board()
-            board.HAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
             pygame.display.update()
+
+            clock.tick(60)
 
 
 
