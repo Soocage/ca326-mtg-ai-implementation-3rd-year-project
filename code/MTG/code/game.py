@@ -157,6 +157,8 @@ class Game():
                                         gameBoard.draw_hand(current_player)
                                         gameBoard.draw_land(current_player) 
                                         current_player.land_flag = True
+                                    else:
+                                        gameBoard.draw_hand(current_player)
                          
 
 ############################# GAME LOGIC HERE#######################################
