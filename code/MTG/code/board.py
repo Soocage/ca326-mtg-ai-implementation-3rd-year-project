@@ -288,7 +288,7 @@ class Board():
         player_1_lands_y = (display_h/16)*11
         player_1_lands_w = (display_w/8)*7
         player_1_lands_h = display_h - player_1_lands_y - player_1_graveyard_h
-        player_1_lands_colour = (0, 255, 0)
+        player_1_lands_colour = (178, 255, 102)
 
         player_1_lands = BoardSection(display, "lands", player_1_lands_x, player_1_lands_y, player_1_lands_w, player_1_lands_h, player_1_lands_colour)
         self.player_1_land_box = player_1_lands
@@ -310,7 +310,7 @@ class Board():
         player_1_life_sec_y = player_1_lands_y
         player_1_life_sec_w = player_1_deck_w
         player_1_life_sec_h = player_1_lands_h
-        player_1_life_sec_colour = (222, 188, 224)
+        player_1_life_sec_colour = (91, 252, 177)
 
         player_1_life_sec = BoardSection(display, "life_sec", player_1_life_sec_x, player_1_life_sec_y, player_1_life_sec_w, player_1_life_sec_h, player_1_life_sec_colour)
         self.player_1_life_sec = player_1_life_sec
@@ -378,4 +378,71 @@ class Board():
         self.player_2_battlefield_box = player_2_battlefield
         player_2_battlefield.draw()
         ##############
+
+        ## MANA POOL ##################################################################
+
+        mana_pool_h = (player_1_battlefield_h/5)
+        mana_pool_w = ((player_1_battlefield_w/4)/5)
+        player_1_r_mana_pool_x = ((player_1_battlefield_w - (mana_pool_w*5))/2)
+        player_1_r_mana_pool_y = player_1_lands_y - mana_pool_h
+
+        player_1_g_mana_pool_x = player_1_r_mana_pool_x + mana_pool_w
+        player_1_g_mana_pool_y = player_1_r_mana_pool_y
+
+        player_1_u_mana_pool_x = player_1_g_mana_pool_x + mana_pool_w
+        player_1_u_mana_pool_y = player_1_g_mana_pool_y
+
+        player_1_w_mana_pool_x = player_1_u_mana_pool_x + mana_pool_w
+        player_1_w_mana_pool_y = player_1_u_mana_pool_y
+
+        player_1_b_mana_pool_x = player_1_w_mana_pool_x + mana_pool_w
+        player_1_b_mana_pool_y = player_1_w_mana_pool_y
+
+        player_1_r_mana_pool_sec = BoardSection(display, "mana_r", player_1_r_mana_pool_x, player_1_r_mana_pool_y, mana_pool_w, mana_pool_h, (200,0,0))
+        player_1_r_mana_pool_sec.draw()
+
+        player_1_g_mana_pool_sec = BoardSection(display, "mana_r", player_1_g_mana_pool_x, player_1_g_mana_pool_y, mana_pool_w, mana_pool_h, (0,200,0))
+        player_1_g_mana_pool_sec.draw()
+
+        player_1_u_mana_pool_sec = BoardSection(display, "mana_r", player_1_u_mana_pool_x, player_1_u_mana_pool_y, mana_pool_w, mana_pool_h, (0,102,204))
+        player_1_u_mana_pool_sec.draw()
+
+        player_1_w_mana_pool_sec = BoardSection(display, "mana_r", player_1_w_mana_pool_x, player_1_w_mana_pool_y, mana_pool_w, mana_pool_h, (255,255,204))
+        player_1_w_mana_pool_sec.draw()
+
+        player_1_b_mana_pool_sec = BoardSection(display, "mana_r", player_1_b_mana_pool_x, player_1_b_mana_pool_y, mana_pool_w, mana_pool_h, (122,0,122))
+        player_1_b_mana_pool_sec.draw()
+
+        player_2_r_mana_pool_x = player_1_r_mana_pool_x
+        player_2_r_mana_pool_y = player_2_battlefield_y
+
+        player_2_g_mana_pool_x = player_2_r_mana_pool_x + mana_pool_w
+        player_2_g_mana_pool_y = player_2_r_mana_pool_y
+
+        player_2_u_mana_pool_x = player_2_g_mana_pool_x + mana_pool_w
+        player_2_u_mana_pool_y = player_2_g_mana_pool_y
+
+        player_2_w_mana_pool_x = player_2_u_mana_pool_x + mana_pool_w
+        player_2_w_mana_pool_y = player_2_u_mana_pool_y
+
+        player_2_b_mana_pool_x = player_2_w_mana_pool_x + mana_pool_w
+        player_2_b_mana_pool_y = player_2_w_mana_pool_y
+
+        player_2_r_mana_pool_sec = BoardSection(display, "mana_r", player_2_r_mana_pool_x, player_2_r_mana_pool_y, mana_pool_w, mana_pool_h, (200,0,0))
+        player_2_r_mana_pool_sec.draw()
+
+        player_2_g_mana_pool_sec = BoardSection(display, "mana_r", player_2_g_mana_pool_x, player_2_g_mana_pool_y, mana_pool_w, mana_pool_h, (0,200,0))
+        player_2_g_mana_pool_sec.draw()
+
+        player_2_u_mana_pool_sec = BoardSection(display, "mana_r", player_2_u_mana_pool_x, player_2_u_mana_pool_y, mana_pool_w, mana_pool_h, (0,102,204))
+        player_2_u_mana_pool_sec.draw()
+
+        player_2_w_mana_pool_sec = BoardSection(display, "mana_r", player_2_w_mana_pool_x, player_2_w_mana_pool_y, mana_pool_w, mana_pool_h, (255,255,204))
+        player_2_w_mana_pool_sec.draw()
+
+        player_2_b_mana_pool_sec = BoardSection(display, "mana_r", player_2_b_mana_pool_x, player_2_b_mana_pool_y, mana_pool_w, mana_pool_h, (122,0,122))
+        player_2_b_mana_pool_sec.draw()
+
+
+
 
