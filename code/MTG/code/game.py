@@ -54,48 +54,18 @@ class Game():
         self.game_loop(self.gameDisplay, gameBoard)
 
     def game_loop(self, display, gameBoard):
-        while self.check_game_status():
-
-            for event in pygame.event.get():
-
-                if event.type == pygame.QUIT:
-                    self.my_quit()
-
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    x = pos[0]
-                    y = pos[1]
-
-                    if event.button == 1:
-                        for card in board.SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                card.clicked = True
-
-                if event.type == pygame.MOUSEBUTTONUP:
-
-                    for card in board.SPRITE_CARD_GROUP:
-                        if card.clicked == True:
-                            card.clicked = False
-
-                            if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
-                                jaja = "jaja"
-                                
-############################# GAME LOGIC HERE#######################################
-
-            for card in board.SPRITE_CARD_GROUP:
-                if card.clicked == True:
-                    pos = pygame.mouse.get_pos()
-                    card.rect.x = pos[0] - (card.rect.width/2)
-                    card.rect.y = pos[1] - (card.rect.height/2)
-
-
+        while self.check_game_status():                               
             ########### TURNS LOGIC ################
-
+            self.untap(self.player_1)
+            self.draw(self.player_1)
+            gameBoard.draw_hand(self.player_1)
+            self.main_phase(self.player_1, self.player_2, gameBoard, display)
 
 ############################# UPDATING SCREEN ######################################
             gameBoard.draw_board()
-            board.SPRITE_CARD_GROUP.draw(display)
+            board.HAND_SPRITE_CARD_GROUP.draw(display)
             pygame.display.update()
+            self.my_quit()
 
 
 
@@ -121,9 +91,70 @@ class Game():
         for i in range(n):
             player.hand.append(player.deck.cards.pop(0))
 
-
-    def draw(player, gameDisplay, display_size):
+    def draw(self, player):
         player.hand.append(player.deck.cards.pop(0))
+        print("######################### Break ###########################")
+
+    def untap(self, player):
+
+        for creature in player.battlefield:
+            creature.status = "norm"
+
+        for land in player.land_zone:
+            land.status = "norm"
+
+    def main_phase(self, current_player, next_player, gameBoard, display):
+        pass_phase = False
+        
+        while not pass_phase:
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    self.my_quit()
+
+                elif event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_SPACE:
+                        pass_phase = True
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    x = pos[0]
+                    y = pos[1]
+
+                    if event.button == 1:
+                        for card in board.HAND_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.clicked = True
+
+                if event.type == pygame.MOUSEBUTTONUP:
+
+                    for card in board.HAND_SPRITE_CARD_GROUP:
+                        if card.clicked == True:
+                            card.clicked = False
+
+                            if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
+                                if card.card.card_type == "Land":
+                                    if current_player.land_flag < 1:
+                                        indx = current_player.hand.index(card.card)
+                                        current_player.land_zone.append(current_player.hand.pop(indx))
+                                        print(current_player.land_zone)
+
+
+############################# GAME LOGIC HERE#######################################
+
+            for card in board.HAND_SPRITE_CARD_GROUP:
+                if card.clicked == True:
+                    pos = pygame.mouse.get_pos()
+                    card.rect.x = pos[0] - (card.rect.width/2)
+                    card.rect.y = pos[1] - (card.rect.height/2)
+
+
+            gameBoard.draw_board()
+            board.HAND_SPRITE_CARD_GROUP.draw(display)
+            pygame.display.update()
+
+
 
     def my_quit(self):
         pygame.quit()
@@ -271,113 +302,6 @@ def creature_damage(curr_player, next_player ,gameDisplay, display_size, attacke
         if card.state != "Dead":
                 new_attackers.append(card)
         player_damage(curr_player, next_player ,gameDisplay, display_size,  new_attackers)#game_board,
-
-
-def main(player, player_2, gameDisplay, display_size):#, game_board):
-
-    pass_phase = False
-    while not pass_phase:
-        print("###################",player.name.upper()," MAIN PHASE #######################")
-        print(player_2.name, "'s health is at ", player_2.life)
-        print("chose action")
-        print("tap mana\nplay a creature\nplay a sorcery\nplay an instant\nplay a land\npass phase")
-        ans = input().lower()
-
-        if ans == "tap mana":
-            list_of_names = []
-            print("which land would you like to tap")
-            for land_card in player.land_zone:
-                print(land_card.name, land_card.state)
-                list_of_names.append(land_card.name)
-
-            chosen_card = input()
-            if chosen_card in list_of_names:
-                found_flag = False
-                i = 0
-                while i < len(list_of_names) and found_flag == False:
-                    if list_of_names[i] == chosen_card and player.land_zone[i].state != "tapped":
-                        tap_mana(player, gameDisplay, display_size, player.land_zone[i])# game_board,
-                        found_flag = True
-                    i += 1
-                
-                if found_flag == False:
-                    print("mana unavailable")
-
-            else:
-                print("chosen card ain't there")
-
-            print(player.name ," your current mana is ", player.mana)
-
-        elif ans == "play a land":
-            print("###################PLAY A LAND#######################")
-            list_of_names = []
-            print("what land?")
-            for card in player.hand:
-                print(card.name, card.card_type)
-                list_of_names.append(card.name.upper())
-
-            land_card = input().upper()
-            indx = list_of_names.index(land_card)
-            play_a_land(player, gameDisplay, display_size, player.hand[indx])# game_board,
-            
-
-        elif ans == "play a creature":
-            print("###################PLAY A CREATURE#######################")
-            list_of_names = []
-            print("What creature")
-            for card in player.hand:
-                print(card.name, card.card_type)
-                list_of_names.append(card.name.upper())
-
-            creature_card = input().upper()
-            indx = list_of_names.index(creature_card)
-            play_a_creature(player, gameDisplay, display_size, player.hand[indx])# game_board
-            print("your hand is")
-            for card in player.hand:
-                print(card.name)
-            print("your battlefield is")
-            for card in player.battlefield:
-                print(card.name)
-
-        elif ans == "play a sorcery":
-            print("###################PLAY A SORCERY#######################")
-            list_of_names = []
-            print("What sorcery")
-            for card in player.hand:
-                print(card.name, card.card_type)
-                list_of_names.append(card.name.upper())
-
-            sorcery_card = input().upper()
-            indx = list_of_names.index(sorcery_card)
-            play_a_sorcery(player, player_2, gameDisplay, display_size, player.hand[indx])# game_board,
-            print("your hand is")
-            for card in player.hand:
-                print(card.name)
-            print("your battlefield is")
-            for card in player.hand:
-                print(card.name)
-
-        elif ans == "play an instant":
-            print("###################PLAY AN INSTANT#######################")
-            list_of_names = []
-            print("What instant")
-            for card in player.hand:
-                print(card.name, card.card_type)
-                list_of_names,append(card.name.upper())
-            instant_card = input().upper()
-            indx = list_of_names.index(instant_card)
-            play_an_instant(player, gameDisplay, display_size, player.hand[indx])# game_board,
-
-            print("your hand is")
-            for card in player.hand:
-                print(card.name)
-            print("your battlefield is")
-            for card in player.hand:
-                print(card.name)
-
-
-        elif ans == "pass phase":
-            pass_phase = True
 
 
 
@@ -578,15 +502,6 @@ def mulligan(player, gameDisplay, display_size, n):#game_board):
             print("invalid anwser please write yes or no")
             print("would you liek to muligan? yes/no")
             ans = input().lower()
-
-
-def untap(player, gameDisplay, display_size):#, game_board):
-
-    for creature in player.battlefield:
-        creature.status = "norm"
-
-    for land in player.land_zone:
-        land.status = "norm"
 
     #game_board.draw_new_battlefield(player, gameDisplay, display_size)
 

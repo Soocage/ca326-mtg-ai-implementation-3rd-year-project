@@ -2,7 +2,7 @@ import pygame
 
 pygame.init()
 pygame.mixer.init()
-SPRITE_CARD_GROUP = pygame.sprite.Group()
+HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 
 class CardSprite(pygame.sprite.Sprite):
     # sprite class for all teh cards
@@ -73,7 +73,7 @@ class Board():
                     x = self.player_1_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
                     y = self.player_1_hand_box.y + (self.player_1_hand_box.h - card_h)/2
                     card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
-                    SPRITE_CARD_GROUP.add(card_sprite)
+                    HAND_SPRITE_CARD_GROUP.add(card_sprite)
                     i += 1
         else:
             if len(cards) <= 8:
@@ -85,10 +85,10 @@ class Board():
                     x = self.player_2_hand_box.x + (padding_w*(i+1)) + (card_w*(i))
                     y = self.player_2_hand_box.y + (self.player_2_hand_box.h - card_h)/2
                     card_sprite = CardSprite(cards[i], x, y, card_w, card_h, "./images/cardback.jpg")
-                    SPRITE_CARD_GROUP.add(card_sprite)
+                    HAND_SPRITE_CARD_GROUP.add(card_sprite)
                     i += 1
 
-        SPRITE_CARD_GROUP.draw(self.display)
+        HAND_SPRITE_CARD_GROUP.draw(self.display)
 
 
 

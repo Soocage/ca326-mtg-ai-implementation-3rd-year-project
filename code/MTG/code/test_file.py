@@ -184,6 +184,7 @@ def main(player, player_2, gameDisplay, display_size):#, game_board):
                         found_flag = True
                     i += 1
                 
+
                 if found_flag == False:
                     print("mana unavailable")
 
