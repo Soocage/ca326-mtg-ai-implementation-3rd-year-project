@@ -14,6 +14,12 @@ pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
 
+cursor = pygame.image.load('./images/crosshair.png')
+cursor_w = 100
+cursor_h = 100
+cursor = pygame.transform.scale(cursor, (cursor_w, cursor_h))
+
+
 class Game():
 
     def __init__(self, gameDisplay, display_size, player_1, player_2):
@@ -148,7 +154,7 @@ class Game():
                         if card.clicked == True:
                             card.clicked = False
 
-                            if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
+                            if ((gameBoard.player_1_hand_box.x > card.rect.x) or (card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w)) or gameBoard.player_1_hand_box.y > card.rect.y:
                                 
                                 if card.card.card_type == "Land":
                                     self.play_a_land(card.card, current_player, gameBoard)
@@ -157,7 +163,9 @@ class Game():
                                     self.play_a_creature(card.card, current_player, gameBoard)
 
                                 if card.card.card_type == "Sorcery":
-                                    self.play_a_sorcery(card.card, current_player, next_player, gameBoard)
+                                    self.play_a_sorcery(card.card, current_player, next_player, gameBoard, display)
+                            else:
+                                gameBoard.draw_hand(current_player)
 
 
                          
@@ -171,36 +179,44 @@ class Game():
                     card.rect.y = pos[1] - (card.rect.height/2)
 
 
-            gameBoard.draw_board()
-            board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
+            self.draw_screen(gameBoard, display)
             pygame.display.update()
-
-            clock.tick(60)
+            clock.tick(60)            
         self.clear_mana(current_player)
 
+    def draw_cursor(self, x, y, display):
+        display.blit(cursor, (x, y))
 
-    def play_a_sorcery(self, card, player, opponent, gameBoard):
+
+
+    def draw_screen(self, gameBoard, display):
+        gameBoard.draw_board()
+        board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
+
+
+    def play_a_sorcery(self, card, player, opponent, gameBoard, display):
         playable = self.check_mana(player, card)
         if playable == True:
+            pygame.mouse.set_visible(False)
             i = 0
             while i < len(player.hand):
                 if player.hand[i] == card:
                     if card.effect == "Draw":
-                        self.effect_draw(player, gameBoard, card.value)
+                        self.effect_draw(player, gameBoard, card.value, display)
 
                     elif card.effect == "Tap":
-                        self.effect_tap(player, opponent, gameBoard)
+                        self.effect_tap(player, opponent, gameBoard, display)
 
                     elif card.effect == "Damage":
-                        self.effect_dmg(opponent, gameBoard, card.targets, card.value)
+                        self.effect_dmg(opponent, gameBoard, card.targets, card.value, display)
 
                     elif card.effect == "Bounce":
-                        self.effect_bounce(player, opponent, card.targets)
+                        self.effect_bounce(player, opponent, gameBoard, display)
 
                     elif card.effect == "Haste":
                         self.effect_haste()
@@ -231,6 +247,7 @@ class Game():
 
                     elif card.effect == "Reanimate":
                         self.effect_reanimate()
+                    pygame.mouse.set_visible(True)
                     player.graveyard.append(player.hand.pop(i))
                     #gameBoard.draw_graveyard(player)
                     gameBoard.draw_hand(player)
@@ -240,17 +257,37 @@ class Game():
 
                     return
                 i += 1
+        else:
+            gameBoard.draw_hand(player)
 
-    def effect_draw(self, player, gameBoard, value):
-        for i in range (value):
-            self.draw(player, gameBoard)
-
-    def effect_tap(self, player, opponent, gameBoard):
+    def effect_haste(self, player, gameBoard, value, display):
         resolved = False
         while not resolved:
             for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.card.keyword = "Haste"
+                                resolved = True
+
+                self.draw_screen(gameBoard)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+    def effect_draw(self, player, gameBoard, value, display):
+        for i in range (value):
+            self.draw(player, gameBoard, display)
+
+    def effect_tap(self, player, opponent, gameBoard, display):
+        resolved = False
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
@@ -258,13 +295,18 @@ class Game():
                                 board.tap_creature(card.card)
                                 resolved = True
 
-    def effect_dmg(self, opponent, gameBoard, list_of_targets, value):
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+    def effect_dmg(self, opponent, gameBoard, list_of_targets, value, display):
             resolved = False
             print(list_of_targets)
             while not resolved:
                 for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        pos = pygame.mouse.get_pos()
                         if event.button == 1:
 
                             if "opponent" in list_of_targets:
@@ -285,12 +327,17 @@ class Game():
                     if event.type == pygame.QUIT:
                         self.my_quit()
 
-    def effect_bounce(self, player, opponent, gameBoard):
+                    self.draw_screen(gameBoard, display)
+                    self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                    pygame.display.update()
+
+    def effect_bounce(self, player, opponent, gameBoard, display):
         resolved = False
         while not resolved:
             for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
                     if event.button == 1:
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
@@ -304,16 +351,18 @@ class Game():
                                 opponent.battlefield.remove(card.card)
                                 resolved = True
 
+                if event.type == pygame.QUIT:
+                    self.my_quit()
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
                                 
 
     def damage_creature(self, card, damage):
         card.toughness_modifier -= damage
         return (card.toughness_modifier >= card.toughness)
-
-
-
-
-
 
 
 
