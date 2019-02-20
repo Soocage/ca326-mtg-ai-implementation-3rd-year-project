@@ -1,4 +1,5 @@
 import pygame
+import re
 
 pygame.init()
 pygame.mixer.init()
@@ -486,6 +487,89 @@ class Board():
 
         player_2_b_mana_pool_sec = BoardSection(display, "mana_r", player_2_b_mana_pool_x, player_2_b_mana_pool_y, mana_pool_w, mana_pool_h, (122,0,122))
         player_2_b_mana_pool_sec.draw()
+
+        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_pool_h*0.45))
+
+
+        player_1_mana = self.player_1.mana
+
+        player_1_r = len(re.findall("R", player_1_mana))
+
+        player_1_r_mana_text = life_font.render(str(player_1_r), False, (0,0,0))
+        player_1_r_mana_rec = player_1_r_mana_text.get_rect()
+        player_1_r_mana_rec.center = ((player_1_r_mana_pool_x+(mana_pool_w/2)), (player_1_r_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_1_r_mana_text, player_1_r_mana_rec)
+
+        player_1_g = len(re.findall("G", player_1_mana))
+
+        player_1_g_mana_text = life_font.render(str(player_1_g), False, (0,0,0))
+        player_1_g_mana_rec = player_1_g_mana_text.get_rect()
+        player_1_g_mana_rec.center = ((player_1_g_mana_pool_x+(mana_pool_w/2)), (player_1_g_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_1_g_mana_text, player_1_g_mana_rec)
+
+        player_1_u = len(re.findall("U", player_1_mana))
+
+        player_1_u_mana_text = life_font.render(str(player_1_u), False, (0,0,0))
+        player_1_u_mana_rec = player_1_u_mana_text.get_rect()
+        player_1_u_mana_rec.center = ((player_1_u_mana_pool_x+(mana_pool_w/2)), (player_1_u_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_1_u_mana_text, player_1_u_mana_rec)
+
+        player_1_w = len(re.findall("W", player_1_mana))
+
+        player_1_w_mana_text = life_font.render(str(player_1_w), False, (0,0,0))
+        player_1_w_mana_rec = player_1_w_mana_text.get_rect()
+        player_1_w_mana_rec.center = ((player_1_w_mana_pool_x+(mana_pool_w/2)), (player_1_w_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_1_w_mana_text, player_1_w_mana_rec)
+
+        player_1_b = len(re.findall("B", player_1_mana))
+
+        player_1_b_mana_text = life_font.render(str(player_1_b), False, (0,0,0))
+        player_1_b_mana_rec = player_1_b_mana_text.get_rect()
+        player_1_b_mana_rec.center = ((player_1_b_mana_pool_x+(mana_pool_w/2)), (player_1_b_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_1_b_mana_text, player_1_b_mana_rec)
+
+        player_2_mana = self.player_2.mana
+
+        player_2_r = len(re.findall("R", player_2_mana))
+
+        player_2_r_mana_text = life_font.render(str(player_2_r), False, (0,0,0))
+        player_2_r_mana_rec = player_2_r_mana_text.get_rect()
+        player_2_r_mana_rec.center = ((player_2_r_mana_pool_x+(mana_pool_w/2)), (player_2_r_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_2_r_mana_text, player_2_r_mana_rec)
+
+        player_2_g = len(re.findall("G", player_2_mana))
+
+        player_2_g_mana_text = life_font.render(str(player_2_g), False, (0,0,0))
+        player_2_g_mana_rec = player_2_g_mana_text.get_rect()
+        player_2_g_mana_rec.center = ((player_2_g_mana_pool_x+(mana_pool_w/2)), (player_2_g_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_2_g_mana_text, player_2_g_mana_rec)
+
+        player_2_u = len(re.findall("U", player_2_mana))
+
+        player_2_u_mana_text = life_font.render(str(player_2_u), False, (0,0,0))
+        player_2_u_mana_rec = player_2_u_mana_text.get_rect()
+        player_2_u_mana_rec.center = ((player_2_u_mana_pool_x+(mana_pool_w/2)), (player_2_u_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_2_u_mana_text, player_2_u_mana_rec)
+
+        player_2_w = len(re.findall("W", player_2_mana))
+
+        player_2_w_mana_text = life_font.render(str(player_2_w), False, (0,0,0))
+        player_2_w_mana_rec = player_2_w_mana_text.get_rect()
+        player_2_w_mana_rec.center = ((player_2_w_mana_pool_x+(mana_pool_w/2)), (player_2_w_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_2_w_mana_text, player_2_w_mana_rec)
+
+        player_2_b = len(re.findall("B", player_2_mana))
+
+        player_2_b_mana_text = life_font.render(str(player_2_b), False, (0,0,0))
+        player_2_b_mana_rec = player_2_b_mana_text.get_rect()
+        player_2_b_mana_rec.center = ((player_2_b_mana_pool_x+(mana_pool_w/2)), (player_2_b_mana_pool_y+(mana_pool_h/2)))
+        display.blit(player_2_b_mana_text, player_2_b_mana_rec)
+
+
+
+
+
+
 
 
 
