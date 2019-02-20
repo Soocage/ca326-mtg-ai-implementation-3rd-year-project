@@ -215,7 +215,7 @@ class Game():
                 return False
 
             i += 1
-        player.mana = mana_copy
+        player.mana = "".join(mana_copy)
         return True
 
     def clear_mana(self, player):
