@@ -61,14 +61,14 @@ for i in range(n):
     with open("../personal_decks/deck_1", "wb") as deck_1:
 
         if ver.colour == "R" and ver.card_type == "Creature":
-            for j in range(0,20):
+            for j in range(0,5):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
                     print(ver.name)
                     print(tmp)
 
         if ver.colour == "R" and ver.card_type == "Sorcery":
-            for j in range(0,1):
+            for j in range(0,2):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
                     print(tmp)
@@ -80,7 +80,7 @@ for i in range(n):
                     print(tmp)
 
         if ver.colour == "R" and ver.card_type == "Land":
-            for j in range(0,36):
+            for j in range(0,10):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
 
