@@ -1,7 +1,10 @@
-6
+9
 [Goblin,Creature,R,R,./images/goblin_1.jpg,1,1]
 [Merfolk,Creature,U,U,./images/merfolk_1.jpg,1,1]
 [Divination,Sorcery,U,U,./images/divination.jpg,player,2,Draw]
 [Shock,Sorcery,R,R,./images/shock.jpg,opponent;creature,2,Bounce]
 [Mountain,Land,R,0,./images/mountain.jpg,mana]
 [Lava Axe,Sorcery,R,R,./images/shock.jpg,opponent;creature,2,Bounce]
+[Rabid Bite,Sorcery,G,G,./images/rabid_bite.jpg,creature,1,Search_land]
+[Forest,Land,G,0,./images/forest.jpg,mana]
+[Elf,Creature,G,G,./images/elf_1.jpg,1,1]
