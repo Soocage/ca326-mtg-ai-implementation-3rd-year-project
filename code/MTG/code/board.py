@@ -126,12 +126,9 @@ class Board():
                     x = temp_sprite_list[i-1].rect.x + card_w + padding_w
                 y = self.player_1_land_box.y + (self.player_1_land_box.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
-<<<<<<< HEAD
                 temp_sprite_list.append(land_sprite)
-=======
                 if lands[i].state == "tapped":
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
->>>>>>> db0ae41652d451a118e40aa3dcb7f6664236e7ff
                 PLAYER_1_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
             PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
