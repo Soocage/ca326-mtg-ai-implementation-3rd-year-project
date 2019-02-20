@@ -162,7 +162,6 @@ class Game():
 
                                 if card.card.card_type == "Creature":
                                     playable = self.check_mana(current_player, card.card)
-                                    print(playable)
                                     if playable == True:
                                         indx = current_player.hand.index(card.card)
                                         current_player.battlefield.append(current_player.hand.pop(indx))
@@ -186,10 +185,11 @@ class Game():
 
             gameBoard.draw_board()
             board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
-            board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
             pygame.display.update()
 
             clock.tick(60)

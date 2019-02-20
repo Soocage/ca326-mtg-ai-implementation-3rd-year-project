@@ -146,8 +146,10 @@ class Board():
     def draw_new_battlefield(self, player):
         battlefield_cards = player.battlefield
         if player == self.player_1:
+            print("1")
             PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
             if len(battlefield_cards) <= 20:
+                print("2")
                 padding_w = (self.player_1_battlefield_box.w/16)/16
                 card_h = (self.player_1_battlefield_box.h/10)*8
                 card_w = (card_h*63)/88
@@ -157,12 +159,13 @@ class Board():
                 card_h = card_w * (88/63)
             i = 0
             while i < len(battlefield_cards):
+                print("3")
                 x = self.player_1_battlefield_box.x + (padding_w*(i+1)) + (card_w*(i))
                 y = self.player_1_battlefield_box.y + (self.player_1_battlefield_box.h - card_h)/2
-                land_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
-                PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(land_sprite)
+                battlefield_card_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
+                PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(battlefield_card_sprite)
                 i += 1
-            PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(self.display)
         else:
             PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
             if len(battlefield_cards) <= 20:
@@ -177,10 +180,10 @@ class Board():
             while i < len(battlefield_cards):
                 x = self.player_2_battlefield_box.x + (padding_w*(i+1)) + (card_w*(i))
                 y = self.player_2_battlefield_box.y + (self.player_2_battlefield_box.h - card_h)/2
-                land_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
-                PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(land_sprite)
+                battlefield_card_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
+                PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.add(battlefield_card_sprite)
                 i += 1
-            PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(self.display)
 
 
 
