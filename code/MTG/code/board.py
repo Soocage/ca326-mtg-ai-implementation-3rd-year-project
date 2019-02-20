@@ -1,5 +1,8 @@
 import pygame
 import re
+import button
+import time
+import main_menu
 
 pygame.init()
 pygame.mixer.init()
@@ -9,6 +12,8 @@ PLAYER_1_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_1_SEARCH_SPRITES = pygame.sprite.Group()
+PLAYER_2_SEARCH_SPRITES = pygame.sprite.Group()
 
 
 class CardSprite(pygame.sprite.Sprite):
@@ -206,6 +211,73 @@ class Board():
                 i += 1
             PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(self.display)
 
+    def draw_search_land(self, player):
+        pygame.mouse.set_visible(True)
+        time.sleep(1)
+        (display_width, display_height) = self.display_size
+
+
+        #draw_search border
+        draw_search_box_x = (display_width)*(1/20)
+        draw_search_box_y = (display_height)*(1/20)
+        draw_search_box_h = ((display_height)*(18/20))
+        draw_search_box_w = ((display_width)*(18/20))
+
+        in_draw_search = True
+        while in_draw_search:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+
+                if event.type == pygame.QUIT:
+                    myquit()
+
+                if event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_ESCAPE:
+                        myquit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        return
+
+            pygame.draw.rect(self.display, (255,255,255), (draw_search_box_x, draw_search_box_y, draw_search_box_w, draw_search_box_h))
+            if player == "player":
+                land_cards = []
+                for card in player.deck.cards:
+                    if card.card_type == "Land":
+                        land_cards.append(card)
+                row_1 = []
+                row_2 = []
+                row_3 = []
+                row_4 = []
+                row_5 = []
+                row_6 = []
+                for i in range (len(land_cards)):
+                    if i < 10:
+                        row_1.append(land_cards[i])
+                    elif 10 < i < 20:
+                        row_2.append(land_cards[i])
+                    elif 20 < i < 30:
+                        row_3.append(land_cards[i])
+                    elif 30 < i < 40:
+                        row_4.append(land_cards[i])
+                    elif 40 < i < 50:
+                        row_5.append(land_cards[i])
+                    elif 50 < i < 60:
+                        row_6.append(land_cards[i])
+
+                padding_w = (self.player_2_battlefield_box.w/16)/16
+                card_h = (self.player_2_battlefield_box.h/10)*8
+                card_w = draw_search_box_w / 11
+
+
+
+
+            elif player == "AI":
+                return
+
+            pygame.display.update()
 
 
 

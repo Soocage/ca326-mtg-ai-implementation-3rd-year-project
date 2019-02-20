@@ -1,9 +1,19 @@
+<<<<<<< HEAD
 8
+=======
+9
+>>>>>>> ce35fb83325c54bff3cdcc5940784358f5d86751
 [Goblin,Creature,R,R,./images/goblin_1.jpg,1,1]
 [Merfolk,Creature,U,U,./images/merfolk_1.jpg,1,1]
 [Divination,Sorcery,U,U,./images/divination.jpg,player,2,Draw]
 [Shock,Sorcery,R,R,./images/shock.jpg,opponent;creature,2,Bounce]
 [Mountain,Land,R,0,./images/mountain.jpg,mana]
 [Lava Axe,Sorcery,R,R,./images/shock.jpg,opponent;creature,2,Bounce]
+<<<<<<< HEAD
 [Swamp,Land,B,0,./images/swamp.jpg,mana]
 [Reanimate,Sorcery,B,B,./images/reanimate.jpg,opponent;player,1,Reanimate]
+=======
+[Rabid Bite,Sorcery,G,G,./images/rabid_bite.jpg,creature,1,Search_land]
+[Forest,Land,G,0,./images/forest.jpg,mana]
+[Elf,Creature,G,G,./images/elf_1.jpg,1,1]
+>>>>>>> ce35fb83325c54bff3cdcc5940784358f5d86751

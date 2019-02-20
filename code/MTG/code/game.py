@@ -8,6 +8,7 @@ import card
 from random import shuffle
 import random
 import time
+import copy
 
 
 pygame.init()
@@ -160,7 +161,7 @@ class Game():
                                     self.play_a_land(card.card, current_player, gameBoard)
 
                                 if card.card.card_type == "Creature":
-                                    self.play_a_creature(card.card, current_player, gameBoard)
+                                    self.play_a_creature(card.card, current_player,next_player, gameBoard)
 
                                 if card.card.card_type == "Sorcery":
                                     self.play_a_sorcery(card.card, current_player, next_player, gameBoard, display)
@@ -219,16 +220,13 @@ class Game():
                         self.effect_bounce(player, opponent, gameBoard, display)
 
                     elif card.effect == "Haste":
-                        self.effect_haste()
-
-                    elif card.effect == "Dmg_Tough":
-                        self.effect_dmg_tough()
+                        self.effect_haste(player, gameBoard, value, display)
 
                     elif card.effect == "Combat_Creature":
-                        self.effect_combat_creature()
+                        self.effect_combat_creature(player, opponent, gameBoard, display)
 
                     elif card.effect == "Search_land":
-                        self.effect_serach_land()
+                        self.effect_search_land(player, gameBoard, display)
 
                     elif card.effect == "Gain_life":
                         self.effect_gain_life()
@@ -248,7 +246,6 @@ class Game():
                     elif card.effect == "Reanimate":
                         self.effect_reanimate(player, opponent, card.targets, gameBoard, display)
 
-                    pygame.mouse.set_visible(True)
                     player.graveyard.append(player.hand.pop(i))
                     #gameBoard.draw_graveyard(player)
                     gameBoard.draw_hand(player)
@@ -260,6 +257,47 @@ class Game():
                 i += 1
         else:
             gameBoard.draw_hand(player)
+
+    def effect_search_land(self, player, gameBoard, display):
+        gameBoard.draw_search_land(player)
+
+    def effect_combat_creature(self, player, opponent, gameBoard, display):
+        resolved = False
+        attacker = []
+        defender = []
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                if len(attacker) < 1:
+                                    attacker.append(card.card)
+                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                if len(defender) < 1:
+                                    defender.append(card.card)
+                        if len(attacker) + len(defender) == 2:
+                            attacker[0].toughness_modifier -= defender[0].power
+                            defender[0].toughness_modifier -= attacker[0].power
+                            if (defender[0].toughness - abs(defender[0].toughness_modifier)) <= 0:
+                                print("friends")
+                                for card in opponent.battlefield:
+                                    if card == defender[0]:
+                                        opponent.graveyard.append(card)
+                                        opponent.battlefield.remove(card)
+                            if (attacker[0].toughness - abs(attacker[0].toughness_modifier)) <= 0:
+                                for card in player.battlefield:
+                                    if card == attacker[0]:
+                                        player.graveyard.append(card)
+                                        player.battlefield.remove(card)
+                            resolved = True
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
 
     def effect_haste(self, player, gameBoard, value, display):
         resolved = False
@@ -274,7 +312,7 @@ class Game():
                                 card.card.keyword = "Haste"
                                 resolved = True
 
-                self.draw_screen(gameBoard)
+                self.draw_screen(gameBoard, display)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
                 pygame.display.update()
 
@@ -402,13 +440,16 @@ class Game():
         else:
             gameBoard.draw_hand(current_player)
 
-    def play_a_creature(self,card, current_player, gameBoard):
+    def play_a_creature(self,card, current_player,next_player, gameBoard):
         playable = self.check_mana(current_player, card)
         if playable == True:
             indx = current_player.hand.index(card)
+            copy.copy(current_player.hand[indx])
+            next_player.battlefield.append(copy.copy(current_player.hand[indx]))
             current_player.battlefield.append(current_player.hand.pop(indx))
             gameBoard.draw_hand(current_player)
             gameBoard.draw_new_battlefield(current_player)
+            gameBoard.draw_new_battlefield(next_player)
             print("we did it")    
         else:
             gameBoard.draw_hand(current_player)
