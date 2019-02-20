@@ -9,4 +9,4 @@ class Player():
         self.land_zone = []
         self.battlefield = []
         self.land_flag = False
-        self.mana = []
+        self.mana = ""
