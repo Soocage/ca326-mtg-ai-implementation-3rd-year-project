@@ -82,7 +82,7 @@ class Game():
         return lives and decks### and has_quit 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_1", "rb")
+        f = open("./personal_decks/deck_3", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -246,7 +246,8 @@ class Game():
                         self.effect_discard()
 
                     elif card.effect == "Reanimate":
-                        self.effect_reanimate()
+                        self.effect_reanimate(player, opponent, card.targets, gameBoard, display)
+
                     pygame.mouse.set_visible(True)
                     player.graveyard.append(player.hand.pop(i))
                     #gameBoard.draw_graveyard(player)
@@ -358,6 +359,31 @@ class Game():
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
                 pygame.display.update()
 
+    def effect_reanimate(self, player, opponent, targets, gameBoard, display):
+        resolved = False
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if "opponent" in targets:
+                            if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+                                print("Spooky")
+                                resolved = True
+                        if "player" in targets:
+                            if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+                                print("Spoopy")
+                                resolved = True
+                if event.type == pygame.QUIT:
+                    self.my_quit()
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+
+
                                 
 
     def damage_creature(self, card, damage):
@@ -416,7 +442,7 @@ class Game():
         pygame.quit()
         quit()
 
-
+####################################################################################################################################################################
 def run_game(gameDisplay, display_size):
     (display_w, display_h) = display_size
     player_deck_list = deck_selection()
