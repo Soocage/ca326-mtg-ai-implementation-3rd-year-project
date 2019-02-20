@@ -121,6 +121,8 @@ class Board():
                 x = self.player_1_land_box.x + (padding_w*(i+1)) + (card_w*(i))
                 y = self.player_1_land_box.y + (self.player_1_land_box.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
+                if lands[i].state == "tapped":
+                    land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_1_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
             PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
@@ -139,6 +141,8 @@ class Board():
                 x = self.player_2_land_box.x + (padding_w*(i+1)) + (card_w*(i))
                 y = self.player_2_land_box.y + (self.player_2_land_box.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
+                if lands[i].state == "tapped":
+                    land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_2_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
             PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
@@ -191,7 +195,10 @@ class Board():
 
 
     def tap_mana(self, land):
-        land.image = pygame.transform.rotate(land.image, 90).convert_alpha()
+        land.image = pygame.transform.rotate(land.image, 90)
+
+    def tap_creature(self, creature):
+        creature.image = pygame.transform.rotate(creature.image, 90)
 
 
 

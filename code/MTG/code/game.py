@@ -151,26 +151,14 @@ class Game():
                             if gameBoard.player_1_hand_box.x > card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w or gameBoard.player_1_hand_box.y > card.rect.y:
                                 
                                 if card.card.card_type == "Land":
-                                    if current_player.land_flag == False:
-                                        indx = current_player.hand.index(card.card)
-                                        current_player.land_zone.append(current_player.hand.pop(indx))
-                                        gameBoard.draw_hand(current_player)
-                                        gameBoard.draw_land(current_player) 
-                                        current_player.land_flag = True
-                                    else:
-                                        gameBoard.draw_hand(current_player)
+                                    self.play_a_land(card.card, current_player, gameBoard)
 
                                 if card.card.card_type == "Creature":
-                                    playable = self.check_mana(current_player, card.card)
-                                    if playable == True:
-                                        indx = current_player.hand.index(card.card)
-                                        current_player.battlefield.append(current_player.hand.pop(indx))
-                                        gameBoard.draw_hand(current_player)
-                                        gameBoard.draw_new_battlefield(current_player)
-                                        print("we did it")
-                                        
-                                    else:
-                                        gameBoard.draw_hand(current_player)
+                                    self.play_a_creature(card.card, current_player, gameBoard)
+
+                                if card.card.card_type == "Sorcery":
+                                    self.play_a_sorcery(card.card, current_player, next_player, gameBoard)
+
 
                          
 
@@ -195,6 +183,160 @@ class Game():
             clock.tick(60)
         self.clear_mana(current_player)
 
+
+    def play_a_sorcery(self, card, player, opponent, gameBoard):
+        playable = self.check_mana(player, card)
+        if playable == True:
+            i = 0
+            while i < len(player.hand):
+                if player.hand[i] == card:
+                    if card.effect == "Draw":
+                        self.effect_draw(player, gameBoard, card.value)
+
+                    elif card.effect == "Tap":
+                        self.effect_tap(player, opponent, gameBoard)
+
+                    elif card.effect == "Damage":
+                        self.effect_dmg(opponent, gameBoard, card.targets, card.value)
+
+                    elif card.effect == "Bounce":
+                        self.effect_bounce(player, opponent, card.targets)
+
+                    elif card.effect == "Haste":
+                        self.effect_haste()
+
+                    elif card.effect == "Dmg_Tough":
+                        self.effect_dmg_tough()
+
+                    elif card.effect == "Combat_Creature":
+                        self.effect_combat_creature()
+
+                    elif card.effect == "Search_land":
+                        self.effect_serach_land()
+
+                    elif card.effect == "Gain_life":
+                        self.effect_gain_life()
+
+                    elif card.effect == "Protection":
+                        self.effect_protection()
+
+                    elif card.effect == "Exile":
+                        self.effect_exile()
+
+                    elif card.effect == "Destroy":
+                        self.effect_destroy()
+
+                    elif card.effect == "Discard":
+                        self.effect_discard()
+
+                    elif card.effect == "Reanimate":
+                        self.effect_reanimate()
+                    player.graveyard.append(player.hand.pop(i))
+                    #gameBoard.draw_graveyard(player)
+                    gameBoard.draw_hand(player)
+                    gameBoard.draw_hand(opponent)
+                    gameBoard.draw_new_battlefield(player)
+                    gameBoard.draw_new_battlefield(opponent)
+
+                    return
+                i += 1
+
+    def effect_draw(self, player, gameBoard, value):
+        for i in range (value):
+            self.draw(player, gameBoard)
+
+    def effect_tap(self, player, opponent, gameBoard):
+        resolved = False
+        while not resolved:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.card.state = "tapped"
+                                board.tap_creature(card.card)
+                                resolved = True
+
+    def effect_dmg(self, opponent, gameBoard, list_of_targets, value):
+            resolved = False
+            print(list_of_targets)
+            while not resolved:
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        pos = pygame.mouse.get_pos()
+                        if event.button == 1:
+
+                            if "opponent" in list_of_targets:
+                                print("2")
+
+                                if  gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
+                                    opponent.life -= int(value)
+                                    resolved = True
+                            if "Creature" in list_of_targets:        
+                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if (self.damage_creature(card.card, value)):
+                                            opponent.graveyard.append(card,card)
+                                            opponent.battlefield.remove(card.card)
+                                            gameBoard.draw_new_battlefield(opponent)
+                                            gameBoard.draw_graveyard(opponent)
+                                            resolved = True
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
+
+    def effect_bounce(self, player, opponent, gameBoard):
+        resolved = False
+        while not resolved:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                player.hand.append(card.card)
+                                player.battlefield.remove(card.card)
+                                resolved = True
+
+                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                opponent.hand.append(card.card)
+                                opponent.battlefield.remove(card.card)
+                                resolved = True
+
+                                
+
+    def damage_creature(self, card, damage):
+        card.toughness_modifier -= damage
+        return (card.toughness_modifier >= card.toughness)
+
+
+
+
+
+
+
+
+    def play_a_land(self, card, current_player, gameBoard):
+        if current_player.land_flag == False:
+            indx = current_player.hand.index(card)
+            current_player.land_zone.append(current_player.hand.pop(indx))
+            gameBoard.draw_hand(current_player)
+            gameBoard.draw_land(current_player) 
+            current_player.land_flag = True
+        else:
+            gameBoard.draw_hand(current_player)
+
+    def play_a_creature(self,card, current_player, gameBoard):
+        playable = self.check_mana(current_player, card)
+        if playable == True:
+            indx = current_player.hand.index(card)
+            current_player.battlefield.append(current_player.hand.pop(indx))
+            gameBoard.draw_hand(current_player)
+            gameBoard.draw_new_battlefield(current_player)
+            print("we did it")    
+        else:
+            gameBoard.draw_hand(current_player)
 
     def check_mana(self, player, card):
         cards_cost = card.mana_cost[:]
