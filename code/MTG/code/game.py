@@ -159,6 +159,20 @@ class Game():
                                         current_player.land_flag = True
                                     else:
                                         gameBoard.draw_hand(current_player)
+
+                                if card.card.card_type == "Creature":
+                                    playable = self.check_mana(current_player, card.card)
+                                    print(playable)
+                                    if playable == True:
+                                        indx = current_player.hand.index(card.card)
+                                        current_player.battlefield.append(current_player.hand.pop(indx))
+                                        gameBoard.draw_hand(current_player)
+                                        gameBoard.draw_new_battlefield(current_player)
+                                        print("we did it")
+                                        
+                                    else:
+                                        gameBoard.draw_hand(current_player)
+
                          
 
 ############################# GAME LOGIC HERE#######################################
@@ -174,11 +188,35 @@ class Game():
             board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
             board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
+            board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
             pygame.display.update()
 
             clock.tick(60)
         self.clear_mana(current_player)
 
+
+    def check_mana(self, player, card):
+        cards_cost = card.mana_cost[:]
+        mana_copy = list(player.mana[:])
+        print(mana_copy)
+        i = 0
+        j = 0
+        while i < len(cards_cost):
+            if type(cards_cost[i]) == "int":
+                if card_cost[i] > 0 and len(mana_copy) >= cards_cost[i]:
+                    for n in range(card_cost[i]):
+                        mana_copy.pop(0)
+
+            elif cards_cost[i] in mana_copy:
+                mana_copy.remove(cards_cost[i])
+
+            else:
+                return False
+
+            i += 1
+        player.mana = mana_copy
+        return True
 
     def clear_mana(self, player):
         player.mana = ""

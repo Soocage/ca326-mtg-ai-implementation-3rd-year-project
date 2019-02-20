@@ -6,6 +6,8 @@ PLAYER_1_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
 
 
 class CardSprite(pygame.sprite.Sprite):
@@ -139,6 +141,48 @@ class Board():
                 PLAYER_2_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
             PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
+
+    def draw_new_battlefield(self, player):
+        battlefield_cards = player.battlefield
+        if player == self.player_1:
+            PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
+            if len(battlefield_cards) <= 20:
+                padding_w = (self.player_1_battlefield_box.w/16)/16
+                card_h = (self.player_1_battlefield_box.h/10)*8
+                card_w = (card_h*63)/88
+            else:
+                padding_w = (self.player_1_battlefield_box.w/(len(battlefield_cards)+1))/(len(battlefield_cards)+2)
+                card_w = (self.player_1_battlefield_box.w/(len(battlefield_cards)+1))
+                card_h = card_w * (88/63)
+            i = 0
+            while i < len(battlefield_cards):
+                x = self.player_1_battlefield_box.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_1_battlefield_box.y + (self.player_1_battlefield_box.h - card_h)/2
+                land_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
+                PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(land_sprite)
+                i += 1
+            PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
+        else:
+            PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
+            if len(battlefield_cards) <= 20:
+                padding_w = (self.player_2_battlefield_box.w/16)/16
+                card_h = (self.player_2_battlefield_box.h/10)*8
+                card_w = (card_h*63)/88
+            else:
+                padding_w = (self.player_2_battlefield_box.w/(len(battlefield_cards)+1))/(len(battlefield_cards)+2)
+                card_w = (self.player_2_battlefield_box.w/(len(battlefield_cards)+1))
+                card_h = card_w * (88/63)
+            i = 0
+            while i < len(battlefield_cards):
+                x = self.player_2_battlefield_box.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_2_battlefield_box.y + (self.player_2_battlefield_box.h - card_h)/2
+                land_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
+                PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(land_sprite)
+                i += 1
+            PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
+
+
+
 
 
 
