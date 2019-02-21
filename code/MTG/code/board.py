@@ -138,7 +138,7 @@ class Board():
                 y = self.player_1_land_box.y + (self.player_1_land_box.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
                 temp_sprite_list.append(land_sprite)
-                if lands[i].state == "tapped":
+                if lands[i].tapped == True:
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_1_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
@@ -158,7 +158,7 @@ class Board():
                 x = self.player_2_land_box.x + (padding_w*(i+1)) + (card_w*(i))
                 y = self.player_2_land_box.y + (self.player_2_land_box.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
-                if lands[i].state == "tapped":
+                if lands[i].tapped == True:
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_2_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1

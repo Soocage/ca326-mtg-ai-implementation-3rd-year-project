@@ -78,8 +78,8 @@ class Game():
 
 
     def end_step(self):
-        self.player_1.state = None
-        self.player_2.state = None
+        self.player_1.state = ""
+        self.player_2.state = ""
         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
             card.card.toughness_modifier = 0
             card.card.power_modifier = 0
@@ -97,7 +97,7 @@ class Game():
         return lives and decks### and has_quit 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_4", "rb")
+        f = open("./personal_decks/deck_2", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -118,19 +118,23 @@ class Game():
     def untap(self, player, gameBoard):
 
         for creature in player.battlefield:
-            creature.state = "untapped"
+            creature.tapped = False
+            creature.summon_sick = False
 
         for land in player.land_zone:
-            land.state = "untapped"
+            land.tapped = False
+
+
 
         gameBoard.draw_land(player)
         player.land_flag = False
         self.clear_mana(player)
 
     def add_mana(self, player, land):
-        land.state = "tapped"
+        land.tapped = True
         player.mana += land.colour
         player.mana = "".join(sorted(player.mana))
+        print(player.mana)
 
     def main_phase(self, current_player, next_player, gameBoard, display):
         pass_phase = False
@@ -157,7 +161,9 @@ class Game():
                         if gameBoard.player_1_land_box.x + gameBoard.player_1_land_box.w > pos[0] > gameBoard.player_1_land_box.x and gameBoard.player_1_land_box.y + gameBoard.player_1_land_box.h > pos[1] > gameBoard.player_1_land_box.y:
                             for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
                                 print (land.card.name)
-                                if land.rect.collidepoint(pos) and land.card.state != "tapped":
+
+                                if land.rect.collidepoint(pos) and land.card.tapped == False:
+                                    print("friends")
                                     self.add_mana(current_player, land.card)
                                     gameBoard.tap_mana(land)
                                     print(current_player.mana)
@@ -176,8 +182,8 @@ class Game():
                                 if card.card.card_type == "Creature":
                                     self.play_a_creature(card.card, current_player,next_player, gameBoard)
 
-                                if card.card.card_type == "Sorcery":
-                                    self.play_a_sorcery(card.card, current_player, next_player, gameBoard, display)
+                                if card.card.card_type == "Sorcery" or card.card.card_type == "Instant":
+                                    self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard, display)
                             else:
                                 gameBoard.draw_hand(current_player)
 
@@ -213,7 +219,7 @@ class Game():
         board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
 
 
-    def play_a_sorcery(self, card, player, opponent, gameBoard, display):
+    def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard, display):
         playable = self.check_mana(player, card)
         if playable == True:
             pygame.mouse.set_visible(False)
@@ -245,22 +251,23 @@ class Game():
                         self.effect_gain_life(player, opponent, gameBoard, display, card.targets, card.value)
 
                     elif card.effect == "Protection":
-                        self.effect_protection(player,gameBoard, display, card.targets, card.value)
+                        self.effect_protection(player, opponent, gameBoard, display, card.targets, card.value)
 
                     elif card.effect == "Exile":
-                        self.effect_exile()
+                        self.effect_exile(player, opponent, gameBoard, display, card.targets)
 
                     elif card.effect == "Destroy":
-                        self.effect_destroy()
+                        self.effect_destroy(player, opponent, gameBoard, display, card.targets)
 
                     elif card.effect == "Discard":
-                        self.effect_discard()
+                        self.effect_discard(player, opponent, gameBoard, display, card.targets, card.value)
 
                     elif card.effect == "Reanimate":
                         self.effect_reanimate(player, opponent, card.targets, gameBoard, display)
 
                     pygame.mouse.set_visible(True)
-                    player.graveyard.append(player.hand.pop(i))
+                    player.hand.remove(card)
+                    player.graveyard.append(card)
                     #gameBoard.draw_graveyard(player)
                     gameBoard.draw_hand(player)
                     gameBoard.draw_hand(opponent)
@@ -272,8 +279,172 @@ class Game():
         else:
             gameBoard.draw_hand(player)
 
-    def effect_protection(self, player,gameBoard, display, list_of_targets, value):
-        resolved = False
+    def effect_discard(self, player, opponent, gameBoard, display, list_of_targets, value):
+        tmp_1 = False
+        tmp_2 = False
+
+        if "player" in list_of_targets and "Protection" not in player.state:
+            tmp_1 = True
+
+        if "opponent" in list_of_targets and "Protection" not in opponent.state:
+            tmp_2 = True
+
+        if tmp_1 or tmp_2:
+            resolved = False
+        else:
+            resolved = True
+
+        amt = 0
+        clicked_target = ""
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+
+                        if "player" in list_of_targets:
+                            if clicked_target == "" or clicked_target == "player":
+                                for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        clicked_target = "player"
+                                        player.hand.remove(card.card)
+                                        player.graveyard.append(card.card)
+                                        amt += 1
+                                        print(amt)
+
+                        if "opponent" in list_of_targets:
+                            if clicked_target == "" or clicked_target == "opponent":
+                                for card in board.PLAYER_2_HAND_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        clicked_target = "opponent"
+                                        opponent.hand.remove(card.card)
+                                        opponent.graveyard.append(card.card)
+
+                                        amt += 1
+
+                        if amt == int(value):
+                            resolved = True
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+    def effect_destroy(self, player, opponent, gameBoard, display, list_of_targets):
+        tmp_1 = False
+        tmp_2 = False
+
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_1 = True
+
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_2 = True
+
+        if tmp_1 or tmp_2:
+            resolved = False
+        else:
+            resolved = True
+
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+
+                        if "creature" in list_of_targets:
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                        player.battlefield.remove(card.card)
+                                        player.graveyard.append(card.card)
+                                        print("Poof")
+                                        resolved = True
+
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                        opponent.battlefield.remove(card.card)
+                                        opponent.graveyard.append(card.card)
+                                        print("Poof")
+                                        resolved = True
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+    def effect_exile(self, player, opponent, gameBoard, display, list_of_targets):
+        tmp_1 = False
+        tmp_2 = False
+
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_1 = True
+
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_2 = True
+
+        if tmp_1 or tmp_2:
+            resolved = False
+        else:
+            resolved = True
+
+        while not resolved:
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+
+                        if "creature" in list_of_targets:
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                        player.battlefield.remove(card.card)
+                                        print("Poof")
+                                        resolved = True
+
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                        opponent.battlefield.remove(card.card)
+                                        print("Poof")
+                                        resolved = True
+
+
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+
+    def effect_protection(self, player, opponent, gameBoard, display, list_of_targets, value):
+        tmp_1 = False
+        tmp_2 = False
+        tmp_3 = False
+        tmp_4 = False
+
+        if "player" in list_of_targets and "Protection" not in player.state:
+            tmp_1 = True
+
+        if "opponent" in list_of_targets and "Protection" not in opponent.state:
+            tmp_2 = True
+
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_3 = True
+
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_4 = True
+
+        if tmp_1 or tmp_2 or tmp_3 or tmp_4:
+            resolved = False
+        else:
+            resolved = True
+
         while not resolved:
              for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
@@ -282,10 +453,14 @@ class Game():
                     if event.button == 1:
                         if "player" in list_of_targets:
                             if gameBoard.player_1_life_sec.y + gameBoard.player_1_life_sec.h > pos[1] > gameBoard.player_1_life_sec.y and gameBoard.player_1_life_sec.x + gameBoard.player_1_life_sec.w > pos[0] > gameBoard.player_1_life_sec.x:
-                                print(player.state)
                                 player.state = "Protection"
-                                print(player.state)
                                 resolved = True
+
+                        if "opponent" in list_of_targets:
+                            if gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
+                                opponent.state = "Protection"
+                                resolved = True
+
                         if "creature" in list_of_targets:
                             for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos):
@@ -295,6 +470,16 @@ class Game():
                                         tmp = card.card.tmp_keyword + "Protection"
                                         card.card.tmp_keyword = tmp
                                 resolved = True
+
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if card.card.tmp_keyword == "":
+                                        card.card.tmp_keyword = "Protection"
+                                    else:
+                                        tmp = card.card.tmp_keyword + "Protection"
+                                        card.card.tmp_keyword = tmp
+                                resolved = True
+
                 self.draw_screen(gameBoard, display)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
                 pygame.display.update()
@@ -302,18 +487,24 @@ class Game():
 
 
     def effect_gain_life(self, player, opponent, gameBoard, display, list_of_targets, value):
-        resolved = False
+        resolved = True
+
+        if "player" in list_of_targets and "Protection" not in player.state:
+            resolved = False
+
+        if "opponent" in list_of_targets and "Protection" not in opponent.state:
+            resolved = False
         while not resolved:
              for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
                 mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if "opponent" in list_of_targets and opponent.state != "Protection":
+                        if "opponent" in list_of_targets and "Protection" not in opponent.state:
                             if  gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
                                 opponent.life += int(value)
                                 resolved = True
-                        if "player" in list_of_targets and player.state != "Protection":
+                        if "player" in list_of_targets and "Protection" not in player.state:
                             if gameBoard.player_1_life_sec.y + gameBoard.player_1_life_sec.h > pos[1] > gameBoard.player_1_life_sec.y and gameBoard.player_1_life_sec.x + gameBoard.player_1_life_sec.w > pos[0] > gameBoard.player_1_life_sec.x:
                                 player.life += int(value)
                                 resolved = True
@@ -326,7 +517,20 @@ class Game():
         gameBoard.draw_search_land(player)
 
     def effect_combat_creature(self, player, opponent, gameBoard, display):
-        resolved = False
+        tmp_1 = False
+        tmp_2 = False
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_1 = True
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                tmp_2 = True
+
+        if tmp_1 == True and tmp_2 == True:
+            resolved = False
+        else:
+            resolved = True
+
         attacker = []
         defender = []
         while not resolved:
@@ -346,34 +550,34 @@ class Game():
                         if len(attacker) + len(defender) == 2:
                             attacker[0].toughness_modifier -= defender[0].power
                             defender[0].toughness_modifier -= attacker[0].power
-                            if (defender[0].toughness - abs(defender[0].toughness_modifier)) <= 0:
-                                print("friends")
+                            if (defender[0].toughness + defender[0].toughness_modifier) <= 0:
                                 for card in opponent.battlefield:
                                     if card == defender[0]:
                                         opponent.graveyard.append(card)
                                         opponent.battlefield.remove(card)
-                            if (attacker[0].toughness - abs(attacker[0].toughness_modifier)) <= 0:
+                            if (attacker[0].toughness + attacker[0].toughness_modifier) <= 0:
                                 for card in player.battlefield:
                                     if card == attacker[0]:
                                         player.graveyard.append(card)
                                         player.battlefield.remove(card)
                             resolved = True
-                    if event.button == 3:
-                        resolved = True
 
                 self.draw_screen(gameBoard, display)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
                 pygame.display.update()
 
     def effect_haste(self, player, gameBoard, value, display):
-        resolved = False
+        resolved = True
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
         while not resolved:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
                 mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                             if card.rect.collidepoint(pos):
                                 card.card.keyword = "Haste"
                                 resolved = True
@@ -387,57 +591,72 @@ class Game():
             self.draw(player, gameBoard, display)
 
     def effect_tap(self, player, opponent, gameBoard, display):
-        resolved = False
+        resolved = True
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
+        while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword) or card.card.tapped != True:
+                                    card.card.tapped = True
+                                    gameBoard.tap_creature(card)
+                                    resolved = True
+
+
+                    self.draw_screen(gameBoard, display)
+                    self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                    pygame.display.update()
+
+    def effect_dmg(self, opponent, gameBoard, list_of_targets, value, display):
+        resolved = True
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
+        if "opponent" in list_of_targets and "Protection" not in opponent.state:
+            resolved = False
+        print(list_of_targets)
         while not resolved:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
                 mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                card.card.state = "tapped"
-                                board.tap_creature(card.card)
-                                resolved = True
+
+                        if "opponent" in list_of_targets:
+
+                            if "Protection" not in opponent.state: 
+
+                                if gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
+                                    opponent.life -= int(value)
+                                    resolved = True
+
+                        if "Creature" in list_of_targets:
+
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    if (self.damage_creature(card.card, value)):
+                                        opponent.graveyard.append(card,card)
+                                        opponent.battlefield.remove(card.card)
+                                        gameBoard.draw_new_battlefield(opponent)
+                                        gameBoard.draw_graveyard(opponent)
+                                        resolved = True
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
 
                 self.draw_screen(gameBoard, display)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
                 pygame.display.update()
 
-    def effect_dmg(self, opponent, gameBoard, list_of_targets, value, display):
-            resolved = False
-            print(list_of_targets)
-            while not resolved:
-                for event in pygame.event.get():
-                    pos = pygame.mouse.get_pos()
-                    mx, my = pos[0], pos[1]
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:
-
-                            if "opponent" in list_of_targets:
-                                print("2")
-
-                                if  gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
-                                    opponent.life -= int(value)
-                                    resolved = True
-                            if "Creature" in list_of_targets:        
-                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                    if card.rect.collidepoint(pos):
-                                        if (self.damage_creature(card.card, value)):
-                                            opponent.graveyard.append(card,card)
-                                            opponent.battlefield.remove(card.card)
-                                            gameBoard.draw_new_battlefield(opponent)
-                                            gameBoard.draw_graveyard(opponent)
-                                            resolved = True
-                    if event.type == pygame.QUIT:
-                        self.my_quit()
-
-                    self.draw_screen(gameBoard, display)
-                    self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
-                    pygame.display.update()
-
     def effect_bounce(self, player, opponent, gameBoard, display):
-        resolved = False
+        resolved = True
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
         while not resolved:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
@@ -445,13 +664,13 @@ class Game():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
+                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                 player.hand.append(card.card)
                                 player.battlefield.remove(card.card)
                                 resolved = True
 
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
+                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                 opponent.hand.append(card.card)
                                 opponent.battlefield.remove(card.card)
                                 resolved = True
@@ -523,13 +742,12 @@ class Game():
     def check_mana(self, player, card):
         cards_cost = card.mana_cost[:]
         mana_copy = list(player.mana[:])
-        print(mana_copy)
         i = 0
         j = 0
         while i < len(cards_cost):
-            if type(cards_cost[i]) == "int":
-                if card_cost[i] > 0 and len(mana_copy) >= cards_cost[i]:
-                    for n in range(card_cost[i]):
+            if cards_cost[i].isdigit():
+                if int(cards_cost[i]) > 0 and len(mana_copy) >= int(cards_cost[i]):
+                    for n in range(int(cards_cost[i])):
                         mana_copy.pop(0)
 
             elif cards_cost[i] in mana_copy:
@@ -550,73 +768,6 @@ class Game():
         quit()
 
 ####################################################################################################################################################################
-def run_game(gameDisplay, display_size):
-    (display_w, display_h) = display_size
-    player_deck_list = deck_selection()
-    opponent_deck_list = deck_selection()
-
-    
-    #game_board = board.Board(gameDisplay, display_size, player_1, player_2)
-
-    n = 7
-    shuffle_deck(player_1)
-    shuffle_deck(player_2)
-
-    #board.draw_decks(player_1, player_2, gameDisplay, display_size)
-    print("###################PLAYER 1 DRAW#######################")
-    deal_cards(player_1, gameDisplay, display_size, n)#, game_board)
-    for card in player_1.hand:
-        print(card.name, card.card_type)
-    print("###################PLAYER 1 MULIGAN#######################")
-    mulligan(player_1, gameDisplay, display_size, n)#, game_board)
-
-    print("###################PLAEYR 2 DRAW#######################")
-    deal_cards(player_2, gameDisplay, display_size, n)#, game_board)
-    for card in player_2.hand:
-        print(card.name, card.card_type)
-    print("###################PLAYER 2 MULIGAN#######################")
-    mulligan(player_2, gameDisplay, display_size, n)#, game_board)
-
-    while player_1.life > 0 and player_2.life > 0:   
-        print("###################PLAYER 1 TURN#######################")
-        for card in player_1.hand:
-            print(card.name)
-        untap(player_1, gameDisplay, display_size)#, game_board)
-        draw(player_1, gameDisplay, display_size)#, game_board)
-        main(player_1, player_2, gameDisplay, display_size)#, game_board)
-        combat(player_1, player_2, gameDisplay, display_size)
-        main(player_1, player_2, gameDisplay, display_size)
-        end_step(player_1, player_2, gameDisplay, display_size)
-
-        print("###################PLAYER 1 TURN#######################")
-        for card in player_2.hand:
-            print(card.name)
-        untap(player_2, gameDisplay, display_size)#, game_board)
-        draw(player_2, gameDisplay, display_size)#, game_board)
-        main(player_2, player_1, gameDisplay, display_size)#, game_board)
-        combat(player_2, player_1, gameDisplay, display_size)
-        main(player_2, player_1, gameDisplay, display_size)
-        end_step(player_2, player_1, gameDisplay, display_size)
-
-    
-
-    pygame.display.update()
-
-
-
-
-
-
-def end_step(player_1, player_2, gameDisplay, display_size):
-    for card in player_1.battlefield:
-        card.toughness_modifier = 0
-    for card in player_2.battlefield:
-        card.toughness_modifier = 0
-        
-        
-
-
-
 
 def combat(curr_player, next_player ,gameDisplay, display_size):#, game_board):
     print("###################COMBAT PHASE#######################")
@@ -692,179 +843,6 @@ def creature_damage(curr_player, next_player ,gameDisplay, display_size, attacke
         player_damage(curr_player, next_player ,gameDisplay, display_size,  new_attackers)#game_board,
 
 
-
-def play_a_creature(player, gameDisplay, display_size, card):# game_board,
-    playable = check_mana(player, card)
-    if playable:
-        #game_board.add_creature(player, gameDisplay, display_size)
-        i = 0
-        while i < len(player.hand):
-            if player.hand[i].name == card.name:
-                player.battlefield.append(player.hand.pop(i))
-                return
-            i += 1
-    return
-
-def play_a_sorcery(player, player_2, gameDisplay, display_size, card):# game_board,
-    playable = check_mana(player, card)
-    if playable:
-        #game_board.add_sorcery(player, gameDisplay, display_size)
-        i = 0
-        while i < len(player.hand):
-            if player.hand[i].name == card.name:
-                player.hand.pop(i)
-                if card.effect == "Draw":
-                    effect_draw(player, gameDisplay, display_size,card)
-
-                elif card.effect == "Tap":
-                    effect_tap()
-
-                elif card.effect == "Damage":
-                    effect_dmg(player, player_2, gameDisplay, display_size,card)
-
-                elif card.effect == "Bounce":
-                    effect_bounce()
-
-                elif card.effect == "Haste":
-                    effect_haste()
-
-                elif card.effect == "Dmg_Tough":
-                    effect_dmg_tough()
-
-                elif card.effect == "Combat_Creature":
-                    effect_combat_creature()
-
-                elif card.effect == "Search_land":
-                    effect_serach_land()
-
-                elif card.effect == "Gain_life":
-                    effect_gain_life()
-
-                elif card.effect == "Protection":
-                    effect_protection()
-
-                elif card.effect == "Exile":
-                    effect_exile()
-
-                elif card.effect == "Destroy":
-                    effect_destroy()
-
-                elif card.effect == "Discard":
-                    effect_discard()
-
-                elif card.effect == "Reanimate":
-                    effect_reanimate()
-                return
-            i += 1
-
-def effect_draw(player, gameDisplay, display_size,card):
-    draw(player, gameDisplay, display_size)
-    #Draw the new screen
-    return
-
-def effect_dmg(player, player_2, gameDisplay, display_size,card):
-    player_2.life -= int(card.value)
-    return
-
-def play_an_instant(player, gameDisplay, display_size, card):# game_board, 
-    playable = check_mana(player, card)
-    if playable:
-        #game_board.add_instant(player, gameDisplay, display_size)
-        i = 0
-        while i < len(player.hand):
-            if player.hand[i].name == card.name:
-                player.hand.pop(i)
-                if card.effect == "Draw":
-                    effect_draw(player, gameDisplay, display_size,card)
-
-                elif card.effect == "Tap":
-                    effect_tap()
-
-                elif card.effect == "Damage":
-                    effect_dmg(player, player_2, gameDisplay, display_size,card)
-
-                elif card.effect == "Bounce":
-                    effect_bounce()
-
-                elif card.effect == "Haste":
-                    effect_haste()
-
-                elif card.effect == "Dmg_Tough":
-                    effect_dmg_tough()
-
-                elif card.effect == "Combat_Creature":
-                    effect_combat_creature()
-
-                elif card.effect == "Search_land":
-                    effect_serach_land()
-
-                elif card.effect == "Gain_life":
-                    effect_gain_life()
-
-                elif card.effect == "Protection":
-                    effect_protection()
-
-                elif card.effect == "Exile":
-                    effect_exile()
-
-                elif card.effect == "Destroy":
-                    effect_destroy()
-
-                elif card.effect == "Discard":
-                    effect_discard()
-
-                elif card.effect == "Reanimate":
-                    effect_reanimate()
-                return
-            i += 1
-
-
-def play_a_land(player, gameDisplay, display_size, card):# game_board,
-    if player.land_flag < 1:
-        i = 0
-        while i < len(player.hand):
-            if player.hand[i].name == card.name:
-                print(len(player.hand))
-                player.hand.pop(i)
-                player.land_flag = 1
-                player.land_zone.append(card)
-                #game_board.add_land(player, gameDisplay, display_size, card)
-                return
-
-            i += 1
-    else:
-        print(len(player.hand))
-        print("You already played a land this tunr")
-        return
-
-def check_mana(player, card):
-    cards_cost = card.mana_cost[:]
-    mana_copy = player.mana[:]
-    i = 0
-    j = 0
-    while i < len(cards_cost):
-        if type(cards_cost[i]) == "int":
-            if card_cost[i] > 0 and len(mana_copy) >= cards_cost[i]:
-                for n in range(card_cost[i]):
-                    mana_copy.pop(0)
-
-        elif cards_cost[i] in mana_copy:
-            mana_copy.remove(cards_cost[i])
-
-        else:
-            return False
-
-        i += 1
-    player.mana = mana_copy
-    return True
-
-
-def tap_mana(player, gameDisplay, display_size, card):# game_board,
-    print("###################TAP MANA#######################")
-    card.state = "tapped"
-    player.mana.append(card.colour)
-
-
 def mulligan(player, gameDisplay, display_size, n):#game_board):
     print(player.name)
     print("would you like to muligan? yes/no")
@@ -890,12 +868,3 @@ def mulligan(player, gameDisplay, display_size, n):#game_board):
             print("invalid anwser please write yes or no")
             print("would you liek to muligan? yes/no")
             ans = input().lower()
-
-    #game_board.draw_new_battlefield(player, gameDisplay, display_size)
-
-if __name__ == "__main__":
-    display_info = pygame.display.Info()
-    display_size = (display_width, display_height)= (display_info.current_w, display_info.current_h)
-    display_size = (20, 20)
-    gameDisplay = pygame.display.set_mode(display_size)
-    run_game(gameDisplay, display_size)

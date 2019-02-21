@@ -117,6 +117,7 @@ for i in range(n):
                 card_deck.append(tmp)
 
         pickle.dump(card_deck, deck_2)
+
 f.close()
 
 f = open("../personal_decks/deck_info", "rb")
@@ -129,6 +130,7 @@ for i in range(n):
             for j in range(0,10):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
+                print(tmp)
 
         if ver.colour == "G" and ver.card_type == "Land":
             for j in range(0,10):
@@ -144,9 +146,8 @@ for i in range(n):
             for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                
-
-            pickle.dump(card_deck, deck_3)
+        
+        pickle.dump(card_deck, deck_3)
 
 f.close()
 
@@ -157,13 +158,13 @@ for i in range(n):
     ver = pickle.load(f)
     with open("../personal_decks/deck_4", "wb") as deck_4:
         if ver.colour == "W" and ver.card_type == "Creature":
-            for j in range(0,10):
+            for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
                 print(ver.name)
 
         if ver.colour == "W" and ver.card_type == "Land":
-            for j in range(0,10):
+            for j in range(0,15):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
                 print(ver.name)
@@ -182,5 +183,40 @@ for i in range(n):
                 
 
         pickle.dump(card_deck, deck_4)
+
+f.close()
+
+f = open("../personal_decks/deck_info", "rb")
+n = pickle.load(f)
+card_deck = []
+for i in range(n):
+    ver = pickle.load(f)
+    with open("../personal_decks/deck_5", "wb") as deck_5:
+        if ver.colour == "U" and ver.card_type == "Creature":
+            for j in range(0,10):
+                tmp = copy.copy(ver)
+                card_deck.append(tmp)
+                print(ver.name)
+
+        if ver.colour == "U" and ver.card_type == "Land":
+            for j in range(0,10):
+                tmp = copy.copy(ver)
+                card_deck.append(tmp)
+                print(ver.name)
+
+        if ver.colour == "U" and ver.card_type == "Instant":
+            for j in range(0,1):
+                tmp = copy.copy(ver)
+                card_deck.append(tmp)
+                print(ver.name)
+                
+        if ver.colour == "U" and ver.card_type == "Sorcery":
+            for j in range(0,5):
+                tmp = copy.copy(ver)
+                card_deck.append(tmp)
+                print(ver.name)
+                
+
+        pickle.dump(card_deck, deck_5)
 
 f.close()
