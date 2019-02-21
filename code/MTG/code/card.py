@@ -8,7 +8,7 @@ class Card():
 
 
 class Creature(Card):
-	def __init__ (self, name, card_type, colour, mana_cost, texture, power, toughness, keyword = None, state = None):
+	def __init__ (self, name, card_type, colour, mana_cost, texture, power, toughness, keyword = "", state = None):
 		Card.__init__(self, name, card_type, colour, mana_cost, texture)
 		self.power = power
 		self.toughness = toughness
@@ -17,6 +17,7 @@ class Creature(Card):
 		self.power_modifier = 0
 		self.toughness_modifier = 0
 		self.counter = ("", 0, 0)
+		self.tmp_keyword = ""
 
 class Sorcery(Card):
 	def __init__ (self, name, card_type, colour, mana_cost, texture, targets, value, effect):

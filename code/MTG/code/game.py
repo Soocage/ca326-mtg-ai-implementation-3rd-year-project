@@ -69,11 +69,25 @@ class Game():
             self.untap(self.player_1, gameBoard)
             self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
+            #self.combat(self,player_1, self.player_2, gameBoard, display)
+            self.main_phase(self.player_1, self.player_2, gameBoard, display)
+            self.end_step()
 
 ############################# UPDATING SCREEN ######################################
 
 
 
+    def end_step(self):
+        self.player_1.state = None
+        self.player_2.state = None
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            card.card.toughness_modifier = 0
+            card.card.power_modifier = 0
+            card.card.tmp_keyword = ""
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            card.card.toughness_modifier = 0
+            card.card.power_modifier = 0
+            card.card.tmp_keyword = ""
 
 
     def check_game_status(self):
@@ -83,7 +97,7 @@ class Game():
         return lives and decks### and has_quit 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_3", "rb")
+        f = open("./personal_decks/deck_4", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -105,7 +119,6 @@ class Game():
 
         for creature in player.battlefield:
             creature.state = "untapped"
-
 
         for land in player.land_zone:
             land.state = "untapped"
@@ -229,10 +242,10 @@ class Game():
                         self.effect_search_land(player, gameBoard, display)
 
                     elif card.effect == "Gain_life":
-                        self.effect_gain_life()
+                        self.effect_gain_life(player, opponent, gameBoard, display, card.targets, card.value)
 
                     elif card.effect == "Protection":
-                        self.effect_protection()
+                        self.effect_protection(player,gameBoard, display, card.targets, card.value)
 
                     elif card.effect == "Exile":
                         self.effect_exile()
@@ -246,6 +259,7 @@ class Game():
                     elif card.effect == "Reanimate":
                         self.effect_reanimate(player, opponent, card.targets, gameBoard, display)
 
+                    pygame.mouse.set_visible(True)
                     player.graveyard.append(player.hand.pop(i))
                     #gameBoard.draw_graveyard(player)
                     gameBoard.draw_hand(player)
@@ -257,6 +271,56 @@ class Game():
                 i += 1
         else:
             gameBoard.draw_hand(player)
+
+    def effect_protection(self, player,gameBoard, display, list_of_targets, value):
+        resolved = False
+        while not resolved:
+             for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if "player" in list_of_targets:
+                            if gameBoard.player_1_life_sec.y + gameBoard.player_1_life_sec.h > pos[1] > gameBoard.player_1_life_sec.y and gameBoard.player_1_life_sec.x + gameBoard.player_1_life_sec.w > pos[0] > gameBoard.player_1_life_sec.x:
+                                print(player.state)
+                                player.state = "Protection"
+                                print(player.state)
+                                resolved = True
+                        if "creature" in list_of_targets:
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    if card.card.tmp_keyword == "":
+                                        card.card.tmp_keyword = "Protection"
+                                    else:
+                                        tmp = card.card.tmp_keyword + "Protection"
+                                        card.card.tmp_keyword = tmp
+                                resolved = True
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
+
+
+    def effect_gain_life(self, player, opponent, gameBoard, display, list_of_targets, value):
+        resolved = False
+        while not resolved:
+             for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        if "opponent" in list_of_targets and opponent.state != "Protection":
+                            if  gameBoard.player_2_life_sec.y + gameBoard.player_2_life_sec.h > pos[1] > gameBoard.player_2_life_sec.y and gameBoard.player_2_life_sec.x + gameBoard.player_2_life_sec.w > pos[0] > gameBoard.player_2_life_sec.x:
+                                opponent.life += int(value)
+                                resolved = True
+                        if "player" in list_of_targets and player.state != "Protection":
+                            if gameBoard.player_1_life_sec.y + gameBoard.player_1_life_sec.h > pos[1] > gameBoard.player_1_life_sec.y and gameBoard.player_1_life_sec.x + gameBoard.player_1_life_sec.w > pos[0] > gameBoard.player_1_life_sec.x:
+                                player.life += int(value)
+                                resolved = True
+                self.draw_screen(gameBoard, display)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
+                pygame.display.update()
+
 
     def effect_search_land(self, player, gameBoard, display):
         gameBoard.draw_search_land(player)
@@ -272,11 +336,11 @@ class Game():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
+                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                 if len(attacker) < 1:
                                     attacker.append(card.card)
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
+                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                 if len(defender) < 1:
                                     defender.append(card.card)
                         if len(attacker) + len(defender) == 2:
@@ -294,6 +358,8 @@ class Game():
                                         player.graveyard.append(card)
                                         player.battlefield.remove(card)
                             resolved = True
+                    if event.button == 3:
+                        resolved = True
 
                 self.draw_screen(gameBoard, display)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), display)
