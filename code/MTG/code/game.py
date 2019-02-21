@@ -168,9 +168,31 @@ class Game():
                                     gameBoard.tap_mana(land)
                                     print(current_player.mana)
 
+                    if event.button == 3:
+                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.viewed = True
+                                
+
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                print("friends2323")
+                                card.viewed = True
+                                
+
+                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                card.viewed = True
+                                
+
                 if event.type == pygame.MOUSEBUTTONUP:
 
                     for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                        if card.viewed == True:
+                            card.viewed = False
+                            gameBoard.draw_hand(current_player)
+                            pygame.display.update()
+
                         if card.clicked == True:
                             card.clicked = False
 
@@ -187,6 +209,19 @@ class Game():
                             else:
                                 gameBoard.draw_hand(current_player)
 
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.viewed == True:
+                            card.viewed = False
+                            gameBoard.draw_new_battlefield(current_player)
+                            pygame.display.update()
+
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.viewed == True:
+                            card.viewed = False
+                            gameBoard.draw_new_battlefield(next_player)
+                            pygame.display.update()
+
+
 
                          
 
@@ -197,6 +232,17 @@ class Game():
                     pos = pygame.mouse.get_pos()
                     card.rect.x = pos[0] - (card.rect.width/2)
                     card.rect.y = pos[1] - (card.rect.height/2)
+                if card.viewed == True:
+                    gameBoard.view_card(card)
+
+            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                if card.viewed == True:
+                    gameBoard.view_card(card)
+
+            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                if card.viewed == True:
+                    gameBoard.view_card(card)
+
 
 
             self.draw_screen(gameBoard, display)
@@ -213,10 +259,10 @@ class Game():
         gameBoard.draw_board()
         board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
-        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
-        board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
 
 
     def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard, display):

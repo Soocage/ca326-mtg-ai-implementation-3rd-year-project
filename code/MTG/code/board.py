@@ -24,12 +24,13 @@ class CardSprite(pygame.sprite.Sprite):
                 card_texture = pygame.image.load(card.texture)            
             else:
                 card_texture = pygame.image.load(back_texture) 
-            self.image = pygame.transform.scale(card_texture,(int(w), int(h)))
+            self.image = pygame.transform.smoothscale(card_texture,(int(w), int(h)))
             self.rect = self.image.get_rect()
             self.rect.x = x
             self.rect.y = y
             self.clicked = False
             self.card = card
+            self.viewed = False
 
 
 class BoardSection():
@@ -280,6 +281,16 @@ class Board():
             pygame.display.update()
 
 
+    def view_card(self, card):
+        card_texture = pygame.image.load(card.card.texture)
+        card.image = card_texture
+        card.rect = card.image.get_rect()
+        new_w = int(card.rect.w * (3/5))
+        new_h = int(card.rect.h * (3/5))
+        card.image = pygame.transform.smoothscale(card_texture,(int(new_w), int(new_h)))
+        card.rect = card.image.get_rect()
+        card.rect.x = (self.display_size[0]/2) - (new_w/2)
+        card.rect.y = (self.display_size[1]/2) - (new_h/2)
 
 
 
