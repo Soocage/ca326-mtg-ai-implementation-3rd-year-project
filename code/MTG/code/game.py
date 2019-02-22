@@ -70,7 +70,7 @@ class Game():
             self.untap(self.player_1, gameBoard)
             self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
-            #self.combat(self,player_1, self.player_2, gameBoard, display)
+            self.combat_phase(self.player_1, self.player_2, gameBoard, display)
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
             self.end_step()
 
@@ -136,6 +136,7 @@ class Game():
 
 
         gameBoard.draw_land(player)
+        gameBoard.draw_new_battlefield(player)
         player.land_flag = False
         self.clear_mana(player)
 
@@ -292,7 +293,80 @@ class Game():
 
     def combat_phase(self, current_player, next_player, gameBoard, display):
         if self.check_life() and not self.quit:
-            a = "b"
+            attackers = self.select_attackers(current_player, gameBoard, display)
+            defenders = self.select_defenders(next_player, attackers, gameBoard, display)
+            self.damage_step(attackers, defenders,current_player, next_player, gameBoard)
+            for attacker in attackers:
+                attacker.combat_state = ""
+            for defenders in defenders:
+                combat_state = ""
+
+    def damage_step(self, attackers, defenders, current_player, next_player, gameBoard):
+        i = 0
+        while i < len(attackers):
+            if type(defenders[i]) != int:
+                attackers[i].toughness_modifier -= defenders[i].power
+                defenders[i].toughness_modifier -= attackers[i].power
+                if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
+                    current_player.graveyard.append(attackers[i])
+                    current_player.battlefield.remove(attackers[i])
+                if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
+                    next_player.graveyard.append(defenders[i])
+                    next_player.battlefield.remove(defenders[i])
+            else:
+                next_player.life -= attackers[i].power
+            i += 1
+        gameBoard.draw_new_battlefield(current_player)
+        gameBoard.draw_new_battlefield(next_player)
+
+
+    def select_attackers(self, player, gameBoard, display):
+        list_of_attackers = []
+        resolved = False
+        while not resolved:
+            for event in pygame.event.get():
+
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if card.rect.collidepoint(pos):
+                                print(card.card.combat_state)
+                                if card.card.combat_state != "attacking" and card.card.summon_sick != True:
+                                    card.card.combat_state = "attacking"
+                                    if "Vigiliance" not in card.card.keyword and "Vigiliance" not in card.card.tmp_keyword:
+                                        card.card.tapped = True
+                                        gameBoard.tap_creature(card)
+                                    list_of_attackers.append(card.card)
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        resolved = True
+
+                self.draw_screen(gameBoard, display)
+                pygame.display.update()
+        return list_of_attackers
+
+    def select_defenders(self, next_player, list_of_attackers, gameBoard, display):
+        resolved = True
+        list_of_defenders = []
+        if len(list_of_attackers) > 0:
+            list_of_defenders = len(list_of_attackers)*[0]
+            resolved = False
+        while not resolved:
+            i = 0
+            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                list_of_defenders[i] = card.card
+                i += 1
+            resolved = True
+        return list_of_defenders
+
+
+
+
+
 
 
     def draw_cursor(self, x, y, display):
@@ -726,15 +800,18 @@ class Game():
                                     opponent.life -= int(value)
                                     resolved = True
 
-                        if "Creature" in list_of_targets:
+                        if "creature" in list_of_targets:
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+
                                 if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    print("4")
                                     if (self.damage_creature(card.card, value)):
-                                        opponent.graveyard.append(card,card)
+                                        print("5")
+                                        opponent.graveyard.append(card.card)
                                         opponent.battlefield.remove(card.card)
                                         gameBoard.draw_new_battlefield(opponent)
-                                        gameBoard.draw_graveyard(opponent)
+                                        #gameBoard.draw_graveyard(opponent)
                                         resolved = True
                     if event.type == pygame.QUIT:
                         self.my_quit()
@@ -801,8 +878,8 @@ class Game():
                                 
 
     def damage_creature(self, card, damage):
-        card.toughness_modifier -= damage
-        return (card.toughness_modifier >= card.toughness)
+        card.toughness_modifier -= int(damage)
+        return (card.toughness_modifier <= card.toughness)
 
 
 
