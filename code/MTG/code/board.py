@@ -289,8 +289,8 @@ class Board():
         new_h = int(card.rect.h * (3/5))
         card.image = pygame.transform.smoothscale(card_texture,(int(new_w), int(new_h)))
         card.rect = card.image.get_rect()
-        card.rect.x = (self.display_size[0]/2) - (new_w/2)
-        card.rect.y = (self.display_size[1]/2) - (new_h/2)
+        card.rect.x = 0
+        card.rect.y = self.display_size[1] - new_h
 
 
 

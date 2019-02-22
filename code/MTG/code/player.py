@@ -3,7 +3,7 @@ class Player():
     def __init__(self, name):
         self.deck = []
         self.name = name
-        self.life = 20
+        self.life = 4
         self.hand = []
         self.graveyard = []
         self.land_zone = []

@@ -31,6 +31,7 @@ class Game():
         self.phase = None
         self.turn = 0
         self.current_player = None
+        self.quit = False
 
     def run_game(self):
         player_1_deck_list = self.deck_selection(self.player_1)
@@ -91,13 +92,21 @@ class Game():
 
 
     def check_game_status(self):
-        lives = self.player_1.life > 0 and self.player_2.life > 0
-        decks = len(self.player_1.deck.cards) > 0 and len(self.player_2.deck.cards) > 0
-        ##has_quit =  self.player_1.has_quit()
-        return lives and decks### and has_quit 
+        lives = self.check_life()
+        deck_1 = self.check_not_mill(self.player_1)
+        deck_2 = self.check_not_mill(self.player_2)
+
+        return lives and (deck_1 and deck_2) and self.quit != True
+
+    def check_life(self):
+        return self.player_1.life > 0 and self.player_2.life > 0
+
+    def check_not_mill(self, player):
+        return len(player.deck.cards) > 0
+
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_2", "rb")
+        f = open("./personal_decks/deck_1", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -111,9 +120,9 @@ class Game():
             player.hand.append(player.deck.cards.pop(0))
 
     def draw(self, player, gameBoard):
-        player.hand.append(player.deck.cards.pop(0))
-        gameBoard.draw_hand(player)
-        print("######################### Break ###########################")
+        if self.check_not_mill(player):
+            player.hand.append(player.deck.cards.pop(0))
+            gameBoard.draw_hand(player)
 
     def untap(self, player, gameBoard):
 
@@ -137,118 +146,154 @@ class Game():
         print(player.mana)
 
     def main_phase(self, current_player, next_player, gameBoard, display):
-        pass_phase = False
-        
-        while not pass_phase:
-            for event in pygame.event.get():
+        print(self.check_life())
+        if self.check_life() and not self.quit:
+            pass_phase = False
+            while not pass_phase:
+                for event in pygame.event.get():
 
-                if event.type == pygame.QUIT:
-                    self.my_quit()
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
 
-                elif event.type == pygame.KEYDOWN:
+                    elif event.type == pygame.KEYDOWN:
 
-                    if event.key == pygame.K_SPACE:
-                        pass_phase = True
+                        if event.key == pygame.K_SPACE:
+                            pass_phase = True
 
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
+                        if event.key == pygame.K_ESCAPE:
+                            self.quit = True
+                            return
 
-                    if event.button == 1:
-                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                card.clicked = True
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        pos = pygame.mouse.get_pos()
 
-                        if gameBoard.player_1_land_box.x + gameBoard.player_1_land_box.w > pos[0] > gameBoard.player_1_land_box.x and gameBoard.player_1_land_box.y + gameBoard.player_1_land_box.h > pos[1] > gameBoard.player_1_land_box.y:
-                            for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
-                                print (land.card.name)
+                        if event.button == 1:
+                            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.clicked = True
 
-                                if land.rect.collidepoint(pos) and land.card.tapped == False:
-                                    print("friends")
-                                    self.add_mana(current_player, land.card)
-                                    gameBoard.tap_mana(land)
-                                    print(current_player.mana)
+                            if gameBoard.player_1_land_box.x + gameBoard.player_1_land_box.w > pos[0] > gameBoard.player_1_land_box.x and gameBoard.player_1_land_box.y + gameBoard.player_1_land_box.h > pos[1] > gameBoard.player_1_land_box.y:
+                                for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                                    
 
-                    if event.button == 3:
-                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                card.viewed = True
+                                    if land.rect.collidepoint(pos) and land.card.tapped == False:
+                                        self.add_mana(current_player, land.card)
+                                        gameBoard.tap_mana(land)
+                                        print(current_player.mana)
+
+                        if event.button == 3:
+                            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.viewed = True
+
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.viewed = True
+                                    
+
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.viewed = True
+
+                            for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.viewed = True
+
+                            for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.viewed = True
+
                                 
+                                    
+
+                    if event.type == pygame.MOUSEBUTTONUP:
+
+                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                            if card.viewed == True:
+                                card.viewed = False
+                                gameBoard.draw_hand(current_player)
+                                pygame.display.update()
+
+                            if card.clicked == True:
+                                card.clicked = False
+
+                                if ((gameBoard.player_1_hand_box.x > card.rect.x) or (card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w)) or gameBoard.player_1_hand_box.y > card.rect.y:
+                                    
+                                    if card.card.card_type == "Land":
+                                        self.play_a_land(card.card, current_player, gameBoard)
+
+                                    if card.card.card_type == "Creature":
+                                        self.play_a_creature(card.card, current_player,next_player, gameBoard)
+
+                                    if card.card.card_type == "Sorcery" or card.card.card_type == "Instant":
+                                        self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard, display)
+
+                                    if self.check_life() == False:
+                                        return
+                                else:
+                                    gameBoard.draw_hand(current_player)
 
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                print("friends2323")
-                                card.viewed = True
-                                
+                            if card.viewed == True:
+                                card.viewed = False
+                                gameBoard.draw_new_battlefield(current_player)
+                                pygame.display.update()
 
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos):
-                                card.viewed = True
-                                
+                            if card.viewed == True:
+                                card.viewed = False
+                                gameBoard.draw_new_battlefield(next_player)
+                                pygame.display.update()
 
-                if event.type == pygame.MOUSEBUTTONUP:
+                        for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                            if card.viewed == True:
+                                card.viewed = False
+                                gameBoard.draw_land(current_player)
+                                pygame.display.update()
 
-                    for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                        if card.viewed == True:
-                            card.viewed = False
-                            gameBoard.draw_hand(current_player)
-                            pygame.display.update()
-
-                        if card.clicked == True:
-                            card.clicked = False
-
-                            if ((gameBoard.player_1_hand_box.x > card.rect.x) or (card.rect.x > gameBoard.player_1_hand_box.x + gameBoard.player_1_hand_box.w)) or gameBoard.player_1_hand_box.y > card.rect.y:
-                                
-                                if card.card.card_type == "Land":
-                                    self.play_a_land(card.card, current_player, gameBoard)
-
-                                if card.card.card_type == "Creature":
-                                    self.play_a_creature(card.card, current_player,next_player, gameBoard)
-
-                                if card.card.card_type == "Sorcery" or card.card.card_type == "Instant":
-                                    self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard, display)
-                            else:
-                                gameBoard.draw_hand(current_player)
-
-                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if card.viewed == True:
-                            card.viewed = False
-                            gameBoard.draw_new_battlefield(current_player)
-                            pygame.display.update()
-
-                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if card.viewed == True:
-                            card.viewed = False
-                            gameBoard.draw_new_battlefield(next_player)
-                            pygame.display.update()
+                        for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                            if card.viewed == True:
+                                card.viewed = False
+                                gameBoard.draw_land(next_player)
+                                pygame.display.update()
 
 
+                for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                    if card.clicked == True:
+                        pos = pygame.mouse.get_pos()
+                        card.rect.x = pos[0] - (card.rect.width/2)
+                        card.rect.y = pos[1] - (card.rect.height/2)
+                    if card.viewed == True:
+                        gameBoard.view_card(card)
 
-                         
+                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if card.viewed == True:
+                        gameBoard.view_card(card)
 
-############################# GAME LOGIC HERE#######################################
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if card.viewed == True:
+                        gameBoard.view_card(card)
 
-            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                if card.clicked == True:
-                    pos = pygame.mouse.get_pos()
-                    card.rect.x = pos[0] - (card.rect.width/2)
-                    card.rect.y = pos[1] - (card.rect.height/2)
-                if card.viewed == True:
-                    gameBoard.view_card(card)
+                for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                    if card.viewed == True:
+                        gameBoard.view_card(card)
 
-            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                if card.viewed == True:
-                    gameBoard.view_card(card)
-
-            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                if card.viewed == True:
-                    gameBoard.view_card(card)
+                for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                    if card.viewed == True:
+                        gameBoard.view_card(card)
 
 
 
-            self.draw_screen(gameBoard, display)
-            pygame.display.update()
-            clock.tick(60)            
-        self.clear_mana(current_player)
+                self.draw_screen(gameBoard, display)
+                pygame.display.update()
+                clock.tick(60)            
+            self.clear_mana(current_player)
+
+
+    def combat_phase(self, current_player, next_player, gameBoard, display):
+        if self.check_life() and not self.quit:
+            a = "b"
+
 
     def draw_cursor(self, x, y, display):
         display.blit(cursor, (x, y))
@@ -257,12 +302,12 @@ class Game():
 
     def draw_screen(self, gameBoard, display):
         gameBoard.draw_board()
+        board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
+        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(display)
-        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
-        board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
 
 
     def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard, display):
@@ -357,7 +402,7 @@ class Game():
                                         player.hand.remove(card.card)
                                         player.graveyard.append(card.card)
                                         amt += 1
-                                        print(amt)
+                                        
 
                         if "opponent" in list_of_targets:
                             if clicked_target == "" or clicked_target == "opponent":
@@ -406,7 +451,7 @@ class Game():
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         player.battlefield.remove(card.card)
                                         player.graveyard.append(card.card)
-                                        print("Poof")
+                                        
                                         resolved = True
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -414,7 +459,7 @@ class Game():
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         opponent.battlefield.remove(card.card)
                                         opponent.graveyard.append(card.card)
-                                        print("Poof")
+                                        
                                         resolved = True
 
                 self.draw_screen(gameBoard, display)
@@ -450,14 +495,14 @@ class Game():
                                 if card.rect.collidepoint(pos):
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         player.battlefield.remove(card.card)
-                                        print("Poof")
+                                        
                                         resolved = True
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos):
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         opponent.battlefield.remove(card.card)
-                                        print("Poof")
+
                                         resolved = True
 
 
@@ -665,7 +710,7 @@ class Game():
                 resolved = False
         if "opponent" in list_of_targets and "Protection" not in opponent.state:
             resolved = False
-        print(list_of_targets)
+        
         while not resolved:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
@@ -738,11 +783,11 @@ class Game():
                     if event.button == 1:
                         if "opponent" in targets:
                             if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-                                print("Spooky")
+                                
                                 resolved = True
                         if "player" in targets:
                             if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-                                print("Spoopy")
+                                
                                 resolved = True
                 if event.type == pygame.QUIT:
                     self.my_quit()
@@ -781,7 +826,7 @@ class Game():
             gameBoard.draw_hand(current_player)
             gameBoard.draw_new_battlefield(current_player)
             gameBoard.draw_new_battlefield(next_player)
-            print("we did it")    
+              
         else:
             gameBoard.draw_hand(current_player)
 
