@@ -259,6 +259,12 @@ def deck_tools(gameDisplay, display_size):
     back_button_x = deck_tools_box_x + (deck_tools_box_w / 2) - (deck_tools_button_width / 2)
     back_button_y = deck_tools_box_y + (deck_tools_box_h*(6/7))
 
+    next_button_x = back_button_x + deck_tools_button_width + (deck_tools_button_width/10)
+    next_button_y = back_button_y
+
+    previous_button_x = back_button_x - deck_tools_button_width - (deck_tools_button_width/10)
+    previous_button_y = back_button_y
+
     in_deck_tools = True
     while in_deck_tools:
         for event in pygame.event.get():
@@ -272,18 +278,20 @@ def deck_tools(gameDisplay, display_size):
 
 
 
+
+
         pygame.draw.rect(gameDisplay, white, (deck_tools_box_x, deck_tools_box_y, deck_tools_box_w, deck_tools_box_h))
-        back_button = Button("Back", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
 
-        draw_button(back_button, display_size, gameDisplay)
+        exit_button = Button("Exit", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
+
+        next_button = Button("Next", next_button_x, next_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "next")
+
+        previous_button = Button("Previous", previous_button_x, previous_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "previous")
+
+        draw_button(exit_button, display_size, gameDisplay)
+        draw_button(previous_button, display_size, gameDisplay)
+        draw_button(next_button, display_size, gameDisplay)
         pygame.display.update()
-
-
-
-
-
-
-
 
 
 def my_quit():
