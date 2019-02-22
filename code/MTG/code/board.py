@@ -225,9 +225,9 @@ class Board():
         draw_search_box_h = ((display_height)*(18/20))
         draw_search_box_w = ((display_width)*(18/20))
 
-        padding_w = (self.draw_search_box_w/11)/11
-        upper_padding_h = (self.draw_search_box_h/7)/7
-        card_h = (self.draw_search_box_h/7)
+        padding_w = (draw_search_box_w/11)/11
+        upper_padding_h = (draw_search_box_h/7)/7
+        card_h = (draw_search_box_h/7)
         card_w = card_h*(63/88)
 
         in_draw_search = True
@@ -262,49 +262,56 @@ class Board():
         i = 0
         while i < len(row_1):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h)
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
         i = 0
         while i < len(row_2):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h*2) + card_h 
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*2) + card_h 
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.addd(land_sprite)
+            i += 1
         i = 0
         while i < len(row_3):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h*3) + (card_h*2)
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*3) + (card_h*2)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
         i = 0
         while i < len(row_4):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h*4) + (card_h*3)
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*4) + (card_h*3)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
         i = 0
         while i < len(row_5):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h*5) + (card_h*4)
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*5) + (card_h*4)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
         i = 0
         while i < len(row_6):
             land_card = row_1[i]
-            x = (padding_w*i+1) + (card_w*i)
-            y = (upper_padding_h*5) + (card_h*4)
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*5) + (card_h*4)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
             
-        LAND_CARD_SPRITE_GROUP.draw()
+        LAND_CARD_SPRITE_GROUP.draw(self.display)
 
         pygame.display.update()
+        return LAND_CARD_SPRITE_GROUP
 
 
     def view_card(self, card):

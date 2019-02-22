@@ -106,7 +106,7 @@ class Game():
 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_1", "rb")
+        f = open("./personal_decks/deck_3", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -679,7 +679,23 @@ class Game():
 
 
     def effect_search_land(self, player, gameBoard, display):
-        gameBoard.draw_search_land(player)
+        resolved = False
+        while not resolved:
+            card_list = gameBoard.draw_search_land(player)
+
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                mx, my = pos[0], pos[1]
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+
+                        for card in card_list:
+                            if card.rect.collidepoint(pos):
+                                player.land_zone.append(card.card)
+                                player.deck.cards.remove(card.card)
+                                gameBoard.draw_land(player)
+                                resolved = True
+
 
     def effect_combat_creature(self, player, opponent, gameBoard, display):
         tmp_1 = False

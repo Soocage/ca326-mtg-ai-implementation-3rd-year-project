@@ -20,6 +20,7 @@
 [Tapitytaptap,Sorcery,U,1U,./images/card_art/tapitytaptap.png,creature,1,Tap]
 [Murder,Sorcery,B,1BB,./images/card_art/murder.png,creature,1,Destroy]
 [Duress,Sorcery,B,B,./images/card_art/duress.png,opponent;player,1,Discard]
+[Cultivate,Sorcery,G,1G,./images/card_art/cultivate.png,player,1,Search_land]
 #####Instant#####,###
 [Shock,Instant,R,R,./images/card_art/shock.png,opponent;creature,2,Damage]
 [Path to Exile,Instant,W,W,./images/card_art/path_to_exile.png,creature,1,Exile]
