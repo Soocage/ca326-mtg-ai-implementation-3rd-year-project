@@ -301,10 +301,7 @@ class Board():
             y = (upper_padding_h*5) + (card_h*4)
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
             LAND_CARD_SPRITE_GROUP.ADD(land_sprite)
-
-        elif player == "AI":
-            return
-
+            
         LAND_CARD_SPRITE_GROUP.draw()
 
         pygame.display.update()
