@@ -21,9 +21,9 @@ class CardSprite(pygame.sprite.Sprite):
     def __init__(self, card, x, y, w, h, back_texture = None):
             pygame.sprite.Sprite.__init__(self)
             if back_texture == None:
-                card_texture = pygame.image.load(card.texture)            
+                card_texture = pygame.image.load(card.texture)
             else:
-                card_texture = pygame.image.load(back_texture) 
+                card_texture = pygame.image.load(back_texture)
             self.image = pygame.transform.smoothscale(card_texture,(int(w), int(h)))
             self.rect = self.image.get_rect()
             self.rect.x = x
@@ -237,7 +237,7 @@ class Board():
                 land_cards.append(card)
 
         pygame.draw.rect(self.display, (255,255,255), (draw_search_box_x, draw_search_box_y, draw_search_box_w, draw_search_box_h))
- 
+
         row_1 = []
         row_2 = []
         row_3 = []
@@ -258,7 +258,7 @@ class Board():
             elif 50 < i < 60:
                 row_6.append(land_cards[i])
 
-        
+
         i = 0
         while i < len(row_1):
             land_card = row_1[i]
@@ -271,7 +271,7 @@ class Board():
         while i < len(row_2):
             land_card = row_1[i]
             x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
-            y = draw_search_box_y + (upper_padding_h*2) + card_h 
+            y = draw_search_box_y + (upper_padding_h*2) + card_h
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
             LAND_CARD_SPRITE_GROUP.addd(land_sprite)
             i += 1
@@ -307,7 +307,7 @@ class Board():
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
             LAND_CARD_SPRITE_GROUP.add(land_sprite)
             i += 1
-            
+
         LAND_CARD_SPRITE_GROUP.draw(self.display)
 
         pygame.display.update()
@@ -430,7 +430,7 @@ class Board():
         player_1_deck = BoardSection(display, "deck", player_1_deck_x, player_1_deck_y, player_1_deck_w, player_1_deck_h, player_1_deck_colour)
         self.player_1_deck = player_1_deck
         player_1_deck.draw()
-        
+
         player_2_deck_x = player_1_deck_x
         player_2_deck_y = player_2_hand_y
         player_2_deck_w = player_1_deck_w
@@ -707,13 +707,3 @@ class Board():
         player_2_b_mana_rec = player_2_b_mana_text.get_rect()
         player_2_b_mana_rec.center = ((player_2_b_mana_pool_x+(mana_pool_w/2)), (player_2_b_mana_pool_y+(mana_pool_h/2)))
         display.blit(player_2_b_mana_text, player_2_b_mana_rec)
-
-
-
-
-
-
-
-
-
-

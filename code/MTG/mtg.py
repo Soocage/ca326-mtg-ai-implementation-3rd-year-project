@@ -14,7 +14,7 @@ import main_menu
 pygame.init()
 pygame.mixer.init()
 
-display_size = (display_width, display_height)= (1024, 768)
+display_size = (display_width, display_height)= (1600, 900)
 gameDisplay = pygame.display.set_mode(display_size)
 
 #takes in dimentions of screen and draws the window
@@ -23,6 +23,3 @@ def my_quit():
 	quit()
 
 main_menu.game_intro(gameDisplay, display_size)
-
-
-
