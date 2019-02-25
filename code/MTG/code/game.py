@@ -75,13 +75,16 @@ class Game():
             print("4")
             self.main_phase(self.player_1, self.player_2, gameBoard, display)
             print("5")
-            self.end_step()
+            self.end_step(gameBoard)
 
 ############################# UPDATING SCREEN ######################################
 
 
 
-    def end_step(self):
+    def end_step(self, gameBoard):
+        self.phase = "end"
+        gameBoard.draw_phase_section(self.phase)
+        pygame.display.update()
         self.player_1.state = ""
         self.player_2.state = ""
         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -109,7 +112,7 @@ class Game():
 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_3", "rb")
+        f = open("./personal_decks/deck_1", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -123,12 +126,21 @@ class Game():
             player.hand.append(player.deck.cards.pop(0))
 
     def draw(self, player, gameBoard):
+        self.phase = "draw"
+        gameBoard.draw_phase_section(self.phase)
+        pygame.display.update()
+
+
         if self.check_not_mill(player):
             player.hand.append(player.deck.cards.pop(0))
             gameBoard.draw_hand(player)
             gameBoard.draw_player_hand_section()
 
     def untap(self, player, gameBoard):
+        self.phase = "untap"
+        gameBoard.draw_phase_section(self.phase)
+        pygame.display.update()
+
 
         for creature in player.battlefield:
             creature.tapped = False
@@ -155,12 +167,14 @@ class Game():
             self.phase = "main_2"
         else:
             self.phase = "main_1"
-
+        self.draw_screen(gameBoard, display)
+        pygame.display.update()
         print(self.check_life())
         if self.check_life() and not self.quit:
             pass_phase = False
             while not pass_phase:
                 for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
 
                     if event.type == pygame.QUIT:
                         self.my_quit()
@@ -174,7 +188,6 @@ class Game():
                             self.quit = True
                             return
 
-                    pos = pygame.mouse.get_pos()
                     if event.type == pygame.MOUSEBUTTONDOWN:
 
                         if event.button == 1:
@@ -182,7 +195,7 @@ class Game():
                             if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
                                 self.quit = True
                                 pass_phase = True
-                                
+
                             if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
                                 gameBoard.draw_options_menu()
                                 gameBoard.draw_board(self.phase)
@@ -232,44 +245,47 @@ class Game():
                             card.rect.y = pos[1] - (card.rect.height/2)
                             pos, card.rect.x, card.rect.y
 
+                    self.draw_screen(gameBoard, display)
+                    for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(display)
+                            pygame.display.update()
 
-                self.draw_screen(gameBoard, display)
-                for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                    if card.rect.collidepoint(pos):
-                        gameBoard.view_card(card)
-                        board.VIEWED_CARD.draw(display)
-                        pygame.display.update()
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(display)
+                            pygame.display.update()
+                            
 
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if card.rect.collidepoint(pos):
-                        gameBoard.view_card(card)
-                        board.VIEWED_CARD.draw(display)
-                        pygame.display.update()
-                        
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(display)
+                            pygame.display.update()
 
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if card.rect.collidepoint(pos):
-                        gameBoard.view_card(card)
-                        board.VIEWED_CARD.draw(display)
-                        pygame.display.update()
+                    for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(display)
+                            pygame.display.update()
 
-                for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
-                    if card.rect.collidepoint(pos):
-                        gameBoard.view_card(card)
-                        board.VIEWED_CARD.draw(display)
-                        pygame.display.update()
-
-                for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
-                    if card.rect.collidepoint(pos):
-                        gameBoard.view_card(card)
-                        board.VIEWED_CARD.draw(display)
-                        pygame.display.update()
+                    for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(display)
+                            pygame.display.update()
 
                 clock.tick(60)
             self.clear_mana(current_player)
 
 
     def combat_phase(self, current_player, next_player, gameBoard, display):
+        self.phase = "combat"
+        gameBoard.draw_phase_section(self.phase)
+        pygame.display.update()
+
         if self.check_life() and not self.quit:
             attackers = self.select_attackers(current_player, gameBoard, display)
             defenders = self.select_defenders(next_player, attackers, gameBoard, display)

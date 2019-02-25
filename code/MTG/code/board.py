@@ -469,7 +469,6 @@ class Board():
         self.draw_card_display_sec()
         self.draw_player_1_life()
         self.draw_player_2_life()
-        self.draw_hand(player_1)
         self.draw_phase_section(active_phase)
         self.draw_player_1_hand_info_sec()
         self.draw_player_2_hand_info_sec()
