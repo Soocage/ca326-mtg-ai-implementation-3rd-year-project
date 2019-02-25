@@ -124,12 +124,35 @@ class Board():
         self.player_2_mana_box_r = None
         self.player_1_player_sec = None
         self.player_2_player_sec = None
+        self.player_1_name_info_sec = None
+        self.player_2_name_info_sec = None
         self.player_1_name_sec = None
         self.player_2_name_sec = None
+        self.player_1_life_sec = None
+        self.player_2_life_sec = None
         self.card_display_sec = None
         self.concede_button_sec = None
         self.options_button_sec = None 
         self.in_options = True
+        self.player_1_hand_info_sec = None
+        self.player_2_hand_info_sec = None
+        self.player_1_hand_name = None
+        self.player_2_hand_name = None
+        self.player_1_hand_size = None
+        self.player_2_hand_size = None
+        self.player_1_deck_info_sec = None
+        self.player_2_deck_info_sec = None
+        self.player_1_deck_name = None
+        self.player_2_deck_name = None
+        self.player_1_deck_size = None
+        self.player_2_deck_size = None
+        self.player_1_grave_info_sec = None
+        self.player_2_grave_info_sec = None
+        self.player_1_grave_name = None
+        self.player_2_grave_name = None
+        self.player_1_grave_size = None
+        self.player_2_grave_size = None
+
 
     def draw_hand(self, player):
         cards = player.hand
@@ -415,9 +438,13 @@ class Board():
         self.draw_player_2_battlefield()
         self.draw_player_1_player_sec()
         self.draw_player_2_player_sec()
+        self.draw_player_1_name_info_sec()
+        self.draw_player_2_name_info_sec()
         self.draw_player_1_name()
         self.draw_player_2_name()
         self.draw_card_display_sec()
+        self.draw_player_1_life()
+        self.draw_player_2_life()
         self.draw_hand(player_1)
         self.draw_phase_section(active_phase)
 
@@ -519,6 +546,25 @@ class Board():
 
 
 
+
+        self.draw_player_1_hand_info_sec()
+        self.draw_player_2_hand_info_sec()
+        self.draw_player_1_hand_name()
+        self.draw_player_2_hand_name()
+        self.draw_player_1_hand_size()
+        self.draw_player_2_hand_size()
+        self.draw_player_1_deck_info_sec()
+        self.draw_player_2_deck_info_sec()
+        self.draw_player_1_deck_name()
+        self.draw_player_2_deck_name()
+        self.draw_player_1_deck_size()
+        self.draw_player_2_deck_size()
+        self.draw_player_1_grave_info_sec()
+        self.draw_player_2_grave_info_sec()
+        self.draw_player_1_grave_name()
+        self.draw_player_2_grave_name()
+        self.draw_player_1_grave_size()
+        self.draw_player_2_grave_size()
 
 
 
@@ -810,17 +856,37 @@ class Board():
         self.player_1_player_sec = BoardSection(self.display, x, y, w, h, colour)
         self.player_1_player_sec.draw()
 
+    def draw_player_1_name_info_sec(self):
+        x = self.player_1_player_sec.x
+        y = self.player_1_player_sec.y
+        w = self.player_1_player_sec.w
+        h = self.player_1_player_sec.h/4
+        colour = (255,255,255)
+
+        self.player_1_name_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_name_info_sec.draw()
+
+    def draw_player_2_name_info_sec(self):
+        x = self.player_1_name_info_sec.x
+        y = self.player_2_player_sec.y
+        w = self.player_2_player_sec.w
+        h = self.player_1_name_info_sec.h
+        colour = self.player_1_name_info_sec.colour
+
+        self.player_2_name_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_name_info_sec.draw()
+
     def draw_player_1_name(self):
-        x = self.player_1_player_sec.x + self.player_1_player_sec.border_size
-        h = self.player_1_player_sec.h*(3/10)
-        y = self.player_1_player_sec.y + self.player_1_player_sec.border_size
-        w = (self.player_1_player_sec.w - (2*self.player_1_player_sec.border_size)) * (0.7)
-        colour = (80,80,80)
+        x = self.player_1_name_info_sec.x + self.player_1_player_sec.border_size
+        h = self.player_1_name_info_sec.h - (2*self.player_1_name_info_sec.border_size)
+        y = self.player_1_name_info_sec.y + self.player_1_name_info_sec.border_size
+        w = (self.player_1_name_info_sec.w - (2*self.player_1_name_info_sec.border_size)) * (0.7)
+        colour = (177,177,177)
 
         self.player_1_name_sec = BoardSection(self.display, x, y, w, h, colour, False)
         self.player_1_name_sec.draw()
 
-        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
         string = self.player_1.name
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
@@ -829,7 +895,7 @@ class Board():
 
     def draw_player_2_name(self):
         x = self.player_1_name_sec.x
-        y = self.player_2_player_sec.y + self.player_2_player_sec.border_size
+        y = self.player_2_name_info_sec.y + self.player_2_name_info_sec.border_size
         w = self.player_1_name_sec.w
         h = self.player_1_name_sec.h
         colour = self.player_1_name_sec.colour
@@ -837,7 +903,7 @@ class Board():
         self.player_2_name_sec = BoardSection(self.display, x, y, w, h, colour, False)
         self.player_2_name_sec.draw()
 
-        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
         string = self.player_2.name
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
@@ -846,6 +912,37 @@ class Board():
 
     def draw_player_1_life(self):
         x = self.player_1_name_sec.x + self.player_1_name_sec.w
+        y = self.player_1_name_sec.y
+        w = self.player_1_player_sec.w - self.player_1_name_sec.w - (self.player_1_player_sec.border_size*2)
+        h = self.player_1_name_sec.h
+        colour = (255, 255, 255)
+
+        self.player_1_life_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_life_sec.draw()
+
+        life_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(self.player_1.life)
+        life_text = life_font.render(string, True, (0,0,0))
+        life_rec = life_text.get_rect()
+        life_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(life_text, life_rec)
+
+    def draw_player_2_life(self):
+        x = self.player_1_life_sec.x
+        y = self.player_2_name_sec.y
+        w = self.player_1_life_sec.w
+        h = self.player_1_life_sec.h
+        colour = self.player_1_life_sec.colour
+
+        self.player_2_life_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_life_sec.draw()
+
+        life_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(self.player_2.life)
+        life_text = life_font.render(string, True, (0,0,0))
+        life_rec = life_text.get_rect()
+        life_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(life_text, life_rec)
 
     def draw_player_2_player_sec(self):
         x = self.player_1_player_sec.x
@@ -856,6 +953,273 @@ class Board():
 
         self.player_2_player_sec = BoardSection(self.display, x, y, w, h, colour)
         self.player_2_player_sec.draw()
+
+    def draw_player_1_hand_info_sec(self):
+        x = self.player_1_player_sec.x
+        y = self.player_1_name_info_sec.y +self.player_1_name_info_sec.h
+        w = self.player_1_name_info_sec.w
+        h = self.player_1_name_info_sec.h
+        colour = self.player_1_name_info_sec.colour
+
+        self.player_1_hand_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_hand_info_sec.draw()
+
+    def draw_player_2_hand_info_sec(self):
+        x = self.player_1_hand_info_sec.x
+        y = self.player_2_name_info_sec.y + self.player_2_name_info_sec.h
+        w = self.player_1_hand_info_sec.w
+        h = self.player_1_hand_info_sec.h
+        colour = self.player_1_hand_info_sec.colour
+
+        self.player_2_hand_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_hand_info_sec.draw()
+
+    def draw_player_1_hand_name(self):
+        x = self.player_1_name_sec.x
+        y = self.player_1_hand_info_sec.y + self.player_1_hand_info_sec.border_size
+        w = self.player_1_name_sec.w
+        h = self.player_2_name_sec.h
+        colour = self.player_1_name_sec.colour
+
+        self.player_1_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_hand_name.draw()
+
+        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Hand"
+        name_text = name_font.render(string, True, (0,0,0))
+        name_rec = name_text.get_rect()
+        name_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(name_text, name_rec)
+
+    def draw_player_2_hand_name(self):
+        x = self.player_1_hand_name.x
+        y = self.player_2_hand_info_sec.y + self.player_2_hand_info_sec.border_size
+        w = self.player_1_hand_name.w
+        h = self.player_1_hand_name.h
+        colour = self.player_1_hand_name.colour
+
+        self.player_2_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_hand_name.draw()
+
+        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Hand"
+        name_text = name_font.render(string, True, (0,0,0))
+        name_rec = name_text.get_rect()
+        name_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(name_text, name_rec)
+
+    def draw_player_1_hand_size(self):
+        x = self.player_1_life_sec.x
+        y = self.player_1_hand_name.y
+        w = self.player_1_life_sec.w
+        h = self.player_1_life_sec.h
+        colour = self.player_1_life_sec.colour
+
+        self.player_1_hand_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_hand_size.draw()
+
+        hand_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_1.hand))
+        hand_text = hand_font.render(string, True, (0,0,0))
+        hand_rec = hand_text.get_rect()
+        hand_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(hand_text, hand_rec)
+
+    def draw_player_2_hand_size(self):
+        x = self.player_2_life_sec.x
+        y = self.player_2_hand_name.y
+        w = self.player_2_life_sec.w
+        h = self.player_2_life_sec.h
+        colour = self.player_2_life_sec.colour
+
+        self.player_2_hand_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_hand_size.draw()
+
+        hand_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_2.hand))
+        hand_text = hand_font.render(string, True, (0,0,0))
+        hand_rec = hand_text.get_rect()
+        hand_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(hand_text, hand_rec)
+
+    def draw_player_1_deck_info_sec(self):
+        x = self.player_1_hand_info_sec.x
+        y = self.player_1_hand_info_sec.y + self.player_1_hand_info_sec.h
+        w = self.player_1_hand_info_sec.w
+        h = self.player_1_hand_info_sec.h
+        colour = self.player_1_hand_info_sec.colour
+
+        self.player_1_deck_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_deck_info_sec.draw()
+
+    def draw_player_2_deck_info_sec(self):
+        x = self.player_2_hand_info_sec.x
+        y = self.player_2_hand_info_sec.y + self.player_2_hand_info_sec.h
+        w = self.player_2_hand_info_sec.w
+        h = self.player_2_hand_info_sec.h
+        colour = self.player_2_hand_info_sec.colour
+
+        self.player_2_deck_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_deck_info_sec.draw()
+
+    def draw_player_1_deck_name(self):
+        x = self.player_1_hand_name.x
+        y = self.player_1_deck_info_sec.y + self.player_1_deck_info_sec.border_size
+        w = self.player_1_hand_name.w
+        h = self.player_1_hand_name.h
+        colour = self.player_1_hand_name.colour
+
+        self.player_1_deck_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_deck_name.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Deck"
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+    def draw_player_2_deck_name(self):
+        x = self.player_2_hand_name.x
+        y = self.player_2_deck_info_sec.y + self.player_2_deck_info_sec.border_size
+        w = self.player_2_hand_name.w
+        h = self.player_2_hand_name.h
+        colour = self.player_2_hand_name.colour
+
+        self.player_2_deck_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_deck_name.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Deck"
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+    def draw_player_1_deck_size(self):
+        x = self.player_1_life_sec.x
+        y = self.player_1_deck_name.y
+        w = self.player_1_life_sec.w
+        h = self.player_1_life_sec.h
+        colour = self.player_1_life_sec.colour
+
+        self.player_1_deck_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_deck_size.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_1.deck.cards))
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+    def draw_player_2_deck_size(self):
+        x = self.player_2_life_sec.x
+        y = self.player_2_deck_name.y
+        w = self.player_2_life_sec.w
+        h = self.player_2_life_sec.h
+        colour = self.player_2_life_sec.colour
+
+        self.player_2_deck_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_deck_size.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_2.deck.cards))
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+    def draw_player_1_grave_info_sec(self):
+        x = self.player_1_hand_info_sec.x
+        y = self.player_1_deck_info_sec.y + self.player_1_deck_info_sec.h
+        w = self.player_1_hand_info_sec.w
+        h = self.player_1_hand_info_sec.h
+        colour = self.player_1_hand_info_sec.colour
+
+        self.player_1_grave_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_grave_info_sec.draw()
+
+    def draw_player_2_grave_info_sec(self):
+        x = self.player_2_hand_info_sec.x
+        y = self.player_2_deck_info_sec.y + self.player_2_deck_info_sec.h
+        w = self.player_2_hand_info_sec.w
+        h = self.player_2_hand_info_sec.h
+        colour = self.player_2_hand_info_sec.colour
+
+        self.player_2_grave_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_grave_info_sec.draw()
+
+    def draw_player_1_grave_name(self):
+        x = self.player_1_hand_name.x
+        y = self.player_1_grave_info_sec.y + self.player_1_grave_info_sec.border_size
+        w = self.player_1_hand_name.w
+        h = self.player_1_hand_name.h
+        colour = self.player_1_hand_name.colour
+
+        self.player_1_grave_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_grave_name.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Grave"
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+
+    def draw_player_2_grave_name(self):
+        x = self.player_2_hand_name.x
+        y = self.player_2_grave_info_sec.y + self.player_2_grave_info_sec.border_size
+        w = self.player_2_hand_name.w
+        h = self.player_2_hand_name.h
+        colour = self.player_2_hand_name.colour
+
+        self.player_2_grave_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_grave_name.draw()
+
+        deck_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = "Grave"
+        deck_text = deck_font.render(string, True, (0,0,0))
+        deck_rec = deck_text.get_rect()
+        deck_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(deck_text, deck_rec)
+
+    def draw_player_1_grave_size(self):
+        x = self.player_1_life_sec.x
+        y = self.player_1_grave_name.y
+        w = self.player_1_life_sec.w
+        h = self.player_1_life_sec.h
+        colour = self.player_1_life_sec.colour
+
+        self.player_1_grave_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_grave_size.draw()
+
+        hand_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_1.graveyard))
+        hand_text = hand_font.render(string, True, (0,0,0))
+        hand_rec = hand_text.get_rect()
+        hand_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(hand_text, hand_rec)
+
+    def draw_player_2_grave_size(self):
+        x = self.player_2_life_sec.x
+        y = self.player_2_grave_name.y
+        w = self.player_2_life_sec.w
+        h = self.player_2_life_sec.h
+        colour = self.player_2_life_sec.colour
+
+        self.player_2_grave_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_grave_size.draw()
+
+        hand_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.7))
+        string = str(len(self.player_2.graveyard))
+        hand_text = hand_font.render(string, True, (0,0,0))
+        hand_rec = hand_text.get_rect()
+        hand_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(hand_text, hand_rec)
+
+
 
     def draw_card_display_sec(self):
         w = self.player_1_player_sec.w
