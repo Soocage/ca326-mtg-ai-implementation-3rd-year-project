@@ -55,8 +55,6 @@ class Game():
         gameBoard.draw_hand(self.player_2)
         pygame.display.update()
         
-        
-
         self.current_player = random.choice([self.player_1, self.player_2])
 
         print(self.current_player.name)
@@ -180,6 +178,15 @@ class Game():
                     if event.type == pygame.MOUSEBUTTONDOWN:
 
                         if event.button == 1:
+                            print(gameBoard.concede_button_sec.x, pos[0])
+                            if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
+                                self.quit = True
+                                pass_phase = True
+                                
+                            if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
+                                gameBoard.draw_options_menu()
+                                gameBoard.draw_board(self.phase)
+
                             for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos):
                                     print(card.card.name, card.clicked)
@@ -346,7 +353,7 @@ class Game():
 
 
     def draw_screen(self, gameBoard, display):
-        #gameBoard.draw_board(self.phase)
+        gameBoard.draw_board(self.phase)
         board.PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(display)
         board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(display)
