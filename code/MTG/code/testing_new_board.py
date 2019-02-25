@@ -391,6 +391,7 @@ class Board():
         self.draw_player_1_player_sec()
         self.draw_player_2_player_sec()
         self.draw_player_1_name()
+        self.draw_player_2_name()
         self.draw_card_display_sec()
         self.draw_hand(player_1)
 
@@ -504,29 +505,29 @@ class Board():
         x = self.info_box_sec.x + self.info_box_sec.w*(0.05)
 
 
-        player_1_r_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
-        self.player_1_mana_box_r = player_1_r_mana_rec
-        player_1_r_mana_rec.draw()
+        player_1_r_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
+        self.player_1_mana_box_r = player_1_r_mana_sec
+        player_1_r_mana_sec.draw()
 
-        x = player_1_r_mana_rec.x + mana_w
+        x = player_1_r_mana_sec.x + mana_w
 
-        player_1_g_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
-        player_1_g_mana_rec.draw()
+        player_1_g_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
+        player_1_g_mana_sec.draw()
 
-        x = player_1_g_mana_rec.x + mana_w
+        x = player_1_g_mana_sec.x + mana_w
 
-        player_1_u_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
-        player_1_u_mana_rec.draw()
+        player_1_u_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
+        player_1_u_mana_sec.draw()
 
-        x = player_1_u_mana_rec.x + mana_w
+        x = player_1_u_mana_sec.x + mana_w
 
-        player_1_w_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
-        player_1_w_mana_rec.draw()
+        player_1_w_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
+        player_1_w_mana_sec.draw()
 
-        x = player_1_w_mana_rec.x + mana_w
+        x = player_1_w_mana_sec.x + mana_w
 
-        player_1_b_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
-        player_1_b_mana_rec.draw()
+        player_1_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
+        player_1_b_mana_sec.draw()
 
         mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_h*0.5))
 
@@ -536,35 +537,35 @@ class Board():
 
         player_1_r_mana_text = mana_font.render(str(player_1_r), True, (0,0,0))
         player_1_r_mana_rec = player_1_r_mana_text.get_rect()
-        player_1_r_mana_rec.center = ((player_1_r_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_r_mana_rec.center = ((player_1_r_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_1_r_mana_text, player_1_r_mana_rec)
 
         player_1_g = len(re.findall("G", player_1_mana))
 
         player_1_g_mana_text = mana_font.render(str(player_1_g), True, (0,0,0))
         player_1_g_mana_rec = player_1_g_mana_text.get_rect()
-        player_1_g_mana_rec.center = ((player_1_g_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_g_mana_rec.center = ((player_1_g_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_1_g_mana_text, player_1_g_mana_rec)
 
         player_1_u = len(re.findall("U", player_1_mana))
 
         player_1_u_mana_text = mana_font.render(str(player_1_u), True, (0,0,0))
         player_1_u_mana_rec = player_1_u_mana_text.get_rect()
-        player_1_u_mana_rec.center = ((player_1_u_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_u_mana_rec.center = ((player_1_u_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_1_u_mana_text, player_1_u_mana_rec)
 
         player_1_w = len(re.findall("W", player_1_mana))
 
         player_1_w_mana_text = mana_font.render(str(player_1_w), True, (0,0,0))
         player_1_w_mana_rec = player_1_w_mana_text.get_rect()
-        player_1_w_mana_rec.center = ((player_1_w_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_w_mana_rec.center = ((player_1_w_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_1_w_mana_text, player_1_w_mana_rec)
 
         player_1_b = len(re.findall("B", player_1_mana))
 
         player_1_b_mana_text = mana_font.render(str(player_1_b), True, (0,0,0))
         player_1_b_mana_rec = player_1_b_mana_text.get_rect()
-        player_1_b_mana_rec.center = ((player_1_b_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_b_mana_rec.center = ((player_1_b_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_1_b_mana_text, player_1_b_mana_rec)
 
 
@@ -575,31 +576,31 @@ class Board():
 
         x = self.info_box_sec.x + self.info_box_sec.w*(0.05)
 
-        player_2_r_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
-        self.player_2_mana_box_r = player_2_r_mana_rec
-        player_2_r_mana_rec.draw()
+        player_2_r_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
+        self.player_2_mana_box_r = player_2_r_mana_sec
+        player_2_r_mana_sec.draw()
 
-        x = player_2_r_mana_rec.x + mana_w
+        x = player_2_r_mana_sec.x + mana_w
 
-        player_2_g_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
-        player_2_g_mana_rec.draw()
+        player_2_g_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
+        player_2_g_mana_sec.draw()
 
-        x = player_2_g_mana_rec.x + mana_w
+        x = player_2_g_mana_sec.x + mana_w
 
-        player_2_u_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
-        player_2_u_mana_rec.draw()
+        player_2_u_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
+        player_2_u_mana_sec.draw()
 
-        x = player_2_u_mana_rec.x + mana_w
+        x = player_2_u_mana_sec.x + mana_w
 
-        player_2_w_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
-        player_2_w_mana_rec.draw()
+        player_2_w_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
+        player_2_w_mana_sec.draw()
 
-        x = player_2_w_mana_rec.x + mana_w
+        x = player_2_w_mana_sec.x + mana_w
 
-        player_2_b_mana_rec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
-        player_2_b_mana_rec.draw()
+        player_2_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
+        player_2_b_mana_sec.draw()
 
-        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_h*0.5))
+        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_h*0.7))
 
         player_2_mana = self.player_1.mana
 
@@ -607,35 +608,35 @@ class Board():
 
         player_2_r_mana_text = mana_font.render(str(player_2_r), True, (0,0,0))
         player_2_r_mana_rec = player_2_r_mana_text.get_rect()
-        player_2_r_mana_rec.center = ((player_2_r_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_2_r_mana_rec.center = ((player_2_r_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_2_r_mana_text, player_2_r_mana_rec)
 
         player_2_g = len(re.findall("G", player_2_mana))
 
         player_2_g_mana_text = mana_font.render(str(player_2_g), True, (0,0,0))
         player_2_g_mana_rec = player_2_g_mana_text.get_rect()
-        player_2_g_mana_rec.center = ((player_2_g_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_2_g_mana_rec.center = ((player_2_g_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_2_g_mana_text, player_2_g_mana_rec)
 
         player_2_u = len(re.findall("U", player_2_mana))
 
         player_2_u_mana_text = mana_font.render(str(player_2_u), True, (0,0,0))
         player_2_u_mana_rec = player_2_u_mana_text.get_rect()
-        player_2_u_mana_rec.center = ((player_2_u_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_2_u_mana_rec.center = ((player_2_u_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_2_u_mana_text, player_2_u_mana_rec)
 
         player_2_w = len(re.findall("W", player_2_mana))
 
         player_2_w_mana_text = mana_font.render(str(player_2_w), True, (0,0,0))
         player_2_w_mana_rec = player_2_w_mana_text.get_rect()
-        player_2_w_mana_rec.center = ((player_2_w_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_2_w_mana_rec.center = ((player_2_w_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_2_w_mana_text, player_2_w_mana_rec)
 
         player_2_b = len(re.findall("B", player_2_mana))
 
         player_2_b_mana_text = mana_font.render(str(player_2_b), True, (0,0,0))
         player_2_b_mana_rec = player_2_b_mana_text.get_rect()
-        player_2_b_mana_rec.center = ((player_2_b_mana_rec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_2_b_mana_rec.center = ((player_2_b_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
         self.display.blit(player_2_b_mana_text, player_2_b_mana_rec)
 
     def draw_player_1_player_sec(self):
@@ -659,9 +660,31 @@ class Board():
         self.player_1_name_sec.draw()
 
         name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        string = self.player_1.name
+        name_text = name_font.render(string, True, (0,0,0))
+        name_rec = name_text.get_rect()
+        name_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(name_text, name_rec)
 
+    def draw_player_2_name(self):
+        x = self.player_1_name_sec.x
+        y = self.player_2_player_sec.y + self.player_2_player_sec.border_size
+        w = self.player_1_name_sec.w
+        h = self.player_1_name_sec.h
+        colour = self.player_1_name_sec.colour
 
+        self.player_2_name_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_name_sec.draw()
 
+        name_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        string = self.player_2.name
+        name_text = name_font.render(string, True, (0,0,0))
+        name_rec = name_text.get_rect()
+        name_rec.center = (x + (w/2), y + (h/2))
+        self.display.blit(name_text, name_rec)
+
+    def draw_player_1_life(self):
+        x = self.player_1_name_sec.x + self.player_1_name_sec.w
 
     def draw_player_2_player_sec(self):
         x = self.player_1_player_sec.x
