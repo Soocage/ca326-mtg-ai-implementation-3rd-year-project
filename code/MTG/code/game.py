@@ -198,7 +198,6 @@ class Game():
 
                             if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
                                 gameBoard.draw_options_menu()
-                                gameBoard.draw_board(self.phase)
 
                             for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos):
@@ -219,18 +218,25 @@ class Game():
 
                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.clicked == True:
+                                self.draw_screen(gameBoard, display)
                                 card.clicked = False
 
                                 if ((gameBoard.player_hand_sec.x > card.rect.x) or (card.rect.x > gameBoard.player_hand_sec.x + gameBoard.player_hand_sec.w)) or gameBoard.player_hand_sec.y > card.rect.y:
                                     
                                     if card.card.card_type == "Land":
                                         self.play_a_land(card.card, current_player, gameBoard)
+                                        self.draw_screen(gameBoard, display)
+                                        pygame.display.update()
 
                                     if card.card.card_type == "Creature":
                                         self.play_a_creature(card.card, current_player,next_player, gameBoard)
+                                        self.draw_screen(gameBoard, display)
+                                        pygame.display.update()
 
                                     if card.card.card_type == "Sorcery" or card.card.card_type == "Instant":
                                         self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard, display)
+                                        self.draw_screen(gameBoard, display)
+                                        pygame.display.update()
 
                                     if self.check_life() == False:
                                         return
@@ -894,11 +900,12 @@ class Game():
 
 
     def play_a_land(self, card, current_player, gameBoard):
+        
         if current_player.land_flag == False:
             indx = current_player.hand.index(card)
             current_player.land_zone.append(current_player.hand.pop(indx))
             gameBoard.draw_hand(current_player)
-            gameBoard.draw_land(current_player) 
+            gameBoard.draw_land(current_player)
             current_player.land_flag = True
         else:
             gameBoard.draw_hand(current_player)
