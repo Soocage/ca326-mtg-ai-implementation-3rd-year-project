@@ -15,11 +15,17 @@ from screen_res import screen_res
 pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
+cusror = None
+bounce_icon = None
+
+
 
 cursor = pygame.image.load('./images/crosshair.png')
 cursor_w = 100
 cursor_h = 100
 cursor = pygame.transform.scale(cursor, (cursor_w, cursor_h))
+
+
 
 
 class Game():
