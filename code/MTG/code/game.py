@@ -23,7 +23,7 @@ bounce_icon = None
 cursor = pygame.image.load('./images/crosshair.png')
 cursor_w = 100
 cursor_h = 100
-cursor = pygame.transform.scale(cursor, (cursor_w, cursor_h))
+cursor = pygame.transform.smoothscale(cursor, (cursor_w, cursor_h))
 
 
 
@@ -57,9 +57,9 @@ class Game():
         gameBoard.calc_board()
         self.draw_screen(gameBoard)
         gameBoard.draw_hand()
-        
+
         pygame.display.update()
-        
+
         self.current_player = random.choice([self.player_1, self.player_2])
 
         print(self.current_player.name)
@@ -67,7 +67,7 @@ class Game():
         self.game_loop(gameBoard)
 
     def game_loop(self, gameBoard):
-        while self.check_game_status(): 
+        while self.check_game_status():
 
             ########### TURNS LOGIC ################
             self.untap(self.player_1, gameBoard)
@@ -117,7 +117,7 @@ class Game():
 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_3", "rb")
+        f = open("./personal_decks/deck_4", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -126,7 +126,7 @@ class Game():
     def shuffle_deck(self, player):
         shuffle(player.deck.cards)
 
-    def deal_cards(self, player, n):    
+    def deal_cards(self, player, n):
         for i in range(n):
             player.hand.append(player.deck.cards.pop(0))
 
@@ -220,7 +220,7 @@ class Game():
 
                             if gameBoard.player_1_land_sec.x + gameBoard.player_1_land_sec.w > pos[0] > gameBoard.player_1_land_sec.x and gameBoard.player_1_land_sec.y + gameBoard.player_1_land_sec.h > pos[1] > gameBoard.player_1_land_sec.y:
                                 for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
-                                    
+
                                     if land.rect.collidepoint(pos) and land.card.tapped == False:
                                         self.add_mana(current_player, land.card)
                                         gameBoard.tap_mana(land)
@@ -234,7 +234,7 @@ class Game():
                                 card.clicked = False
 
                                 if ((gameBoard.player_hand_sec.x > card.rect.x) or (card.rect.x > gameBoard.player_hand_sec.x + gameBoard.player_hand_sec.w)) or gameBoard.player_hand_sec.y > card.rect.y:
-                                    
+
                                     if card.card.card_type == "Land":
                                         self.play_a_land(card.card, current_player, gameBoard)
 
@@ -274,7 +274,7 @@ class Game():
                             gameBoard.view_card(card)
                             board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
-                            
+
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
@@ -393,6 +393,52 @@ class Game():
         board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
         board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
+    def get_icon(self, w, h, keyword):
+        scale_side = h
+        if w < h:
+            scale_side = w
+
+        if keyword == "Tap":
+            image = pygame.image.load('./images/spell_effects/tap_icon.png')
+
+        elif keyword == "Damage":
+            image = pygame.image.load('./images/spell_effects/damage_icon.png')
+
+        elif keyword == "Bounce":
+            image = pygame.image.load('./images/spell_effects/bounce_icon.png')
+
+        elif keyword == "Haste":
+            image = pygame.image.load('./images/spell_effects/haste_icon.png')
+
+        elif keyword == "Combat_Creature":
+            image = pygame.image.load('./images/spell_effects/combat_creature_icon.png')
+
+        elif keyword == "Gain_life":
+            image = pygame.image.load('./images/spell_effects/cross_icon.png')
+
+        elif keyword == "Protection":
+            image = pygame.image.load('./images/spell_effects/protection_symbol.png')
+
+        elif keyword == "Exile":
+            image = pygame.image.load('./images/spell_effects/exile_icon.png')
+
+        elif keyword == "Destroy":
+            image = pygame.image.load('./images/spell_effects/skull_icon.png')
+
+        elif keyword == "Reanimate":
+            image = pygame.image.load('./images/spell_effects/gravestone_icon.png')
+
+        else:
+            image = pygame.image.load('./images/crosshair.png')
+
+        image_w = int(scale_side*0.7)
+        image_h = image_w
+        image = copy.copy(pygame.transform.smoothscale(image, (image_w, image_h)))
+        return image
+
+
+
+
 
     def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard):
         playable = self.check_mana(player, card)
@@ -485,7 +531,7 @@ class Game():
                                         player.hand.remove(card.card)
                                         player.graveyard.append(card.card)
                                         amt += 1
-                                        
+
 
                         if "opponent" in list_of_targets:
                             if clicked_target == "" or clicked_target == "opponent":
@@ -534,7 +580,7 @@ class Game():
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         player.battlefield.remove(card.card)
                                         player.graveyard.append(card.card)
-                                        
+
                                         resolved = True
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -542,10 +588,25 @@ class Game():
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         opponent.battlefield.remove(card.card)
                                         opponent.graveyard.append(card.card)
-                                        
+
                                         resolved = True
 
                 self.draw_screen(gameBoard)
+
+                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Destroy")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Destroy")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                 pygame.display.update()
 
@@ -578,7 +639,7 @@ class Game():
                                 if card.rect.collidepoint(pos):
                                     if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                                         player.battlefield.remove(card.card)
-                                        
+
                                         resolved = True
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -590,6 +651,21 @@ class Game():
 
 
                 self.draw_screen(gameBoard)
+
+                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Exile")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Exile")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                 pygame.display.update()
 
@@ -625,12 +701,12 @@ class Game():
                 mx, my = pos[0], pos[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        if "player" in list_of_targets:
+                        if "player" in list_of_targets and tmp_1:
                             if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
                                 player.state = "Protection"
                                 resolved = True
 
-                        if "opponent" in list_of_targets:
+                        if "opponent" in list_of_targets and tmp_2:
                             if gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
                                 opponent.state = "Protection"
                                 resolved = True
@@ -655,6 +731,35 @@ class Game():
                                 resolved = True
 
                 self.draw_screen(gameBoard)
+
+                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Protection")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Protection")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
+                if "player" in list_of_targets and tmp_1:
+                    image = self.get_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h, "Protection")
+                    image_rect = image.get_rect()
+                    image_rect.center = ((gameBoard.player_1_player_sec.x + (gameBoard.player_1_player_sec.w/2)), (gameBoard.player_1_player_sec.y + (gameBoard.player_1_player_sec.h/2)))
+                    screen_res.gameDisplay.blit(image, image_rect)
+
+
+                if "opponent" in list_of_targets and tmp_2:
+                    image = self.get_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h, "Protection")
+                    image_rect = image.get_rect()
+                    image_rect.center = ((gameBoard.player_2_player_sec.x + (gameBoard.player_2_player_sec.w/2)), (gameBoard.player_2_player_sec.y + (gameBoard.player_2_player_sec.h/2)))
+                    screen_res.gameDisplay.blit(image, image_rect)
+
+
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                 pygame.display.update()
 
@@ -683,6 +788,14 @@ class Game():
                                 player.life += int(value)
                                 resolved = True
                 self.draw_screen(gameBoard)
+
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        image = self.get_icon(card.rect.w, card.rect.h, "Gain_life")
+                        image_rect = image.get_rect()
+                        image_rect.center = card.rect.center
+                        screen_res.gameDisplay.blit(image, image_rect)
+
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                 pygame.display.update()
 
@@ -777,7 +890,7 @@ class Game():
                 pygame.display.update()
 
     def effect_draw(self, player, gameBoard, value):
-        for i in range (value):
+        for i in range (int(value)):
             self.draw(player, gameBoard)
 
     def effect_tap(self, player, opponent, gameBoard):
@@ -799,6 +912,14 @@ class Game():
 
 
                     self.draw_screen(gameBoard)
+
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_icon(card.rect.w, card.rect.h, "Tap")
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
                     self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                     pygame.display.update()
 
@@ -809,7 +930,7 @@ class Game():
                 resolved = False
         if "opponent" in list_of_targets and "Protection" not in opponent.state:
             resolved = False
-        
+
         while not resolved:
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
@@ -819,7 +940,7 @@ class Game():
 
                         if "opponent" in list_of_targets:
 
-                            if "Protection" not in opponent.state: 
+                            if "Protection" not in opponent.state:
 
                                 if gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
                                     opponent.life -= int(value)
@@ -885,11 +1006,11 @@ class Game():
                     if event.button == 1:
                         if "opponent" in targets:
                             if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-                                
+
                                 resolved = True
                         if "player" in targets:
                             if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-                                
+
                                 resolved = True
                 if event.type == pygame.QUIT:
                     self.my_quit()
@@ -900,7 +1021,7 @@ class Game():
 
 
 
-                                
+
 
     def damage_creature(self, card, damage):
         card.toughness_modifier -= int(damage)
@@ -909,7 +1030,7 @@ class Game():
 
 
     def play_a_land(self, card, current_player, gameBoard):
-        
+
         if current_player.land_flag == False:
             indx = current_player.hand.index(card)
             current_player.land_zone.append(current_player.hand.pop(indx))
@@ -929,7 +1050,7 @@ class Game():
             gameBoard.draw_hand()
             gameBoard.draw_new_battlefield(current_player)
             gameBoard.draw_new_battlefield(next_player)
-              
+
         else:
             gameBoard.draw_hand()
 
