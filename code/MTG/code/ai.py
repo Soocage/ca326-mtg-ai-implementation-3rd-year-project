@@ -26,13 +26,5 @@ class Ai():
                 self.land_flag = True
                 return 
 
-    def play_creature(self, gameBoard):
 
-        available_lands = 0
-        for land in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
-            if land.card.tapped != True:
-                available_lands += 1
-
-        for card in self.hand:
-            if card.card_type == "Creature":
-                a = "b"
+   

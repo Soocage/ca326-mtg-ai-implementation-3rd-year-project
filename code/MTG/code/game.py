@@ -353,9 +353,25 @@ class Game():
                         mana_cost = self.check_creature_cost(card)
 
                         available_lands = []
-                        for land_card in self.player_2.land_zone:
-                            if land_card.tapped == False:
+                        for land_card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                            if land_card.card.tapped == False:
                                 available_lands.append(land_card)
+
+                        if len(available_lands) >= mana_cost:
+                            i = 0
+                            while i < mana_cost:
+                                self.add_mana(current_player, available_lands[i].card)
+                                gameBoard.tap_mana(available_lands[i])
+                                i += 1
+
+                            current_player.battlefield.append(card)
+                            gameBoard.draw_new_battlefield(current_player)
+                            pygame.display.update()
+                            current_player.hand.remove(card)
+
+
+
+
 
 
             self.clear_mana(current_player)
