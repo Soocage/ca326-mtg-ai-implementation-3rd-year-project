@@ -151,8 +151,8 @@ class Board():
         self.pass_button = None
 
 
-    def draw_hand(self, player):
-        cards = player.hand
+    def draw_hand(self):
+        cards = self.player_1.hand
         PLAYER_1_HAND_SPRITE_CARD_GROUP.empty()
         if len(cards) <= 7:
             padding_w = (self.player_hand_sec.w/8)/8
@@ -210,17 +210,17 @@ class Board():
         else:
             PLAYER_2_LAND_SPRITE_CARD_GROUP.empty()
             if len(lands) <= 15:
-                padding_w = (self.player_2_land_box.w/16)/16
-                card_h = (self.player_2_land_box.h/10)*8
+                padding_w = (self.player_2_land_sec.w/16)/16
+                card_h = (self.player_2_land_sec.h/10)*8
                 card_w = (card_h*63)/88
             else:
-                padding_w = (self.player_2_land_box.w/(len(lands)+1))/(len(lands)+2)
-                card_w = (self.player_2_land_box.w/(len(lands)+1))
+                padding_w = (self.player_2_land_sec.w/(len(lands)+1))/(len(lands)+2)
+                card_w = (self.player_2_land_sec.w/(len(lands)+1))
                 card_h = card_w * (88/63)
             i = 0
             while i < len(lands):
-                x = self.player_2_land_box.x + (padding_w*(i+1)) + (card_w*(i))
-                y = self.player_2_land_box.y + (self.player_2_land_box.h - card_h)/2
+                x = self.player_2_land_sec.x + (padding_w*(i+1)) + (card_w*(i))
+                y = self.player_2_land_sec.y + (self.player_2_land_sec.h - card_h)/2
                 land_sprite = CardSprite(lands[i], x, y, card_w, card_h)
                 if lands[i].tapped == True:
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)

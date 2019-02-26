@@ -12,6 +12,7 @@ import pygame
 from button import Button
 import game
 import player
+from screen_res import screen_res
 
 #Colours
 
@@ -39,36 +40,37 @@ clock = pygame.time.Clock()
 
 
 
-def game_intro(gameDisplay, display_size):
-    (display_width, display_height) = display_size
+def game_intro():
+
+    (screen_res.display_width, screen_res.display_height) = screen_res.display_size
     
     logo = pygame.image.load('./images/logo.png')
-    logo_width = int(display_width/2)
-    logo_height = int(display_height/4)
+    logo_width = int(screen_res.display_width/2)
+    logo_height = int(screen_res.display_height/4)
     logo = pygame.transform.scale(logo, (logo_width, logo_height))
 
     #button dimentions
-    button_width = (display_width/4)
-    button_height = (display_height/8)
+    button_width = (screen_res.display_width/4)
+    button_height = (screen_res.display_height/8)
 
     #main menu button positions
-    start_game_button_x = (display_width/2)- (button_width + (display_width/10))
-    start_game_button_y = (display_height/2.5)
+    start_game_button_x = (screen_res.display_width/2)- (button_width + (screen_res.display_width/10))
+    start_game_button_y = (screen_res.display_height/2.5)
 
-    login_button_x = (display_width/2) + (display_width/10)
-    login_button_y = (display_height/2.5)
+    login_button_x = (screen_res.display_width/2) + (screen_res.display_width/10)
+    login_button_y = (screen_res.display_height/2.5)
 
-    option_button_x = (display_width/2)- (button_width + (display_width/10))
-    option_button_y = (display_height/3)*1.75
+    option_button_x = (screen_res.display_width/2)- (button_width + (screen_res.display_width/10))
+    option_button_y = (screen_res.display_height/3)*1.75
 
-    deck_button_x = (display_width/2) + (display_width/10)
-    deck_button_y = (display_height/3)*1.75
+    deck_button_x = (screen_res.display_width/2) + (screen_res.display_width/10)
+    deck_button_y = (screen_res.display_height/3)*1.75
 
-    exit_game_button_x = (display_width/2) - (button_width/2)
-    exit_game_button_y = (display_height/3)*2.25
+    exit_game_button_x = (screen_res.display_width/2) - (button_width/2)
+    exit_game_button_y = (screen_res.display_height/3)*2.25
 
 
-    (display_width, display_height) = display_size 
+    (screen_res.display_width, screen_res.display_height) = screen_res.display_size 
     time.sleep(1)
 
     in_intro = True
@@ -85,8 +87,8 @@ def game_intro(gameDisplay, display_size):
                 if event.key == pygame.K_ESCAPE:
                     my_quit()
 
-        gameDisplay.fill(bg_colour)
-        gameDisplay.blit(logo, ((display_width/2 -(logo_width/2)),(display_height/15)))
+        screen_res.gameDisplay.fill(bg_colour)
+        screen_res.gameDisplay.blit(logo, ((screen_res.display_width/2 -(logo_width/2)),(screen_res.display_height/15)))
 
         fight_vs_ai = Button("Fight Vs Ai",start_game_button_x, start_game_button_y, button_width, button_height, button_blue, hover_button_blue, "play_vs_ai")
 
@@ -98,11 +100,11 @@ def game_intro(gameDisplay, display_size):
 
         login = Button("Login",login_button_x, login_button_y, button_width, button_height, button_blue, hover_button_blue, "login")
 
-        draw_button(fight_vs_ai, display_size, gameDisplay)
-        draw_button(quit, display_size, gameDisplay)
-        draw_button(option, display_size, gameDisplay)
-        draw_button(deck_tool, display_size, gameDisplay)
-        draw_button(login, display_size, gameDisplay)
+        draw_button(fight_vs_ai)
+        draw_button(quit)
+        draw_button(option)
+        draw_button(deck_tool)
+        draw_button(login)
 
         pygame.display.update()
         clock.tick(60)
@@ -110,18 +112,18 @@ def game_intro(gameDisplay, display_size):
 
 
 
-def option(gameDisplay, display_size):
-    (display_width, display_height) = display_size
+def option():
+    (screen_res.display_width, screen_res.display_height) = screen_res.display_size
 
     #define option button dimentions
-    option_button_width = (display_width/4)
-    option_button_height = (display_height/8)
+    option_button_width = (screen_res.display_width/4)
+    option_button_height = (screen_res.display_height/8)
 
     #option border
-    option_box_x = (display_width/6) -10
-    option_box_y = (display_height/6)-10
-    option_box_h = ((display_height/3)*2)+20
-    option_box_w = ((display_width/3)*2)+20
+    option_box_x = (screen_res.display_width/6) -10
+    option_box_y = (screen_res.display_height/6)-10
+    option_box_h = ((screen_res.display_height/3)*2)+20
+    option_box_w = ((screen_res.display_width/3)*2)+20
 
     #option button dimentions
     volume_slider_height = option_box_h /10
@@ -140,7 +142,7 @@ def option(gameDisplay, display_size):
     change_resolution_button_x = (option_box_x) + option_box_w*(1/20)
     change_resolution_button_y = option_box_y + (option_box_h*(1/6)) - (option_button_height/2)
      
-    back_button_x = (display_width/2) - option_button_width/2
+    back_button_x = (screen_res.display_width/2) - option_button_width/2
     back_button_y = option_box_y + (option_box_h*(5/6)) - (option_button_height/2) 
 
     volume_slider_x = (option_box_x + option_box_w - (volume_button_x + option_button_width) * 0.5) + (volume_slider_width/2)
@@ -193,11 +195,11 @@ def option(gameDisplay, display_size):
         current_vol = str(round(pygame.mixer.music.get_volume(), 1))
 
 
-        gameDisplay.fill(bg_colour)     
+        screen_res.gameDisplay.fill(bg_colour)     
 
-        pygame.draw.rect(gameDisplay, black, (option_box_x, option_box_y, option_box_w, option_box_h))
+        pygame.draw.rect(screen_res.gameDisplay, black, (option_box_x, option_box_y, option_box_w, option_box_h))
 
-        pygame.draw.rect(gameDisplay, bright_red, (display_width/6, display_height/6, (display_width/3)*2, (display_height/3)*2))
+        pygame.draw.rect(screen_res.gameDisplay, bright_red, (screen_res.display_width/6, screen_res.display_height/6, (screen_res.display_width/3)*2, (screen_res.display_height/3)*2))
 
         
         change_res = Button("Change resolution",change_resolution_button_x, change_resolution_button_y, option_button_width, option_button_height, button_blue, button_blue)
@@ -225,35 +227,34 @@ def option(gameDisplay, display_size):
         minus = Button("-", minus_button_x, minus_button_y, minus_button_width, minus_button_height, grey, white, "minus")
 
     
-        draw_button(change_res, display_size, gameDisplay)
-        draw_button(back, display_size, gameDisplay)
-        draw_button(volume, display_size, gameDisplay)
-        draw_button(slider, display_size, gameDisplay)
-        draw_button(plus, display_size, gameDisplay)
-        draw_button(minus, display_size, gameDisplay)
-        draw_button(res_1, display_size, gameDisplay)
-        draw_button(res_2, display_size, gameDisplay)
-        draw_button(res_3, display_size, gameDisplay)
-        draw_button(res_4, display_size, gameDisplay)
-        draw_button(res_5, display_size, gameDisplay)
+        draw_button(change_res)
+        draw_button(back)
+        draw_button(volume)
+        draw_button(slider)
+        draw_button(plus)
+        draw_button(minus)
+        draw_button(res_2)
+        draw_button(res_3)
+        draw_button(res_4)
+        draw_button(res_5)
 
         pygame.display.update()
 
 
 
-def deck_tools(gameDisplay, display_size):
+def deck_tools():
     time.sleep(1)
-    (display_width, display_height) = display_size
+    (screen_res.display_width, screen_res.display_height) = screen_res.display_size
 
     #define deck_tools button dimentions
-    deck_tools_button_width = ((display_width/4)/2)
-    deck_tools_button_height = ((display_height/8)/2)
+    deck_tools_button_width = ((screen_res.display_width/4)/2)
+    deck_tools_button_height = ((screen_res.display_height/8)/2)
 
     #deck_tools border
-    deck_tools_box_x = (display_width)*(1/20)
-    deck_tools_box_y = (display_height)*(1/20)
-    deck_tools_box_h = ((display_height)*(18/20))
-    deck_tools_box_w = ((display_width)*(18/20))
+    deck_tools_box_x = (screen_res.display_width)*(1/20)
+    deck_tools_box_y = (screen_res.display_height)*(1/20)
+    deck_tools_box_h = ((screen_res.display_height)*(18/20))
+    deck_tools_box_w = ((screen_res.display_width)*(18/20))
 
     #deck tools button dimentions
     back_button_x = deck_tools_box_x + (deck_tools_box_w / 2) - (deck_tools_button_width / 2)
@@ -280,7 +281,7 @@ def deck_tools(gameDisplay, display_size):
 
 
 
-        pygame.draw.rect(gameDisplay, white, (deck_tools_box_x, deck_tools_box_y, deck_tools_box_w, deck_tools_box_h))
+        pygame.draw.rect(screen_res.gameDisplay, white, (deck_tools_box_x, deck_tools_box_y, deck_tools_box_w, deck_tools_box_h))
 
         exit_button = Button("Exit", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
 
@@ -288,9 +289,9 @@ def deck_tools(gameDisplay, display_size):
 
         previous_button = Button("Previous", previous_button_x, previous_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "previous")
 
-        draw_button(exit_button, display_size, gameDisplay)
-        draw_button(previous_button, display_size, gameDisplay)
-        draw_button(next_button, display_size, gameDisplay)
+        draw_button(exit_button)
+        draw_button(previous_button)
+        draw_button(next_button)
         pygame.display.update()
 
 
@@ -299,7 +300,7 @@ def my_quit():
     quit()
 
 
-def draw_button(name, display_size, gameDisplay):
+def draw_button(name):
     #list of possible resolutions
     res_list = ["1920x1080", "800x600", "1440x900", "1024x768", "1600x900"]
 
@@ -313,24 +314,24 @@ def draw_button(name, display_size, gameDisplay):
     if (name.x + name.w) > mouse[0] > name.x and (name.y + name.h) > mouse[1] > name.y:
 
         #Highlight the button with a lighter shad of blue
-        pygame.draw.rect(gameDisplay, name.a_colour, (name.x, name.y, name.w, name.h))
+        pygame.draw.rect(screen_res.gameDisplay, name.a_colour, (name.x, name.y, name.w, name.h))
 
         if click[0] == 1 and name.action != None:
 
             if name.action == "play_vs_ai":
                 player_1 = player.Player("Sean")
                 player_2 = player.Player("AI_Dusty")
-                game_1 = game.Game(gameDisplay, display_size, player_1, player_2)
+                game_1 = game.Game(player_1, player_2)
                 game_1.run_game()
 
             elif name.action == "quit":
                 my_quit()
             
             elif name.action == "options":
-                option(gameDisplay, display_size)
+                option()
 
             elif name.action == "back":
-                game_intro(gameDisplay, display_size)
+                game_intro()
 
             elif name.action == "plus":
                 increase_volume()
@@ -342,26 +343,26 @@ def draw_button(name, display_size, gameDisplay):
                 for res in res_list:
                     if name.msg == res:
                         new_res = res.split("x")
-                        display_size = (int(new_res[0]) ,int(new_res[1]))
-                        pygame.display.set_mode(display_size)
-                        option(gameDisplay, display_size)
+                        screen_res.display_size = (int(new_res[0]) ,int(new_res[1]))
+                        pygame.display.set_mode(screen_res.display_size)
+                        option()
 
             elif name.action == "deck tools":
-                deck_tools(gameDisplay, display_size)
+                deck_tools()
 
 
 
 
     #Else we are not over the button so it stays as it is
     else:
-        pygame.draw.rect(gameDisplay, name.i_colour, (name.x, name.y, name.w, name.h))
+        pygame.draw.rect(screen_res.gameDisplay, name.i_colour, (name.x, name.y, name.w, name.h))
 
     if  name.msg in res_list:
         smallFont = pygame.font.Font("freesansbold.ttf", int(name.h/7))
         smallText = smallFont.render(name.msg, False, black)
         smallRect = smallText.get_rect()
         smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
-        gameDisplay.blit(smallText, smallRect)
+        screen_res.gameDisplay.blit(smallText, smallRect)
 
     else:
         if name.w > name.h:
@@ -372,7 +373,7 @@ def draw_button(name, display_size, gameDisplay):
         smallText = smallFont.render(name.msg, False, black)
         smallRect = smallText.get_rect()
         smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
-        gameDisplay.blit(smallText, smallRect)
+        screen_res.gameDisplay.blit(smallText, smallRect)
 
 
 def increase_volume():

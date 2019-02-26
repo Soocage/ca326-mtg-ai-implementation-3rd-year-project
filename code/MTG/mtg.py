@@ -10,16 +10,15 @@ import pygame
 import random
 import time
 import main_menu
+from screen_res import screen_res
 
 pygame.init()
 pygame.mixer.init()
 
-display_size = (display_width, display_height)= (1600, 900)
-gameDisplay = pygame.display.set_mode(display_size)
 
 #takes in dimentions of screen and draws the window
 def my_quit():
 	pygame.quit()
 	quit()
 
-main_menu.game_intro(gameDisplay, display_size)
+main_menu.game_intro()
