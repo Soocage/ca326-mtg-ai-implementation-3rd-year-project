@@ -166,11 +166,7 @@ class Game():
 
     def deck_selection(self, player):
 
-<<<<<<< HEAD
-        f = open("./personal_decks/deck_2", "rb")
-=======
         f = open("./personal_decks/deck_1", "rb")
->>>>>>> faf7b1f5e80e8b1c4bff1a95f5a6a80f983fe7cf
         player_deck = pickle.load(f)
         f.close()
 
