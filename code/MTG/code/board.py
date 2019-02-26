@@ -14,7 +14,6 @@ pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
 PLAYER_1_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
-PLAYER_2_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
@@ -22,7 +21,7 @@ PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_SEARCH_SPRITES = pygame.sprite.Group()
 PLAYER_2_SEARCH_SPRITES = pygame.sprite.Group()
 VIEWED_CARD = pygame.sprite.Group()
-
+MULLIGAN_BUTTONS = pygame.sprite.Group()
 
 
 
@@ -58,6 +57,20 @@ class CardSprite(pygame.sprite.Sprite):
             self.clicked = False
             self.card = card
             self.viewed = False
+
+class ButtonSprite(pygame.sprite.Sprite):
+    def __init__ (self, x, y, w, h, action):
+        pygame.sprite.Sprite.__init__(self)
+        self.action = action
+        self.image = pygame.Surface([w,h])
+        self.image.fill(grey)
+        self.image.set_colorkey(WHITE)
+        pygame.draw.rect(self.image, grey, [0,0,w,h])
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 
 
 class BoardSection():
@@ -143,8 +156,51 @@ class Board():
         self.player_2_grave_name = None
         self.player_1_grave_size = None
         self.player_2_grave_size = None
-        self.pass_button = None
+        self.pass_button_sec = None
 
+
+    def draw_mulligan(self):
+        MULLIGAN_BUTTONS.empty()
+        w = self.player_1_play_sec.w * (1/4)
+        h = self.player_1_play_sec.h * (1/4)
+        y = (self.player_1_play_sec.y) - h/2
+
+        x1 = self.player_1_play_sec.x + self.player_1_play_sec.w/2 -w - w*(1/10)
+        yes_button = ButtonSprite(x1,y,w,h,"yes")
+        MULLIGAN_BUTTONS.add(yes_button)
+
+        x2 = self.player_1_play_sec.x + self.player_1_play_sec.w/2+ w*(1/10)
+
+        no_button = ButtonSprite(x2,y,w,h,"no")
+        MULLIGAN_BUTTONS.add(no_button)
+
+        mul_w = w + w + ((x2 - x1)-w)
+        mul_h = h
+        mul_x = x1
+        mul_y = y - mul_h - mul_h*(1/10)
+
+        mul_question = ButtonSprite(mul_x, mul_y, mul_w, mul_h, "mul_question")
+        MULLIGAN_BUTTONS.add(mul_question)
+
+        MULLIGAN_BUTTONS.draw(screen_res.gameDisplay)
+
+        button_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        button_text = button_font.render("Yes", True, (0,0,0))
+        button_rec = button_text.get_rect()
+        button_rec.center = ((x1+(w/2)), (y+(h/2)))
+        screen_res.gameDisplay.blit(button_text, button_rec)
+
+        button_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.5))
+        button_text = button_font.render("No", True, (0,0,0))
+        button_rec = button_text.get_rect()
+        button_rec.center = ((x2+(w/2)), (y+(h/2)))
+        screen_res.gameDisplay.blit(button_text, button_rec)
+
+        button_font = pygame.font.Font(pygame.font.get_default_font(), int(mul_h*0.5))
+        button_text = button_font.render("Would you like to Mulligan?", True, (0,0,0))
+        button_rec = button_text.get_rect()
+        button_rec.center = ((mul_x+(mul_w/2)), (mul_y+(mul_h/2)))
+        screen_res.gameDisplay.blit(button_text, button_rec)
 
     def draw_hand(self):
         cards = self.player_1.hand
@@ -169,6 +225,7 @@ class Board():
             card_sprite = CardSprite(cards[i] , x, y, card_w, card_h)
             temp_sprite_list.append(card_sprite)
             PLAYER_1_HAND_SPRITE_CARD_GROUP.add(card_sprite)
+
             i += 1
         PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
