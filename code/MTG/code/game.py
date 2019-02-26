@@ -9,7 +9,7 @@ from random import shuffle
 import random
 import time
 import copy
-from scree_res import scree_res
+from screen_res import screen_res
 
 
 pygame.init()
@@ -200,7 +200,11 @@ class Game():
                                 gameBoard.draw_options_menu()
                                 gameBoard.calc_board()
                                 gameBoard.draw_board(self.phase)
-                                self.draw_screen(gameBoard)
+                                gameBoard.draw_hand()
+                                gameBoard.draw_land(current_player)
+                                gameBoard.draw_land(next_player)
+                                gameBoard.draw_new_battlefield(current_player)
+                                gameBoard.draw_new_battlefield(next_player)
                                 pygame.display.update()
 
 
@@ -256,32 +260,32 @@ class Game():
                     for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
                             gameBoard.view_card(card)
-                            board.VIEWED_CARD.draw()
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
 
                     for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
                             gameBoard.view_card(card)
-                            board.VIEWED_CARD.draw()
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
                             
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
                             gameBoard.view_card(card)
-                            board.VIEWED_CARD.draw()
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
 
                     for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
                             gameBoard.view_card(card)
-                            board.VIEWED_CARD.draw()
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
 
                     for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
                         if card.rect.collidepoint(pos):
                             gameBoard.view_card(card)
-                            board.VIEWED_CARD.draw()
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
                             pygame.display.update()
 
                 clock.tick(60)
@@ -377,11 +381,11 @@ class Game():
 
     def draw_screen(self, gameBoard):
         gameBoard.draw_board(self.phase)
-        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw()
-        board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw()
-        board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw()
-        board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw()
-        board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw()
+        board.PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        board.PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
 
     def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard):
@@ -742,9 +746,9 @@ class Game():
                                         player.battlefield.remove(card)
                             resolved = True
 
-                self.draw_screen(gameBoard, screen_res.gameDisplay)
-                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2), screen_res.gameDisplay)
-                pygame.screen_res.gameDisplay.update()
+                self.draw_screen(gameBoard)
+                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
+                pygame.display.update()
 
     def effect_haste(self, player, gameBoard, value):
         resolved = True

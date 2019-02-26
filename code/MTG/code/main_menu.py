@@ -323,6 +323,7 @@ def draw_button(name):
                 player_2 = player.Player("AI_Dusty")
                 game_1 = game.Game(player_1, player_2)
                 game_1.run_game()
+                game_intro()
 
             elif name.action == "quit":
                 my_quit()

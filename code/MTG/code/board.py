@@ -69,7 +69,7 @@ class BoardSection():
         self.w = int(w)
         self.h = int(h)
         self.is_border = is_border
-        self.border_size = int(screen.get_width()*0.002)
+        self.border_size = int(screen_res.gameDisplay.get_width()*0.002)
 
     def draw(self):
         if self.is_border:
