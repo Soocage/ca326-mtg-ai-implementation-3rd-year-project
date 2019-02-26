@@ -8,6 +8,7 @@ from button import Button
 import player
 import pickle
 import deck
+from screen_res import screen_res
 
 pygame.init()
 pygame.mixer.init()
@@ -61,8 +62,7 @@ class CardSprite(pygame.sprite.Sprite):
 
 class BoardSection():
 
-    def __init__(self, screen, x, y, w, h, colour, is_border=True):
-        self.screen = screen
+    def __init__(self, x, y, w, h, colour, is_border=True):
         self.colour = colour
         self.x = int(x)
         self.y = int(y)
@@ -73,16 +73,16 @@ class BoardSection():
 
     def draw(self):
         if self.is_border:
-            pygame.draw.rect(self.screen, (0,0,0), [self.x, self.y, self.w , self.h])
-            pygame.draw.rect(self.screen, self.colour, [self.x + self.border_size, self.y + self.border_size, self.w - (2*self.border_size), self.h - (2* self.border_size)])
+            pygame.draw.rect(screen_res.gameDisplay, (0,0,0), [self.x, self.y, self.w , self.h])
+            pygame.draw.rect(screen_res.gameDisplay, self.colour, [self.x + self.border_size, self.y + self.border_size, self.w - (2*self.border_size), self.h - (2* self.border_size)])
 
         else:
-            pygame.draw.rect(self.screen, self.colour, [self.x, self.y, self.w, self.h])
+            pygame.draw.rect(screen_res.gameDisplay, self.colour, [self.x, self.y, self.w, self.h])
 
 
 class PhaseSection(BoardSection):
-    def __init__(self, screen, x, y, w, h, colour, is_border=True, active = False):
-        BoardSection.__init__(self, screen, x, y, w, h, colour, is_border=True)
+    def __init__(self, x, y, w, h, colour, is_border=True, active = False):
+        BoardSection.__init__(self, x, y, w, h, colour, is_border=True)
         self.active = active
         if self.active == True:
             self.colour = (175,123,188)
@@ -90,14 +90,9 @@ class PhaseSection(BoardSection):
 
 class Board():
 
-    def __init__(self, display, display_size, player_1, player_2):
-        self.display = display
-        self.display_size = display_size
-        self.display_w = self.display_size[0]
-        self.display_h = self.display_size[1]
+    def __init__(self, player_1, player_2):
         self.player_1 = player_1
         self.player_2 = player_2
-
         self.menu_box_sec = None
         self.player_hand_sec = None
         self.phase_box_sec = None
@@ -175,7 +170,7 @@ class Board():
             temp_sprite_list.append(card_sprite)
             PLAYER_1_HAND_SPRITE_CARD_GROUP.add(card_sprite)
             i += 1
-        PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(self.display)
+        PLAYER_1_HAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
 
     def draw_land(self, player):
@@ -196,7 +191,7 @@ class Board():
             i = 0
             while i < len(lands):
                 if i == 0:
-                    x = (self.display_size[0]/2) - ((len(lands)-1)*(padding_w/2)) - ((len(lands)-1)*(card_w/2)) - (card_w/2)
+                    x = (screen_res.display_size[0]/2) - ((len(lands)-1)*(padding_w/2)) - ((len(lands)-1)*(card_w/2)) - (card_w/2)
                 else:
                     x = temp_sprite_list[i-1].rect.x + card_w + padding_w
                 y = self.player_1_land_sec.y + (self.player_1_land_sec.h - card_h)/2
@@ -206,7 +201,7 @@ class Board():
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_1_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
-            PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_1_LAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
         else:
             PLAYER_2_LAND_SPRITE_CARD_GROUP.empty()
             if len(lands) <= 15:
@@ -226,7 +221,7 @@ class Board():
                     land_sprite.image = pygame.transform.rotate(land_sprite.image, 90)
                 PLAYER_2_LAND_SPRITE_CARD_GROUP.add(land_sprite)
                 i += 1
-            PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
     def draw_new_battlefield(self, player):
         battlefield_cards = player.battlefield
@@ -245,7 +240,7 @@ class Board():
             i = 0
             while i < len(battlefield_cards):
                 if i == 0:
-                    x = (self.display_size[0]/2) - ((len(battlefield_cards)-1)*(padding_w/2)) - ((len(battlefield_cards)-1)*(card_w/2)) - (card_w/2)
+                    x = (screen_res.display_size[0]/2) - ((len(battlefield_cards)-1)*(padding_w/2)) - ((len(battlefield_cards)-1)*(card_w/2)) - (card_w/2)
                 else:
                     x = temp_sprite_list[i-1].rect.x + card_w + padding_w
                 y = self.player_1_battlefield_sec.y + (self.player_1_battlefield_sec.h/20)
@@ -253,7 +248,7 @@ class Board():
                 temp_sprite_list.append(battlefield_card_sprite)
                 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(battlefield_card_sprite)
                 i += 1
-            PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
         else:
             PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
             if len(battlefield_cards) <= 20:
@@ -271,12 +266,12 @@ class Board():
                 battlefield_card_sprite = CardSprite(battlefield_cards[i], x, y, card_w, card_h)
                 PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.add(battlefield_card_sprite)
                 i += 1
-            PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(self.display)
+            PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
     def draw_search_land(self, player):
         LAND_CARD_SPRITE_GROUP = pygame.sprite.Group()
         pygame.mouse.set_visible(True)
-        (display_width, display_height) = self.display_size
+        (display_width, display_height) = screen_res.display_size
 
 
         #draw_search border
@@ -296,7 +291,7 @@ class Board():
             if card.card_type == "Land":
                 land_cards.append(card)
 
-        pygame.draw.rect(self.display, (255,255,255), (draw_search_box_x, draw_search_box_y, draw_search_box_w, draw_search_box_h))
+        pygame.draw.rect(screen_res.gameDisplay, (255,255,255), (draw_search_box_x, draw_search_box_y, draw_search_box_w, draw_search_box_h))
 
         row_1 = []
         row_2 = []
@@ -368,7 +363,7 @@ class Board():
             LAND_CARD_SPRITE_GROUP.add(land_sprite)
             i += 1
 
-        LAND_CARD_SPRITE_GROUP.draw(self.display)
+        LAND_CARD_SPRITE_GROUP.draw(screen_res.gameDisplay)
 
         pygame.display.update()
         return LAND_CARD_SPRITE_GROUP
@@ -443,7 +438,7 @@ class Board():
     def draw_board(self, active_phase):
         player_1 = self.player_1
         player_2 = self.player_2
-        display = self.display
+        display = screen_res.gameDisplay
 
         display.fill((255,255,255))
         self.draw_menu_box_section()
@@ -498,7 +493,7 @@ class Board():
         pass_button_text = pass_font.render(("Pass"), True, (0,0,0))
         pass_button_rec = pass_button_text.get_rect()
         pass_button_rec.center = ((self.pass_button_sec.x+(self.pass_button_sec.w/2)), (self.pass_button_sec.y+(self.pass_button_sec.h/2)))
-        self.display.blit(pass_button_text, pass_button_rec)
+        screen_res.gameDisplay.blit(pass_button_text, pass_button_rec)
 
     def calc_pass_button(self):
         pass_button_w = self.phase_box_sec.w/7
@@ -509,7 +504,7 @@ class Board():
 
         pass_button_colour =  (48,203,216)
 
-        self.pass_button_sec = BoardSection(self.display, pass_button_sec_x, pass_button_sec_y, pass_button_w, pass_button_h, pass_button_colour, True)
+        self.pass_button_sec = BoardSection(pass_button_sec_x, pass_button_sec_y, pass_button_w, pass_button_h, pass_button_colour, True)
 
 
 
@@ -541,37 +536,37 @@ class Board():
 
         if active_phase == "untap":
             active = True
-        untap_button = PhaseSection(self.display, untap_phase_sec_x, untap_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        untap_button = PhaseSection(untap_phase_sec_x, untap_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         untap_button.draw()
         active = False
 
         if active_phase == "draw":
             active = True
-        draw_button = PhaseSection(self.display, draw_phase_sec_x, draw_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        draw_button = PhaseSection(draw_phase_sec_x, draw_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         draw_button.draw()
         active = False
 
         if active_phase == "main_1":
             active = True
-        main_1_button = PhaseSection(self.display, main_1_phase_sec_x, main_1_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        main_1_button = PhaseSection(main_1_phase_sec_x, main_1_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         main_1_button.draw()
         active = False
 
         if active_phase == "combat":
             active = True
-        combat_button = PhaseSection(self.display, combat_phase_sec_x, combat_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        combat_button = PhaseSection(combat_phase_sec_x, combat_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         combat_button.draw()
         active = False
 
         if active_phase == "main_2":
             active = True
-        main_2_button = PhaseSection(self.display, main_2_phase_sec_x, main_2_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        main_2_button = PhaseSection(main_2_phase_sec_x, main_2_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         main_2_button.draw()
         active = False
 
         if active_phase == "end":
             active = True
-        end_button = PhaseSection(self.display, end_phase_sec_x, end_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
+        end_button = PhaseSection(end_phase_sec_x, end_phase_sec_y, phase_button_w, phase_button_h, phase_button_colour, True, active)
         end_button.draw()
         active = False
 
@@ -580,42 +575,42 @@ class Board():
         untap_phase_text = phase_font.render(("Untap"), True, (0,0,0))
         untap_phase_rec = untap_phase_text.get_rect()
         untap_phase_rec.center = ((untap_phase_sec_x+(phase_button_w/2)), (untap_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(untap_phase_text, untap_phase_rec)
+        screen_res.gameDisplay.blit(untap_phase_text, untap_phase_rec)
 
         draw_phase_text = phase_font.render(("Draw"), True, (0,0,0))
         draw_phase_rec = draw_phase_text.get_rect()
         draw_phase_rec.center = ((draw_phase_sec_x+(phase_button_w/2)), (draw_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(draw_phase_text, draw_phase_rec)
+        screen_res.gameDisplay.blit(draw_phase_text, draw_phase_rec)
 
         main_1_phase_text = phase_font.render(("Main 1"), True, (0,0,0))
         main_1_phase_rec = main_1_phase_text.get_rect()
         main_1_phase_rec.center = ((main_1_phase_sec_x+(phase_button_w/2)), (main_1_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(main_1_phase_text, main_1_phase_rec)
+        screen_res.gameDisplay.blit(main_1_phase_text, main_1_phase_rec)
 
         combat_phase_text = phase_font.render(("Combat"), True, (0,0,0))
         combat_phase_rec = combat_phase_text.get_rect()
         combat_phase_rec.center = ((combat_phase_sec_x+(phase_button_w/2)), (combat_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(combat_phase_text, combat_phase_rec)
+        screen_res.gameDisplay.blit(combat_phase_text, combat_phase_rec)
 
         main_2_phase_text = phase_font.render(("Main 2"), True, (0,0,0))
         main_2_phase_rec = main_2_phase_text.get_rect()
         main_2_phase_rec.center = ((main_2_phase_sec_x+(phase_button_w/2)), (main_2_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(main_2_phase_text, main_2_phase_rec)
+        screen_res.gameDisplay.blit(main_2_phase_text, main_2_phase_rec)
 
         end_phase_text = phase_font.render(("End"), True, (0,0,0))
         end_phase_rec = end_phase_text.get_rect()
         end_phase_rec.center = ((end_phase_sec_x+(phase_button_w/2)), (end_phase_sec_y+(phase_button_h/2)))
-        self.display.blit(end_phase_text, end_phase_rec)
+        screen_res.gameDisplay.blit(end_phase_text, end_phase_rec)
 
 
     def calc_menu_box_section(self):
         menu_box_x = 0
-        menu_box_y = self.display_h * (13/16)
-        menu_box_w = self.display_w * (1/7)
-        menu_box_h = self.display_h * (3/16)
+        menu_box_y = screen_res.display_height * (13/16)
+        menu_box_w = screen_res.display_width * (1/7)
+        menu_box_h = screen_res.display_height * (3/16)
         menu_box_colour = (125,80,2)
 
-        self.menu_box_sec = BoardSection(self.display, menu_box_x, menu_box_y, menu_box_w, menu_box_h, menu_box_colour, False)
+        self.menu_box_sec = BoardSection(menu_box_x, menu_box_y, menu_box_w, menu_box_h, menu_box_colour, False)
 
     def draw_menu_box_section(self):
         self.menu_box_sec.draw()
@@ -629,7 +624,7 @@ class Board():
         options_button_h = self.menu_box_sec.h * (1/4)
         options_button_colour = (177,177,177)
 
-        self.options_button_sec = BoardSection(self.display, options_button_x, options_button_y, options_button_w, options_button_h, options_button_colour, True)
+        self.options_button_sec = BoardSection(options_button_x, options_button_y, options_button_w, options_button_h, options_button_colour, True)
 
     def draw_options_button(self):
         self.options_button_sec.draw()
@@ -639,7 +634,7 @@ class Board():
         options_button_text = menu_font.render(("Options"), True, (0,0,0))
         options_button_rec = options_button_text.get_rect()
         options_button_rec.center = ((self.options_button_sec.x+(self.options_button_sec.w /2)), (self.options_button_sec.y+(self.options_button_sec.h/2)))
-        self.display.blit(options_button_text, options_button_rec)
+        screen_res.gameDisplay.blit(options_button_text, options_button_rec)
 
 
     def calc_concede_button(self):
@@ -649,7 +644,7 @@ class Board():
         concede_button_h = self.menu_box_sec.h * (1/4)
         concede_button_colour = (177,177,177)
 
-        self.concede_button_sec = BoardSection(self.display, concede_button_x, concede_button_y, concede_button_w, concede_button_h, concede_button_colour, True)
+        self.concede_button_sec = BoardSection(concede_button_x, concede_button_y, concede_button_w, concede_button_h, concede_button_colour, True)
 
     def draw_concede_button(self):
         self.concede_button_sec.draw()
@@ -659,29 +654,29 @@ class Board():
         concede_button_text = menu_font.render(("Concede"), True, (0,0,0))
         concede_button_rec = concede_button_text.get_rect()
         concede_button_rec.center = ((self.concede_button_sec.x+(self.concede_button_sec.w /2)), (self.concede_button_sec.y+(self.concede_button_sec.h/2)))
-        self.display.blit(concede_button_text, concede_button_rec)
+        screen_res.gameDisplay.blit(concede_button_text, concede_button_rec)
 
 
     def calc_player_hand_section(self):
         hand_section_x = self.menu_box_sec.x + self.menu_box_sec.w
         hand_section_y = self.menu_box_sec.y
-        hand_section_w = self.display_w - self.menu_box_sec.w
+        hand_section_w = screen_res.display_width - self.menu_box_sec.w
         hand_section_h = self.menu_box_sec.h
         hand_section_colour = (199,125,3)
 
-        self.player_hand_sec = BoardSection(self.display, hand_section_x, hand_section_y, hand_section_w, hand_section_h, hand_section_colour)
+        self.player_hand_sec = BoardSection(hand_section_x, hand_section_y, hand_section_w, hand_section_h, hand_section_colour)
 
     def draw_player_hand_section(self):
         self.player_hand_sec.draw()
 
     def calc_phase_box(self):
         phase_box_x = self.player_hand_sec.x
-        phase_box_h = self.display_h * (1/16)
+        phase_box_h = screen_res.display_height * (1/16)
         phase_box_y = self.player_hand_sec.y - phase_box_h
         phase_box_w = self.player_hand_sec.w
         phase_box_colour = WHITE
 
-        self.phase_box_sec = BoardSection(self.display, phase_box_x, phase_box_y, phase_box_w, phase_box_h, phase_box_colour)
+        self.phase_box_sec = BoardSection(phase_box_x, phase_box_y, phase_box_w, phase_box_h, phase_box_colour)
 
     def draw_phase_box(self):
         self.phase_box_sec.draw()
@@ -689,11 +684,11 @@ class Board():
     def calc_info_box(self):
         info_box_x = 0
         info_box_y = 0
-        info_box_h = self.display_h * (13/16)
+        info_box_h = screen_res.display_height * (13/16)
         info_box_w = self.menu_box_sec.w
         info_box_colour = (125,80,2)
 
-        self.info_box_sec = BoardSection(self.display, info_box_x, info_box_y, info_box_w, info_box_h, info_box_colour)
+        self.info_box_sec = BoardSection(info_box_x, info_box_y, info_box_w, info_box_h, info_box_colour)
 
     def draw_info_box(self):
         self.info_box_sec.draw()
@@ -701,11 +696,11 @@ class Board():
 
     def calc_player_1_play_sec(self):
         x = self.player_hand_sec.x
-        h = ((self.display_h - (self.player_hand_sec.h + self.phase_box_sec.h)) / 2)
+        h = ((screen_res.display_height - (self.player_hand_sec.h + self.phase_box_sec.h)) / 2)
         y = self.phase_box_sec.y - h
         w = self.phase_box_sec.w
 
-        self.player_1_play_sec = BoardSection(self.display, x, y, w, h, (120,120,120))
+        self.player_1_play_sec = BoardSection(x, y, w, h, (120,120,120))
 
 
     def draw_player_1_play_sec(self):
@@ -713,24 +708,24 @@ class Board():
 
     def calc_player_1_land_sec(self):
         x = self.phase_box_sec.x + (self.phase_box_sec.border_size)
-        h = ((self.display_h - (self.player_hand_sec.h + self.phase_box_sec.h))/2)*(7/20)
+        h = ((screen_res.display_height - (self.player_hand_sec.h + self.phase_box_sec.h))/2)*(7/20)
         y = self.phase_box_sec.y - h
         w = self.phase_box_sec.w - (self.phase_box_sec.border_size*2)
         colour = (251,185,74)
 
-        self.player_1_land_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_land_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_land_sec(self):
         self.player_1_land_sec.draw()
 
     def calc_player_1_battlefield(self):
         player_1_battlefield_x = self.player_1_land_sec.x
-        player_1_battlefield_h = ((self.display_h - (self.player_hand_sec.h + self.phase_box_sec.h)) / 2) - self.player_1_land_sec.h - self.player_1_play_sec.border_size
+        player_1_battlefield_h = ((screen_res.display_height - (self.player_hand_sec.h + self.phase_box_sec.h)) / 2) - self.player_1_land_sec.h - self.player_1_play_sec.border_size
         player_1_battlefield_y = self.player_1_land_sec.y - player_1_battlefield_h
         player_1_battlefield_w = self.player_1_land_sec.w
         player_1_battlefield_colour = colour = (251,185,74)
 
-        self.player_1_battlefield_sec = BoardSection(self.display, player_1_battlefield_x, player_1_battlefield_y, player_1_battlefield_w, player_1_battlefield_h, player_1_battlefield_colour, False)
+        self.player_1_battlefield_sec = BoardSection(player_1_battlefield_x, player_1_battlefield_y, player_1_battlefield_w, player_1_battlefield_h, player_1_battlefield_colour, False)
 
 
     def draw_player_1_battlefield(self):
@@ -743,7 +738,7 @@ class Board():
         w = self.player_1_play_sec.w
         h = self.player_1_play_sec.h
 
-        self.player_2_play_sec = BoardSection(self.display, x, y, w, h, (11,11,11))
+        self.player_2_play_sec = BoardSection(x, y, w, h, (11,11,11))
 
     def draw_player_2_play_sec(self):
         self.player_2_play_sec.draw()
@@ -755,7 +750,7 @@ class Board():
         h = self.player_1_land_sec.h
         colour = (251,185,74)
 
-        self.player_2_land_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_land_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_land_sec(self):
         self.player_2_land_sec.draw()
@@ -768,7 +763,7 @@ class Board():
         player_2_battlefield_w = self.player_2_land_sec.w
         player_2_battlefield_colour = (251,185,74)
 
-        self.player_2_battlefield_sec = BoardSection(self.display, player_2_battlefield_x, player_2_battlefield_y, player_2_battlefield_w, player_2_battlefield_h, player_2_battlefield_colour, False)
+        self.player_2_battlefield_sec = BoardSection(player_2_battlefield_x, player_2_battlefield_y, player_2_battlefield_w, player_2_battlefield_h, player_2_battlefield_colour, False)
 
     def draw_player_2_battlefield(self):
         self.player_2_battlefield_sec.draw()
@@ -783,28 +778,28 @@ class Board():
         x = self.info_box_sec.x + self.info_box_sec.w*(0.05)
 
 
-        player_1_r_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
+        player_1_r_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (200,0,0))
         self.player_1_mana_box_r = player_1_r_mana_sec
 
 
         x = player_1_r_mana_sec.x + mana_w
 
-        player_1_g_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
+        player_1_g_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (0,200,0))
         self.player_1_mana_box_g = player_1_g_mana_sec
 
         x = player_1_g_mana_sec.x + mana_w
 
-        player_1_u_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
+        player_1_u_mana_sec = BoardSection(x, mana_y, mana_w, mana_h,(0,102,204))
         self.player_1_mana_box_u = player_1_u_mana_sec
 
         x = player_1_u_mana_sec.x + mana_w
 
-        player_1_w_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
+        player_1_w_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (255,255,204))
         self.player_1_mana_box_w = player_1_w_mana_sec
 
         x = player_1_w_mana_sec.x + mana_w
 
-        player_1_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
+        player_1_b_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (122,0,122))
         self.player_1_mana_box_b = player_1_b_mana_sec
 
     def draw_player_1_mana_sec(self):
@@ -823,35 +818,35 @@ class Board():
         player_1_r_mana_text = mana_font.render(str(player_1_r), True, (0,0,0))
         player_1_r_mana_rec = player_1_r_mana_text.get_rect()
         player_1_r_mana_rec.center = ((self.player_1_mana_box_r.x+(self.player_1_mana_box_r.w/2)), (self.player_1_mana_box_r.y+(self.player_1_mana_box_r.h/2)))
-        self.display.blit(player_1_r_mana_text, player_1_r_mana_rec)
+        screen_res.gameDisplay.blit(player_1_r_mana_text, player_1_r_mana_rec)
 
         player_1_g = len(re.findall("G", player_1_mana))
 
         player_1_g_mana_text = mana_font.render(str(player_1_g), True, (0,0,0))
         player_1_g_mana_rec = player_1_g_mana_text.get_rect()
         player_1_g_mana_rec.center = ((self.player_1_mana_box_g.x+(self.player_1_mana_box_g.w/2)), (self.player_1_mana_box_g.y+(self.player_1_mana_box_g.h/2)))
-        self.display.blit(player_1_g_mana_text, player_1_g_mana_rec)
+        screen_res.gameDisplay.blit(player_1_g_mana_text, player_1_g_mana_rec)
 
         player_1_u = len(re.findall("U", player_1_mana))
 
         player_1_u_mana_text = mana_font.render(str(player_1_u), True, (0,0,0))
         player_1_u_mana_rec = player_1_u_mana_text.get_rect()
         player_1_u_mana_rec.center = ((self.player_1_mana_box_u.x+(self.player_1_mana_box_u.w/2)), (self.player_1_mana_box_u.y+(self.player_1_mana_box_u.h/2)))
-        self.display.blit(player_1_u_mana_text, player_1_u_mana_rec)
+        screen_res.gameDisplay.blit(player_1_u_mana_text, player_1_u_mana_rec)
 
         player_1_w = len(re.findall("W", player_1_mana))
 
         player_1_w_mana_text = mana_font.render(str(player_1_w), True, (0,0,0))
         player_1_w_mana_rec = player_1_w_mana_text.get_rect()
         player_1_w_mana_rec.center = ((self.player_1_mana_box_w.x+(self.player_1_mana_box_w.w/2)), (self.player_1_mana_box_w.y+(self.player_1_mana_box_w.h/2)))
-        self.display.blit(player_1_w_mana_text, player_1_w_mana_rec)
+        screen_res.gameDisplay.blit(player_1_w_mana_text, player_1_w_mana_rec)
 
         player_1_b = len(re.findall("B", player_1_mana))
 
         player_1_b_mana_text = mana_font.render(str(player_1_b), True, (0,0,0))
         player_1_b_mana_rec = player_1_b_mana_text.get_rect()
         player_1_b_mana_rec.center = ((self.player_1_mana_box_b.x+(self.player_1_mana_box_b.w/2)), (self.player_1_mana_box_b.y+(self.player_1_mana_box_b.h/2)))
-        self.display.blit(player_1_b_mana_text, player_1_b_mana_rec)
+        screen_res.gameDisplay.blit(player_1_b_mana_text, player_1_b_mana_rec)
 
     def calc_player_2_mana_sec(self):
         mana_w = (self.info_box_sec.w*(0.90))/5
@@ -860,24 +855,24 @@ class Board():
 
         x = self.info_box_sec.x + self.info_box_sec.w*(0.05)
 
-        player_2_r_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
+        player_2_r_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (200,0,0))
         self.player_2_mana_box_r = player_2_r_mana_sec
 
         x = player_2_r_mana_sec.x + mana_w
 
-        player_2_g_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (0,200,0))
+        player_2_g_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (0,200,0))
         self.player_2_mana_box_g = player_2_g_mana_sec
         x = player_2_g_mana_sec.x + mana_w
 
-        player_2_u_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h,(0,102,204))
+        player_2_u_mana_sec = BoardSection(x, mana_y, mana_w, mana_h,(0,102,204))
         self.player_2_mana_box_u = player_2_u_mana_sec
         x = player_2_u_mana_sec.x + mana_w
 
-        player_2_w_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (255,255,204))
+        player_2_w_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (255,255,204))
         self.player_2_mana_box_w = player_2_w_mana_sec
         x = player_2_w_mana_sec.x + mana_w
 
-        player_2_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
+        player_2_b_mana_sec = BoardSection(x, mana_y, mana_w, mana_h, (122,0,122))
         self.player_2_mana_box_b = player_2_b_mana_sec
 
     def draw_player_2_mana_sec(self):
@@ -895,35 +890,35 @@ class Board():
         player_2_r_mana_text = mana_font.render(str(player_2_r), True, (0,0,0))
         player_2_r_mana_rec = player_2_r_mana_text.get_rect()
         player_2_r_mana_rec.center = ((self.player_2_mana_box_r.x+(self.player_2_mana_box_r.w/2)), (self.player_2_mana_box_r.y+(self.player_2_mana_box_r.h/2)))
-        self.display.blit(player_2_r_mana_text, player_2_r_mana_rec)
+        screen_res.gameDisplay.blit(player_2_r_mana_text, player_2_r_mana_rec)
 
         player_2_g = len(re.findall("G", player_2_mana))
 
         player_2_g_mana_text = mana_font.render(str(player_2_g), True, (0,0,0))
         player_2_g_mana_rec = player_2_g_mana_text.get_rect()
         player_2_g_mana_rec.center = ((self.player_2_mana_box_g.x+(self.player_2_mana_box_g.w/2)), (self.player_2_mana_box_g.y+(self.player_2_mana_box_g.h/2)))
-        self.display.blit(player_2_g_mana_text, player_2_g_mana_rec)
+        screen_res.gameDisplay.blit(player_2_g_mana_text, player_2_g_mana_rec)
 
         player_2_u = len(re.findall("U", player_2_mana))
 
         player_2_u_mana_text = mana_font.render(str(player_2_u), True, (0,0,0))
         player_2_u_mana_rec = player_2_u_mana_text.get_rect()
         player_2_u_mana_rec.center = (self.player_2_mana_box_u.x+(self.player_2_mana_box_u.w/2)), (self.player_2_mana_box_u.y+(self.player_2_mana_box_u.h/2))
-        self.display.blit(player_2_u_mana_text, player_2_u_mana_rec)
+        screen_res.gameDisplay.blit(player_2_u_mana_text, player_2_u_mana_rec)
 
         player_2_w = len(re.findall("W", player_2_mana))
 
         player_2_w_mana_text = mana_font.render(str(player_2_w), True, (0,0,0))
         player_2_w_mana_rec = player_2_w_mana_text.get_rect()
         player_2_w_mana_rec.center = (self.player_2_mana_box_w.x+(self.player_2_mana_box_w.w/2)), (self.player_2_mana_box_w.y+(self.player_2_mana_box_w.h/2))
-        self.display.blit(player_2_w_mana_text, player_2_w_mana_rec)
+        screen_res.gameDisplay.blit(player_2_w_mana_text, player_2_w_mana_rec)
 
         player_2_b = len(re.findall("B", player_2_mana))
 
         player_2_b_mana_text = mana_font.render(str(player_2_b), True, (0,0,0))
         player_2_b_mana_rec = player_2_b_mana_text.get_rect()
         player_2_b_mana_rec.center = ((self.player_2_mana_box_b.x+(self.player_2_mana_box_b.w/2)), (self.player_2_mana_box_b.y+(self.player_2_mana_box_b.h/2)))
-        self.display.blit(player_2_b_mana_text, player_2_b_mana_rec)
+        screen_res.gameDisplay.blit(player_2_b_mana_text, player_2_b_mana_rec)
 
 
     def calc_player_1_player_sec(self):
@@ -933,7 +928,7 @@ class Board():
         y = self.player_1_mana_box_r.y - self.info_box_sec.w*(0.05) - h
         colour = (122,122,122)
 
-        self.player_1_player_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_player_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_1_player_sec(self):
         self.player_1_player_sec.draw()
@@ -946,7 +941,7 @@ class Board():
         h = self.player_1_player_sec.h/4
         colour = (255,255,255)
 
-        self.player_1_name_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_name_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_1_name_info_sec(self):
         self.player_1_name_info_sec.draw()
@@ -959,7 +954,7 @@ class Board():
         h = self.player_1_name_info_sec.h
         colour = self.player_1_name_info_sec.colour
 
-        self.player_2_name_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_name_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_2_name_info_sec(self):
         self.player_2_name_info_sec.draw()
@@ -971,7 +966,7 @@ class Board():
         w = (self.player_1_name_info_sec.w - (2*self.player_1_name_info_sec.border_size)) * (0.7)
         colour = (177,177,177)
 
-        self.player_1_name_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_name_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_name(self):
         self.player_1_name_sec.draw()
@@ -981,7 +976,7 @@ class Board():
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
         name_rec.center = (self.player_1_name_sec.x + (self.player_1_name_sec.w/2), self.player_1_name_sec.y + (self.player_1_name_sec.h/2))
-        self.display.blit(name_text, name_rec)
+        screen_res.gameDisplay.blit(name_text, name_rec)
 
 
     def calc_player_2_name(self):
@@ -991,7 +986,7 @@ class Board():
         h = self.player_1_name_sec.h
         colour = self.player_1_name_sec.colour
 
-        self.player_2_name_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_name_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_name(self):
         self.player_2_name_sec.draw()
@@ -1001,7 +996,7 @@ class Board():
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
         name_rec.center = (self.player_2_name_sec.x + (self.player_2_name_sec.w/2), self.player_2_name_sec.y + (self.player_2_name_sec.h/2))
-        self.display.blit(name_text, name_rec)
+        screen_res.gameDisplay.blit(name_text, name_rec)
 
     def calc_player_1_life(self):
         x = self.player_1_name_sec.x + self.player_1_name_sec.w
@@ -1010,7 +1005,7 @@ class Board():
         h = self.player_1_name_sec.h
         colour = (255, 255, 255)
 
-        self.player_1_life_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_life_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_life(self):
         self.player_1_life_sec.draw()
@@ -1020,7 +1015,7 @@ class Board():
         life_text = life_font.render(string, True, (0,0,0))
         life_rec = life_text.get_rect()
         life_rec.center = (self.player_1_life_sec.x + (self.player_1_life_sec.w/2), self.player_1_life_sec.y + (self.player_1_life_sec.h/2))
-        self.display.blit(life_text, life_rec)
+        screen_res.gameDisplay.blit(life_text, life_rec)
 
 
     def calc_player_2_life(self):
@@ -1030,7 +1025,7 @@ class Board():
         h = self.player_1_life_sec.h
         colour = self.player_1_life_sec.colour
 
-        self.player_2_life_sec = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_life_sec = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_life(self):
         self.player_2_life_sec.draw()
@@ -1040,7 +1035,7 @@ class Board():
         life_text = life_font.render(string, True, (0,0,0))
         life_rec = life_text.get_rect()
         life_rec.center = (self.player_2_life_sec.x + (self.player_2_life_sec.w/2), self.player_2_life_sec.y + (self.player_2_life_sec.h/2))
-        self.display.blit(life_text, life_rec)
+        screen_res.gameDisplay.blit(life_text, life_rec)
 
 
     def calc_player_2_player_sec(self):
@@ -1050,7 +1045,7 @@ class Board():
         h = self.player_1_player_sec.h
         colour = self.player_1_player_sec.colour
 
-        self.player_2_player_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_player_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_2_player_sec(self):
         self.player_2_player_sec.draw()
@@ -1062,7 +1057,7 @@ class Board():
         h = self.player_1_name_info_sec.h
         colour = self.player_1_name_info_sec.colour
 
-        self.player_1_hand_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_hand_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_1_hand_info_sec(self):
         self.player_1_hand_info_sec.draw()
@@ -1075,7 +1070,7 @@ class Board():
         h = self.player_1_hand_info_sec.h
         colour = self.player_1_hand_info_sec.colour
 
-        self.player_2_hand_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_hand_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_2_hand_info_sec(self):
         self.player_2_hand_info_sec.draw()
@@ -1087,7 +1082,7 @@ class Board():
         h = self.player_2_name_sec.h
         colour = self.player_1_name_sec.colour
 
-        self.player_1_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_hand_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_hand_name(self):
         self.player_1_hand_name.draw()
@@ -1097,7 +1092,7 @@ class Board():
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
         name_rec.center = (self.player_1_hand_name.x + (self.player_1_hand_name.w/2), self.player_1_hand_name.y + (self.player_1_hand_name.h/2))
-        self.display.blit(name_text, name_rec)
+        screen_res.gameDisplay.blit(name_text, name_rec)
 
     def calc_player_2_hand_name(self):
         x = self.player_1_hand_name.x
@@ -1106,7 +1101,7 @@ class Board():
         h = self.player_1_hand_name.h
         colour = self.player_1_hand_name.colour
 
-        self.player_2_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_hand_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_hand_name(self):
         self.player_2_hand_name.draw()
@@ -1116,7 +1111,7 @@ class Board():
         name_text = name_font.render(string, True, (0,0,0))
         name_rec = name_text.get_rect()
         name_rec.center = (self.player_2_hand_name.x + (self.player_2_hand_name.w/2), self.player_2_hand_name.y + (self.player_2_hand_name.h/2))
-        self.display.blit(name_text, name_rec)
+        screen_res.gameDisplay.blit(name_text, name_rec)
 
     def calc_player_1_hand_size(self):
         x = self.player_1_life_sec.x
@@ -1125,7 +1120,7 @@ class Board():
         h = self.player_1_life_sec.h
         colour = self.player_1_life_sec.colour
 
-        self.player_1_hand_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_hand_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_hand_size(self):
         self.player_1_hand_size.draw()
@@ -1135,7 +1130,7 @@ class Board():
         hand_text = hand_font.render(string, True, (0,0,0))
         hand_rec = hand_text.get_rect()
         hand_rec.center = (self.player_1_hand_size.x + (self.player_1_hand_size.w/2), self.player_1_hand_size.y + (self.player_1_hand_size.h/2))
-        self.display.blit(hand_text, hand_rec)
+        screen_res.gameDisplay.blit(hand_text, hand_rec)
 
     def calc_player_2_hand_size(self):
         x = self.player_2_life_sec.x
@@ -1144,7 +1139,7 @@ class Board():
         h = self.player_2_life_sec.h
         colour = self.player_2_life_sec.colour
 
-        self.player_2_hand_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_hand_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_hand_size(self):
         self.player_2_hand_size.draw()
@@ -1154,7 +1149,7 @@ class Board():
         hand_text = hand_font.render(string, True, (0,0,0))
         hand_rec = hand_text.get_rect()
         hand_rec.center = (self.player_2_hand_size.x + (self.player_2_hand_size.w/2), self.player_2_hand_size.y + (self.player_2_hand_size.h/2))
-        self.display.blit(hand_text, hand_rec)
+        screen_res.gameDisplay.blit(hand_text, hand_rec)
 
     def calc_player_1_deck_info_sec(self):
         x = self.player_1_hand_info_sec.x
@@ -1163,7 +1158,7 @@ class Board():
         h = self.player_1_hand_info_sec.h
         colour = self.player_1_hand_info_sec.colour
 
-        self.player_1_deck_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_deck_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_1_deck_info_sec(self):
         self.player_1_deck_info_sec.draw()
@@ -1175,7 +1170,7 @@ class Board():
         h = self.player_2_hand_info_sec.h
         colour = self.player_2_hand_info_sec.colour
 
-        self.player_2_deck_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_deck_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_2_deck_info_sec(self):
         self.player_2_deck_info_sec.draw()
@@ -1187,7 +1182,7 @@ class Board():
         h = self.player_1_hand_name.h
         colour = self.player_1_hand_name.colour
 
-        self.player_1_deck_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_deck_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_deck_name(self):
         self.player_1_deck_name.draw()
@@ -1197,7 +1192,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = (self.player_1_deck_name.x + (self.player_1_deck_name.w/2), self.player_1_deck_name.y + (self.player_1_deck_name.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
     def calc_player_2_deck_name(self):
         x = self.player_2_hand_name.x
@@ -1206,7 +1201,7 @@ class Board():
         h = self.player_2_hand_name.h
         colour = self.player_2_hand_name.colour
 
-        self.player_2_deck_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_deck_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_deck_name(self):
         self.player_2_deck_name.draw()
@@ -1216,7 +1211,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = (self.player_2_deck_name.x + (self.player_2_deck_name.w/2), self.player_2_deck_name.y + (self.player_2_deck_name.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
     def calc_player_1_deck_size(self):
         x = self.player_1_life_sec.x
@@ -1225,7 +1220,7 @@ class Board():
         h = self.player_1_life_sec.h
         colour = self.player_1_life_sec.colour
 
-        self.player_1_deck_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_deck_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_deck_size(self):
         self.player_1_deck_size.draw()
@@ -1235,7 +1230,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = (self.player_1_deck_size.x + (self.player_1_deck_size.w/2), self.player_1_deck_size.y + (self.player_1_deck_size.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
     def calc_player_2_deck_size(self):
         x = self.player_2_life_sec.x
@@ -1244,7 +1239,7 @@ class Board():
         h = self.player_2_life_sec.h
         colour = self.player_2_life_sec.colour
 
-        self.player_2_deck_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_deck_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_deck_size(self):
         self.player_2_deck_size.draw()
@@ -1254,7 +1249,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = (self.player_2_deck_size.x + (self.player_2_deck_size.w/2), self.player_2_deck_size.y + (self.player_2_deck_size.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
     def calc_player_1_grave_info_sec(self):
         x = self.player_1_hand_info_sec.x
@@ -1263,7 +1258,7 @@ class Board():
         h = self.player_1_hand_info_sec.h
         colour = self.player_1_hand_info_sec.colour
 
-        self.player_1_grave_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_1_grave_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_1_grave_info_sec(self):
         self.player_1_grave_info_sec.draw()
@@ -1275,7 +1270,7 @@ class Board():
         h = self.player_2_hand_info_sec.h
         colour = self.player_2_hand_info_sec.colour
 
-        self.player_2_grave_info_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.player_2_grave_info_sec = BoardSection(x, y, w, h, colour)
 
     def draw_player_2_grave_info_sec(self):
         self.player_2_grave_info_sec.draw()
@@ -1287,7 +1282,7 @@ class Board():
         h = self.player_1_hand_name.h
         colour = self.player_1_hand_name.colour
 
-        self.player_1_grave_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_grave_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_grave_name(self):
         self.player_1_grave_name.draw()
@@ -1297,7 +1292,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = (self.player_1_grave_name.x + (self.player_1_grave_name.w/2), self.player_1_grave_name.y + (self.player_1_grave_name.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
 
     def calc_player_2_grave_name(self):
@@ -1307,7 +1302,7 @@ class Board():
         h = self.player_2_hand_name.h
         colour = self.player_2_hand_name.colour
 
-        self.player_2_grave_name = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_grave_name = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_grave_name(self):
         self.player_2_grave_name.draw()
@@ -1317,7 +1312,7 @@ class Board():
         deck_text = deck_font.render(string, True, (0,0,0))
         deck_rec = deck_text.get_rect()
         deck_rec.center = ( self.player_2_grave_name.x + ( self.player_2_grave_name.w/2),  self.player_2_grave_name.y + ( self.player_2_grave_name.h/2))
-        self.display.blit(deck_text, deck_rec)
+        screen_res.gameDisplay.blit(deck_text, deck_rec)
 
     def calc_player_1_grave_size(self):
         x = self.player_1_life_sec.x
@@ -1326,7 +1321,7 @@ class Board():
         h = self.player_1_life_sec.h
         colour = self.player_1_life_sec.colour
 
-        self.player_1_grave_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_1_grave_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_1_grave_size(self):
         self.player_1_grave_size.draw()
@@ -1336,7 +1331,7 @@ class Board():
         hand_text = hand_font.render(string, True, (0,0,0))
         hand_rec = hand_text.get_rect()
         hand_rec.center = (self.player_1_grave_size.x + (self.player_1_grave_size.w/2), self.player_1_grave_size.y + (self.player_1_grave_size.h/2))
-        self.display.blit(hand_text, hand_rec)
+        screen_res.gameDisplay.blit(hand_text, hand_rec)
 
     def calc_player_2_grave_size(self):
         x = self.player_2_life_sec.x
@@ -1345,7 +1340,7 @@ class Board():
         h = self.player_2_life_sec.h
         colour = self.player_2_life_sec.colour
 
-        self.player_2_grave_size = BoardSection(self.display, x, y, w, h, colour, False)
+        self.player_2_grave_size = BoardSection(x, y, w, h, colour, False)
 
     def draw_player_2_grave_size(self):
         self.player_2_grave_size.draw()
@@ -1355,7 +1350,7 @@ class Board():
         hand_text = hand_font.render(string, True, (0,0,0))
         hand_rec = hand_text.get_rect()
         hand_rec.center = (self.player_2_grave_size.x + (self.player_2_grave_size.w/2), self.player_2_grave_size.y + (self.player_2_grave_size.h/2))
-        self.display.blit(hand_text, hand_rec)
+        screen_res.gameDisplay.blit(hand_text, hand_rec)
 
 
     def calc_card_display_sec(self):
@@ -1365,13 +1360,13 @@ class Board():
         y = (self.info_box_sec.y + self.info_box_sec.h)/2 - (h/2)
         colour = (100,0,100)
 
-        self.card_display_sec = BoardSection(self.display, x, y, w, h, colour)
+        self.card_display_sec = BoardSection(x, y, w, h, colour)
 
     def draw_card_display_sec(self):
         self.card_display_sec.draw()
 
     def draw_options_menu(self):
-        display_width, display_height = self.display_size
+        display_width, display_height = screen_res.display_size
 
         #define option button dimentions
         option_button_width = (display_width/4)
@@ -1444,11 +1439,11 @@ class Board():
 
             current_vol = str(round(pygame.mixer.music.get_volume(), 1))
 
-            self.display.fill(bg_colour)
+            screen_res.gameDisplay.fill(bg_colour)
 
-            pygame.draw.rect(self.display, BLACK, (option_box_x, option_box_y, option_box_w, option_box_h))
+            pygame.draw.rect(screen_res.gameDisplay, BLACK, (option_box_x, option_box_y, option_box_w, option_box_h))
 
-            pygame.draw.rect(self.display, bright_red, (display_width/6, display_height/6, (display_width/3)*2, (display_height/3)*2))
+            pygame.draw.rect(screen_res.gameDisplay, bright_red, (display_width/6, display_height/6, (display_width/3)*2, (display_height/3)*2))
 
             change_res = Button("Change resolution",change_resolution_button_x, change_resolution_button_y, option_button_width, option_button_height, button_blue, button_blue)
 
@@ -1502,17 +1497,17 @@ class Board():
         if (name.x + name.w) > mouse[0] > name.x and (name.y + name.h) > mouse[1] > name.y:
 
             #Highlight the button with a lighter shad of blue
-            pygame.draw.rect(self.display, name.a_colour, (name.x, name.y, name.w, name.h))
+            pygame.draw.rect(screen_res.gameDisplay, name.a_colour, (name.x, name.y, name.w, name.h))
 
             if click[0] == 1 and name.action != None:
                 if name.action == "change_res":
                     for res in res_list:
                         if name.msg == res:
                             new_res = res.split("x")
-                            self.display_h = int(new_res[1])
-                            self.display_w = int(new_res[0])
-                            self.display_size = self.display_w , self.display_h
-                            self.display = pygame.display.set_mode(self.display_size)
+                            screen_res.display_height = int(new_res[1])
+                            screen_res.display_width = int(new_res[0])
+                            screen_res.display_size = screen_res.display_width , screen_res.display_height
+                            screen_res.gameDisplay = pygame.display.set_mode(screen_res.display_size)
                             self.draw_board("untap")
                             self.draw_options_menu()
 
@@ -1525,14 +1520,14 @@ class Board():
                 elif name.action == "back":
                     self.in_options = False
         else:
-            pygame.draw.rect(self.display, name.i_colour, (name.x, name.y, name.w, name.h))
+            pygame.draw.rect(screen_res.gameDisplay, name.i_colour, (name.x, name.y, name.w, name.h))
 
         if  name.msg in res_list:
             smallFont = pygame.font.Font("freesansbold.ttf", int(name.h/7))
             smallText = smallFont.render(name.msg, False, BLACK)
             smallRect = smallText.get_rect()
             smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
-            self.display.blit(smallText, smallRect)
+            screen_res.gameDisplay.blit(smallText, smallRect)
 
         else:
             if name.w > name.h:
@@ -1543,7 +1538,7 @@ class Board():
             smallText = smallFont.render(name.msg, False, BLACK)
             smallRect = smallText.get_rect()
             smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
-            self.display.blit(smallText, smallRect)
+            screen_res.gameDisplay.blit(smallText, smallRect)
 
 
     def increase_volume(self):
