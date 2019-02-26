@@ -53,6 +53,7 @@ class Game():
         self.deal_cards(self.player_1, 7)
         self.deal_cards(self.player_2, 7)
         print(self.player_1.hand)
+        self.mulligan(gameBoard)
 
         gameBoard.calc_board()
         self.draw_screen(gameBoard)
@@ -84,6 +85,46 @@ class Game():
 
 ############################# UPDATING SCREEN ######################################
 
+
+    def mulligan(self, gameBoard):
+        resolved = False
+        while not resolved:
+            gameBoard.draw_mulligan()
+            for event in pygame.event.get():
+                if event.type == MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    for button in board.MULLIGAN_BUTTONS:
+                        if button.rect.collidepoint(pos):
+                            if button.action == "yes":
+                                for card in player.hand:
+                                    player.deck.cards
+            
+
+
+
+    def mulligan():
+
+        while ans:
+            if ans == "yes":
+                for card in player.hand:
+                    player.deck.cards.append(card)
+                player.hand = []
+                shuffle_deck(player)
+                n -= 1
+                deal_cards(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
+                for card in player.hand:
+                    print(card.name)
+                if n != 0:
+                    mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
+                return
+
+            elif ans == "no":
+                return
+
+            else:
+                print("invalid anwser please write yes or no")
+                print("would you liek to muligan? yes/no")
+                ans = input().lower()
 
 
     def end_step(self, gameBoard):
@@ -962,28 +1003,28 @@ class Game():
         quit()
 
 ####################################################################################################################################################################
-#def mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n):#game_board):
-    #print(player.name)
-    #print("would you like to muligan? yes/no")
-    #ans = input().lower()
-    #while ans:
-        #if ans == "yes":
-            #for card in player.hand:
-                #player.deck.cards.append(card)
-            #player.hand = []
-            #shuffle_deck(player)
-            #n -= 1
-            #deal_cards(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
-            #for card in player.hand:
-                #print(card.name)
-            #if n != 0:
-                #mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
-            #return
+def mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n):
+    print(player.name)
+    print("would you like to muligan? yes/no")
+    ans = input().lower()
+    while ans:
+        if ans == "yes":
+            for card in player.hand:
+                player.deck.cards.append(card)
+            player.hand = []
+            shuffle_deck(player)
+            n -= 1
+            deal_cards(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
+            for card in player.hand:
+                print(card.name)
+            if n != 0:
+                mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
+            return
 
-        #elif ans == "no":
-            #return
+        elif ans == "no":
+            return
 
-        #else:
-            #print("invalid anwser please write yes or no")
-            #print("would you liek to muligan? yes/no")
-            #ans = input().lower()
+        else:
+            print("invalid anwser please write yes or no")
+            print("would you liek to muligan? yes/no")
+            ans = input().lower()
