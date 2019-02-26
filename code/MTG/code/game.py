@@ -50,14 +50,18 @@ class Game():
 
         gameBoard = board.Board(self.player_1, self.player_2)
 
-        self.deal_cards(self.player_1, 7)
-        self.deal_cards(self.player_2, 7)
+        mulligan_counter = 7
+
+        self.deal_cards(self.player_1, mulligan_counter)
+        self.deal_cards(self.player_2, mulligan_counter)
         print(self.player_1.hand)
 
         gameBoard.calc_board()
         self.draw_screen(gameBoard)
         gameBoard.draw_hand()
-
+        print(self.quit)
+        self.mulligan(gameBoard, self.player_1, mulligan_counter, self.player_2)
+        print(self.quit)
         pygame.display.update()
 
         self.current_player = random.choice([self.player_1, self.player_2])
@@ -85,6 +89,53 @@ class Game():
 ############################# UPDATING SCREEN ######################################
 
 
+    def mulligan(self, gameBoard, player, mulligan_counter, next_player):
+        resolved = False
+        while not resolved:
+            gameBoard.draw_mulligan()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.my_quit()
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if event.button == 1:
+
+                        if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
+                            self.quit = True
+                            resolved = True
+
+                        if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
+
+                            gameBoard.draw_options_menu()
+                            gameBoard.calc_board()
+                            gameBoard.draw_board(self.phase)
+                            gameBoard.draw_hand()
+                            gameBoard.draw_land(player)
+                            gameBoard.draw_land(next_player)
+                            gameBoard.draw_new_battlefield(player)
+                            gameBoard.draw_new_battlefield(next_player)
+                            pygame.display.update()
+
+
+                        for button in board.MULLIGAN_BUTTONS:
+                            if button.rect.collidepoint(pos):
+                                if button.action == "yes":
+                                    for card in player.hand:
+                                        player.deck.cards.append(card)
+                                    player.hand = []
+                                    self.shuffle_deck(player)
+                                    mulligan_counter -= 1
+                                    self.deal_cards(player, mulligan_counter)
+                                    gameBoard.draw_hand()
+                                    if mulligan_counter != 1:
+                                        self.mulligan(gameBoard, player, mulligan_counter, next_player)
+                                    return
+                                if button.action == "no":
+                                    resolved = True
+                gameBoard.draw_player_hand_section()
+                gameBoard.draw_hand()
+                pygame.display.update()
 
     def end_step(self, gameBoard):
         self.phase = "end"
@@ -117,6 +168,7 @@ class Game():
 
 
     def deck_selection(self, player):
+
         f = open("./personal_decks/deck_4", "rb")
         player_deck = pickle.load(f)
         f.close()
@@ -126,8 +178,8 @@ class Game():
     def shuffle_deck(self, player):
         shuffle(player.deck.cards)
 
-    def deal_cards(self, player, n):
-        for i in range(n):
+    def deal_cards(self, player, mulligan_counter):
+        for i in range(mulligan_counter):
             player.hand.append(player.deck.cards.pop(0))
 
     def draw(self, player, gameBoard):
@@ -213,6 +265,8 @@ class Game():
                                 gameBoard.draw_new_battlefield(next_player)
                                 pygame.display.update()
 
+                            if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
+                                pass_phase = True
 
                             for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos):
@@ -303,8 +357,9 @@ class Game():
         gameBoard.draw_phase_section(self.phase)
         pygame.display.update()
 
+
         if self.check_life() and not self.quit:
-            attackers = self.select_attackers(current_player, gameBoard)
+            attackers = self.select_attackers(current_player, gameBoard, next_player)
             defenders = self.select_defenders(next_player, attackers, gameBoard)
             self.damage_step(attackers, defenders,current_player, next_player, gameBoard)
             for attacker in attackers:
@@ -331,17 +386,41 @@ class Game():
         gameBoard.draw_new_battlefield(next_player)
 
 
-    def select_attackers(self, player, gameBoard):
+    def select_attackers(self, player, gameBoard, next_player):
         list_of_attackers = []
         resolved = False
         while not resolved:
             for event in pygame.event.get():
+
+                if event.type == pygame.QUIT:
+                    self.my_quit()
 
                 pos = pygame.mouse.get_pos()
                 mx, my = pos[0], pos[1]
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
+
+                        if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
+                            self.quit = True
+                            resolved = True
+
+                        if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
+
+                            gameBoard.draw_options_menu()
+                            gameBoard.calc_board()
+                            gameBoard.draw_board(self.phase)
+                            gameBoard.draw_hand()
+                            gameBoard.draw_land(player)
+                            gameBoard.draw_land(next_player)
+                            gameBoard.draw_new_battlefield(player)
+                            gameBoard.draw_new_battlefield(next_player)
+                            pygame.display.update()
+
+                        if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
+                            pass_phase = True
+
+
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
                                 print(card.card.combat_state)
@@ -369,7 +448,8 @@ class Game():
         while not resolved:
             i = 0
             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                list_of_defenders[i] = card.card
+                if i < len(list_of_attackers):
+                    list_of_defenders[i] = card.card
                 i += 1
             resolved = True
         return list_of_defenders
