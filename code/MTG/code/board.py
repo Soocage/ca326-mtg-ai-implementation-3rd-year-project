@@ -75,7 +75,7 @@ class BoardSection():
         if self.is_border:
             pygame.draw.rect(self.screen, (0,0,0), [self.x, self.y, self.w , self.h])
             pygame.draw.rect(self.screen, self.colour, [self.x + self.border_size, self.y + self.border_size, self.w - (2*self.border_size), self.h - (2* self.border_size)])
-        
+
         else:
             pygame.draw.rect(self.screen, self.colour, [self.x, self.y, self.w, self.h])
 
@@ -128,7 +128,7 @@ class Board():
         self.player_2_life_sec = None
         self.card_display_sec = None
         self.concede_button_sec = None
-        self.options_button_sec = None 
+        self.options_button_sec = None
         self.in_options = True
         self.player_1_hand_info_sec = None
         self.player_2_hand_info_sec = None
@@ -385,7 +385,7 @@ class Board():
         viewed_sprite = CardSprite(card_copy, x, y, w, h)
         VIEWED_CARD.add(viewed_sprite)
 
-        
+
 
 
     def tap_mana(self, land):
@@ -785,7 +785,7 @@ class Board():
 
         player_1_r_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (200,0,0))
         self.player_1_mana_box_r = player_1_r_mana_sec
-        
+
 
         x = player_1_r_mana_sec.x + mana_w
 
@@ -807,7 +807,14 @@ class Board():
         player_1_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
         self.player_1_mana_box_b = player_1_b_mana_sec
 
-        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_h*0.7))
+    def draw_player_1_mana_sec(self):
+        self.player_1_mana_box_r.draw()
+        self.player_1_mana_box_g.draw()
+        self.player_1_mana_box_u.draw()
+        self.player_1_mana_box_b.draw()
+        self.player_1_mana_box_w.draw()
+
+        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(self.player_1_mana_box_r.h*0.7))
 
         player_1_mana = self.player_1.mana
 
@@ -815,43 +822,36 @@ class Board():
 
         player_1_r_mana_text = mana_font.render(str(player_1_r), True, (0,0,0))
         player_1_r_mana_rec = player_1_r_mana_text.get_rect()
-        player_1_r_mana_rec.center = ((player_1_r_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_r_mana_rec.center = ((self.player_1_mana_box_r.x+(self.player_1_mana_box_r.w/2)), (self.player_1_mana_box_r.y+(self.player_1_mana_box_r.h/2)))
         self.display.blit(player_1_r_mana_text, player_1_r_mana_rec)
 
         player_1_g = len(re.findall("G", player_1_mana))
 
         player_1_g_mana_text = mana_font.render(str(player_1_g), True, (0,0,0))
         player_1_g_mana_rec = player_1_g_mana_text.get_rect()
-        player_1_g_mana_rec.center = ((player_1_g_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_g_mana_rec.center = ((self.player_1_mana_box_g.x+(self.player_1_mana_box_g.w/2)), (self.player_1_mana_box_g.y+(self.player_1_mana_box_g.h/2)))
         self.display.blit(player_1_g_mana_text, player_1_g_mana_rec)
 
         player_1_u = len(re.findall("U", player_1_mana))
 
         player_1_u_mana_text = mana_font.render(str(player_1_u), True, (0,0,0))
         player_1_u_mana_rec = player_1_u_mana_text.get_rect()
-        player_1_u_mana_rec.center = ((player_1_u_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_u_mana_rec.center = ((self.player_1_mana_box_u.x+(self.player_1_mana_box_u.w/2)), (self.player_1_mana_box_u.y+(self.player_1_mana_box_u.h/2)))
         self.display.blit(player_1_u_mana_text, player_1_u_mana_rec)
 
         player_1_w = len(re.findall("W", player_1_mana))
 
         player_1_w_mana_text = mana_font.render(str(player_1_w), True, (0,0,0))
         player_1_w_mana_rec = player_1_w_mana_text.get_rect()
-        player_1_w_mana_rec.center = ((player_1_w_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_w_mana_rec.center = ((self.player_1_mana_box_w.x+(self.player_1_mana_box_w.w/2)), (self.player_1_mana_box_w.y+(self.player_1_mana_box_w.h/2)))
         self.display.blit(player_1_w_mana_text, player_1_w_mana_rec)
 
         player_1_b = len(re.findall("B", player_1_mana))
 
         player_1_b_mana_text = mana_font.render(str(player_1_b), True, (0,0,0))
         player_1_b_mana_rec = player_1_b_mana_text.get_rect()
-        player_1_b_mana_rec.center = ((player_1_b_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
+        player_1_b_mana_rec.center = ((self.player_1_mana_box_b.x+(self.player_1_mana_box_b.w/2)), (self.player_1_mana_box_b.y+(self.player_1_mana_box_b.h/2)))
         self.display.blit(player_1_b_mana_text, player_1_b_mana_rec)
-
-    def draw_player_1_mana_sec(self):
-        self.player_1_mana_box_r.draw()
-        self.player_1_mana_box_g.draw()
-        self.player_1_mana_box_u.draw()
-        self.player_1_mana_box_b.draw()
-        self.player_1_mana_box_w.draw()
 
     def calc_player_2_mana_sec(self):
         mana_w = (self.info_box_sec.w*(0.90))/5
@@ -879,44 +879,6 @@ class Board():
 
         player_2_b_mana_sec = BoardSection(self.display, x, mana_y, mana_w, mana_h, (122,0,122))
         self.player_2_mana_box_b = player_2_b_mana_sec
-        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(mana_h*0.7))
-
-        player_2_mana = self.player_2.mana
-
-        player_2_r = len(re.findall("R", player_2_mana))
-
-        player_2_r_mana_text = mana_font.render(str(player_2_r), True, (0,0,0))
-        player_2_r_mana_rec = player_2_r_mana_text.get_rect()
-        player_2_r_mana_rec.center = ((player_2_r_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
-        self.display.blit(player_2_r_mana_text, player_2_r_mana_rec)
-
-        player_2_g = len(re.findall("G", player_2_mana))
-
-        player_2_g_mana_text = mana_font.render(str(player_2_g), True, (0,0,0))
-        player_2_g_mana_rec = player_2_g_mana_text.get_rect()
-        player_2_g_mana_rec.center = ((player_2_g_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
-        self.display.blit(player_2_g_mana_text, player_2_g_mana_rec)
-
-        player_2_u = len(re.findall("U", player_2_mana))
-
-        player_2_u_mana_text = mana_font.render(str(player_2_u), True, (0,0,0))
-        player_2_u_mana_rec = player_2_u_mana_text.get_rect()
-        player_2_u_mana_rec.center = ((player_2_u_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
-        self.display.blit(player_2_u_mana_text, player_2_u_mana_rec)
-
-        player_2_w = len(re.findall("W", player_2_mana))
-
-        player_2_w_mana_text = mana_font.render(str(player_2_w), True, (0,0,0))
-        player_2_w_mana_rec = player_2_w_mana_text.get_rect()
-        player_2_w_mana_rec.center = ((player_2_w_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
-        self.display.blit(player_2_w_mana_text, player_2_w_mana_rec)
-
-        player_2_b = len(re.findall("B", player_2_mana))
-
-        player_2_b_mana_text = mana_font.render(str(player_2_b), True, (0,0,0))
-        player_2_b_mana_rec = player_2_b_mana_text.get_rect()
-        player_2_b_mana_rec.center = ((player_2_b_mana_sec.x+(mana_w/2)), (mana_y+(mana_h/2)))
-        self.display.blit(player_2_b_mana_text, player_2_b_mana_rec)
 
     def draw_player_2_mana_sec(self):
         self.player_2_mana_box_r.draw()
@@ -924,6 +886,45 @@ class Board():
         self.player_2_mana_box_u.draw()
         self.player_2_mana_box_b.draw()
         self.player_2_mana_box_w.draw()
+
+        player_2_mana = self.player_2.mana
+        mana_font = pygame.font.Font(pygame.font.get_default_font(), int(self.player_2_mana_box_r.h*0.7))
+
+        player_2_r = len(re.findall("R", player_2_mana))
+
+        player_2_r_mana_text = mana_font.render(str(player_2_r), True, (0,0,0))
+        player_2_r_mana_rec = player_2_r_mana_text.get_rect()
+        player_2_r_mana_rec.center = ((self.player_2_mana_box_r.x+(self.player_2_mana_box_r.w/2)), (self.player_2_mana_box_r.y+(self.player_2_mana_box_r.h/2)))
+        self.display.blit(player_2_r_mana_text, player_2_r_mana_rec)
+
+        player_2_g = len(re.findall("G", player_2_mana))
+
+        player_2_g_mana_text = mana_font.render(str(player_2_g), True, (0,0,0))
+        player_2_g_mana_rec = player_2_g_mana_text.get_rect()
+        player_2_g_mana_rec.center = ((self.player_2_mana_box_g.x+(self.player_2_mana_box_g.w/2)), (self.player_2_mana_box_g.y+(self.player_2_mana_box_g.h/2)))
+        self.display.blit(player_2_g_mana_text, player_2_g_mana_rec)
+
+        player_2_u = len(re.findall("U", player_2_mana))
+
+        player_2_u_mana_text = mana_font.render(str(player_2_u), True, (0,0,0))
+        player_2_u_mana_rec = player_2_u_mana_text.get_rect()
+        player_2_u_mana_rec.center = (self.player_2_mana_box_u.x+(self.player_2_mana_box_u.w/2)), (self.player_2_mana_box_u.y+(self.player_2_mana_box_u.h/2))
+        self.display.blit(player_2_u_mana_text, player_2_u_mana_rec)
+
+        player_2_w = len(re.findall("W", player_2_mana))
+
+        player_2_w_mana_text = mana_font.render(str(player_2_w), True, (0,0,0))
+        player_2_w_mana_rec = player_2_w_mana_text.get_rect()
+        player_2_w_mana_rec.center = (self.player_2_mana_box_w.x+(self.player_2_mana_box_w.w/2)), (self.player_2_mana_box_w.y+(self.player_2_mana_box_w.h/2))
+        self.display.blit(player_2_w_mana_text, player_2_w_mana_rec)
+
+        player_2_b = len(re.findall("B", player_2_mana))
+
+        player_2_b_mana_text = mana_font.render(str(player_2_b), True, (0,0,0))
+        player_2_b_mana_rec = player_2_b_mana_text.get_rect()
+        player_2_b_mana_rec.center = ((self.player_2_mana_box_b.x+(self.player_2_mana_box_b.w/2)), (self.player_2_mana_box_b.y+(self.player_2_mana_box_b.h/2)))
+        self.display.blit(player_2_b_mana_text, player_2_b_mana_rec)
+
 
     def calc_player_1_player_sec(self):
         x = self.player_1_mana_box_r.x
@@ -937,7 +938,7 @@ class Board():
     def draw_player_1_player_sec(self):
         self.player_1_player_sec.draw()
 
-   
+
     def calc_player_1_name_info_sec(self):
         x = self.player_1_player_sec.x
         y = self.player_1_player_sec.y
@@ -950,7 +951,7 @@ class Board():
     def draw_player_1_name_info_sec(self):
         self.player_1_name_info_sec.draw()
 
-    
+
     def calc_player_2_name_info_sec(self):
         x = self.player_1_name_info_sec.x
         y = self.player_2_player_sec.y
@@ -982,7 +983,7 @@ class Board():
         name_rec.center = (self.player_1_name_sec.x + (self.player_1_name_sec.w/2), self.player_1_name_sec.y + (self.player_1_name_sec.h/2))
         self.display.blit(name_text, name_rec)
 
-    
+
     def calc_player_2_name(self):
         x = self.player_1_name_sec.x
         y = self.player_2_name_info_sec.y + self.player_2_name_info_sec.border_size
@@ -1021,7 +1022,7 @@ class Board():
         life_rec.center = (self.player_1_life_sec.x + (self.player_1_life_sec.w/2), self.player_1_life_sec.y + (self.player_1_life_sec.h/2))
         self.display.blit(life_text, life_rec)
 
-    
+
     def calc_player_2_life(self):
         x = self.player_1_life_sec.x
         y = self.player_2_name_sec.y
@@ -1041,7 +1042,7 @@ class Board():
         life_rec.center = (self.player_2_life_sec.x + (self.player_2_life_sec.w/2), self.player_2_life_sec.y + (self.player_2_life_sec.h/2))
         self.display.blit(life_text, life_rec)
 
-    
+
     def calc_player_2_player_sec(self):
         x = self.player_1_player_sec.x
         y = self.player_2_mana_box_r.y + self.player_2_mana_box_r.h + self.info_box_sec.w*(0.05)
@@ -1066,7 +1067,7 @@ class Board():
     def draw_player_1_hand_info_sec(self):
         self.player_1_hand_info_sec.draw()
 
-    
+
     def calc_player_2_hand_info_sec(self):
         x = self.player_1_hand_info_sec.x
         y = self.player_2_name_info_sec.y + self.player_2_name_info_sec.h
@@ -1086,7 +1087,7 @@ class Board():
         h = self.player_2_name_sec.h
         colour = self.player_1_name_sec.colour
 
-        self.player_1_hand_name = BoardSection(self.display, x, y, w, h, colour, False)    
+        self.player_1_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
 
     def draw_player_1_hand_name(self):
         self.player_1_hand_name.draw()
@@ -1105,7 +1106,7 @@ class Board():
         h = self.player_1_hand_name.h
         colour = self.player_1_hand_name.colour
 
-        self.player_2_hand_name = BoardSection(self.display, x, y, w, h, colour, False)    
+        self.player_2_hand_name = BoardSection(self.display, x, y, w, h, colour, False)
 
     def draw_player_2_hand_name(self):
         self.player_2_hand_name.draw()
@@ -1124,7 +1125,7 @@ class Board():
         h = self.player_1_life_sec.h
         colour = self.player_1_life_sec.colour
 
-        self.player_1_hand_size = BoardSection(self.display, x, y, w, h, colour, False)    
+        self.player_1_hand_size = BoardSection(self.display, x, y, w, h, colour, False)
 
     def draw_player_1_hand_size(self):
         self.player_1_hand_size.draw()
@@ -1398,9 +1399,9 @@ class Board():
 
         change_resolution_button_x = (option_box_x) + option_box_w*(1/20)
         change_resolution_button_y = option_box_y + (option_box_h*(1/6)) - (option_button_height/2)
-         
+
         back_button_x = (display_width/2) - option_button_width/2
-        back_button_y = option_box_y + (option_box_h*(5/6)) - (option_button_height/2) 
+        back_button_y = option_box_y + (option_box_h*(5/6)) - (option_button_height/2)
 
         volume_slider_x = (option_box_x + option_box_w - (volume_button_x + option_button_width) * 0.5) + (volume_slider_width/2)
         volume_slider_y = volume_button_y  + (option_button_height/2) - (volume_slider_height/2)
@@ -1436,14 +1437,14 @@ class Board():
         self.in_options = True
         while self.in_options:
             (mx, my) = pygame.mouse.get_pos()
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     myquit()
 
             current_vol = str(round(pygame.mixer.music.get_volume(), 1))
 
-            self.display.fill(bg_colour)     
+            self.display.fill(bg_colour)
 
             pygame.draw.rect(self.display, BLACK, (option_box_x, option_box_y, option_box_w, option_box_h))
 
@@ -1461,12 +1462,12 @@ class Board():
 
             res_5 = Button("1920x1080", int(res_5_x), int(res_5_y), res_button_width, res_button_height, grey, WHITE, "change_res")
 
-            
+
             back = Button("Back", back_button_x, back_button_y, option_button_width, option_button_height, button_blue, hover_button_blue, "back")
 
-                    
+
             volume = Button("Volume", volume_button_x, volume_button_y, option_button_width, option_button_height, button_blue, button_blue)
-            
+
             slider = Button(current_vol, volume_slider_x, volume_slider_y, volume_slider_width, volume_slider_height, volume_slider_colour, volume_slider_colour)
 
             plus = Button("+", plus_button_x, plus_button_y, plus_button_width, plus_button_height, grey, WHITE, "plus")
@@ -1493,13 +1494,13 @@ class Board():
 
         #Take in the co-ordinates of the mouse
         mouse = pygame.mouse.get_pos()
-        
+
         #Check what buttons have been pressed by the mouse
         click = pygame.mouse.get_pressed()
 
         #Check if mouse position is within the boundry of the button
         if (name.x + name.w) > mouse[0] > name.x and (name.y + name.h) > mouse[1] > name.y:
-            
+
             #Highlight the button with a lighter shad of blue
             pygame.draw.rect(self.display, name.a_colour, (name.x, name.y, name.w, name.h))
 
