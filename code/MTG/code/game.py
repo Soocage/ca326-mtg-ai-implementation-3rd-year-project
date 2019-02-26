@@ -1081,30 +1081,3 @@ class Game():
     def my_quit(self):
         pygame.quit()
         quit()
-
-####################################################################################################################################################################
-#def mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n):#game_board):
-    #print(player.name)
-    #print("would you like to muligan? yes/no")
-    #ans = input().lower()
-    #while ans:
-        #if ans == "yes":
-            #for card in player.hand:
-                #player.deck.cards.append(card)
-            #player.hand = []
-            #shuffle_deck(player)
-            #n -= 1
-            #deal_cards(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
-            #for card in player.hand:
-                #print(card.name)
-            #if n != 0:
-                #mulligan(plascreen_res.gameDisplay, screen_res.gameDisplay_size, n)
-            #return
-
-        #elif ans == "no":
-            #return
-
-        #else:
-            #print("invalid anwser please write yes or no")
-            #print("would you liek to muligan? yes/no")
-            #ans = input().lower()
