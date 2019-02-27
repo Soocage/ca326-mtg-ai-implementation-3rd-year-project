@@ -28,9 +28,11 @@ MULLIGAN_BUTTONS = pygame.sprite.Group()
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-RED = (255,0,0)
-GREEN = (0,255,0)
-BLUE = (0,0,255)
+RED = (237, 28, 36)
+GREEN = (34, 177, 76)
+BLUE = (0,162,232)
+ORANGE = (255, 127, 39)
+
 
 button_blue = (125,137,240)
 hover_button_blue = (175, 183, 245)
@@ -157,6 +159,9 @@ class Board():
         self.player_1_grave_size = None
         self.player_2_grave_size = None
         self.pass_button_sec = None
+        self.player_1_indicator = None
+        self.player_2_indicator = None
+        self.stack_display_section = None
 
 
     def draw_mulligan(self):
@@ -552,6 +557,81 @@ class Board():
         self.draw_player_1_grave_size()
         self.draw_player_2_grave_size()
         self.draw_pass_button()
+        self.most_recent_card_zone()
+
+    def draw_indicator(self, player, response = False):
+        indicator_w = screen_res.display_width/8
+        indicator_h = screen_res.display_height * (1/16)
+
+        player_1_indicator_x = screen_res.display_width - indicator_w
+        player_1_indicator_y = self.pass_button_sec.y - indicator_h
+
+        player_2_indicator_x = player_1_indicator_x
+        player_2_indicator_y = 0
+
+        player_1_string = ""
+        player_2_string = ""
+
+        if player.name != "AI_Dusty":
+            if response == False:
+                player_1_indicator_colour = GREEN
+                player_1_string = "Your turn"
+                player_2_indicator_colour = RED
+            else:
+                player_1_indicator_colour = BLUE
+                player_1_string = "Your Response"
+                player_2_indicator_colour = ORANGE
+        else:
+            if response == False:
+                player_1_indicator_colour = RED
+                player_2_indicator_colour = GREEN
+                player_2_string = "Their turn"
+            else:
+                player_1_indicator_colour = ORANGE
+                player_2_indicator_colour = BLUE
+                player_2_string = "Their Response"
+
+        player_1_indicator = BoardSection(player_1_indicator_x, player_1_indicator_y, indicator_w, indicator_h, player_1_indicator_colour)
+        self.player_1_indicator = player_1_indicator
+
+        player_2_indicator = BoardSection(player_2_indicator_x, player_2_indicator_y, indicator_w, indicator_h, player_2_indicator_colour)
+        self.player_2_indicator = player_2_indicator
+
+        player_1_indicator.draw()
+        player_2_indicator.draw()
+
+
+        indicator_font = pygame.font.Font(pygame.font.get_default_font(), int(indicator_h*0.4))
+
+        player_1_indicator_text = indicator_font.render(player_1_string, True, (0,0,0))
+        player_1_indicator_rec = player_1_indicator_text.get_rect()
+        player_1_indicator_rec.center = ((self.player_1_indicator.x+(self.player_1_indicator.w/2)), (self.player_1_indicator.y+(self.player_1_indicator.h/2)))
+        screen_res.gameDisplay.blit(player_1_indicator_text, player_1_indicator_rec)
+
+        player_2_indicator_text = indicator_font.render(player_2_string, True, (0,0,0))
+        player_2_indicator_rec = player_2_indicator_text.get_rect()
+        player_2_indicator_rec.center = ((self.player_2_indicator.x+(self.player_2_indicator.w/2)), (self.player_2_indicator.y+(self.player_2_indicator.h/2)))
+        screen_res.gameDisplay.blit(player_2_indicator_text, player_2_indicator_rec)
+
+    def most_recent_card_zone(self):
+        card_box_w = (screen_res.display_width/8) *(0.8)
+        card_box_h = card_box_w * (88/63)
+        card_box_x = screen_res.display_width - card_box_w
+        card_box_y = self.player_1_play_sec.y - card_box_h/2
+        card_box_colour = (177,177,177)
+
+        stack_display_section = BoardSection(card_box_x, card_box_y, card_box_w, card_box_h, card_box_colour)
+
+        self.stack_display_section = stack_display_section
+
+        stack_display_section.draw()
+
+
+
+
+
+
+
 
     def draw_pass_button(self):
         self.pass_button_sec.draw()
