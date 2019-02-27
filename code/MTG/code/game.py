@@ -166,11 +166,7 @@ class Game():
 
     def deck_selection(self, player):
 
-<<<<<<< HEAD
-        f = open("./personal_decks/deck_2", "rb")
-=======
         f = open("./personal_decks/deck_1", "rb")
->>>>>>> faf7b1f5e80e8b1c4bff1a95f5a6a80f983fe7cf
         player_deck = pickle.load(f)
         f.close()
 
@@ -1216,9 +1212,10 @@ class Game():
         cards_cost = card.mana_cost[:]
         mana_copy = list(player.mana[:])
         i = len(cards_cost) - 1
-        j = 0
-        while i > 0 :
+        while i >= 0 :
+            print(cards_cost[i], i, mana_copy, cards_cost)
             if cards_cost[i].isdigit():
+                print("ok")
                 if len(mana_copy) >= int(cards_cost[i]):
                     if int(cards_cost[i]) > 0:
                         for n in range(int(cards_cost[i])):
