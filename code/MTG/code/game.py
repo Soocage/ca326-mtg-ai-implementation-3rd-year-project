@@ -75,6 +75,7 @@ class Game():
             self.untap(self.player_1, gameBoard)
             self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
+            self.response(self.player_2, self.player_1, gameBoard)
             self.combat_phase(self.player_1, self.player_2, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
             self.end_step(gameBoard)
@@ -286,7 +287,6 @@ class Game():
                                         if card.card.card_type == "Land":
                                             self.play_a_land(card.card, current_player, gameBoard)
 
-
                                         if card.card.card_type == "Creature":
                                             self.play_a_creature(card.card, current_player,next_player, gameBoard)
 
@@ -350,7 +350,7 @@ class Game():
                 for card in self.player_2.hand:
 
                     if card.card_type == "Creature":
-                        mana_cost = self.check_creature_cost(card)
+                        mana_cost = self.check_card_cost(card)
 
                         available_lands = []
                         for land_card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
@@ -369,14 +369,199 @@ class Game():
                             pygame.display.update()
                             current_player.hand.remove(card)
 
-
-
-
-
-
             self.clear_mana(current_player)
 
-    def check_creature_cost(self, card):
+    def response(self, current_player, opponent, gameBoard):
+
+
+        if current_player.name != "AI_Dusty":
+            for card in current_player.hand:
+                if card.card_type == "Instant":
+                    mana_cost = self.check_card_cost(card)
+                    available_lands = []
+                    for land_card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                        if land_card.card.tapped == False:
+                            available_lands.append(land_card)
+
+                        if len(available_lands) >= mana_cost:
+                            self.response_phase(current_player, opponent, gameBoard, card)
+
+        else:
+            for card in current_player.hand:
+                if card.card_type == "Instant":
+                    mana_cost = self.check_card_cost(card)
+                    available_lands = []
+                    for land_card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                        if land_card.card.tapped == False:
+                            available_lands.append(land_card)
+
+                        if len(available_lands) >= mana_cost:
+                            self.response_phase(current_player, opponent, gameBoard, card)
+
+    def response_phase(self, current_player, opponent, gameBoard, card):
+        if current_player.name != "AI_Dusty":
+            resolved = False
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
+
+                    if event.type == pygame.KEYDOWN:
+
+                        if event.key == pygame.K_SPACE:
+                            pass_phase = True
+
+                        if event.key == pygame.K_ESCAPE:
+                            self.quit = True
+                            return
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+
+                        if event.button == 1:
+                            if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
+                                self.quit = True
+                                pass_phase = True
+
+                            if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
+
+                                gameBoard.draw_options_menu()
+                                gameBoard.calc_board()
+                                gameBoard.draw_board(self.phase)
+                                gameBoard.draw_hand()
+                                gameBoard.draw_land(current_player)
+                                gameBoard.draw_land(next_player)
+                                gameBoard.draw_new_battlefield(current_player)
+                                gameBoard.draw_new_battlefield(next_player)
+                                pygame.display.update()
+
+                            if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
+                                pass_phase = True
+
+                            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    card.clicked = True
+
+                            if gameBoard.player_1_land_sec.x + gameBoard.player_1_land_sec.w > pos[0] > gameBoard.player_1_land_sec.x and gameBoard.player_1_land_sec.y + gameBoard.player_1_land_sec.h > pos[1] > gameBoard.player_1_land_sec.y:
+                                for land in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+
+                                    if land.rect.collidepoint(pos) and land.card.tapped == False:
+                                        self.add_mana(current_player, land.card)
+                                        gameBoard.tap_mana(land)
+
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                            if card.clicked == True:
+                                self.draw_screen(gameBoard)
+                                card.clicked = False
+
+                                if ((gameBoard.player_hand_sec.x > card.rect.x) or (card.rect.x > gameBoard.player_hand_sec.x + gameBoard.player_hand_sec.w)) or gameBoard.player_hand_sec.y > card.rect.y:
+
+                                    if card.card.card_type == "Instant":
+                                        self.play_a_sorcery_or_instant(card.card, current_player, opponent, gameBoard)
+
+                                    if self.check_life() == False:
+                                        return
+
+                                    self.draw_screen(gameBoard)
+                                    pygame.display.update()
+                                    resolved = True
+
+                                    gameBoard.draw_hand()
+
+                                else:
+                                    gameBoard.draw_hand()
+
+                    for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                        if card.clicked == True:
+                            pos = pygame.mouse.get_pos()
+                            card.rect.x = pos[0] - (card.rect.width/2)
+                            card.rect.y = pos[1] - (card.rect.height/2)
+                            pos, card.rect.x, card.rect.y
+
+                    self.draw_screen(gameBoard)
+                    for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                            pygame.display.update()
+
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                            pygame.display.update()
+
+
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                            pygame.display.update()
+
+                    for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                            pygame.display.update()
+
+                    for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                        if card.rect.collidepoint(pos):
+                            gameBoard.view_card(card)
+                            board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                            pygame.display.update()
+
+        else:
+            mana_cost = self.check_card_cost(card)
+            available_lands = []
+            for land_card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
+                if land_card.card.tapped == False:
+                    available_lands.append(land_card)
+
+            if len(available_lands) >= mana_cost:
+                i = 0
+                while i < mana_cost:
+                    self.add_mana(current_player, available_lands[i].card)
+                    gameBoard.tap_mana(available_lands[i])
+                    i += 1
+
+            if card.effect == "Damage":
+                print("AI_Dusty is Playing ", card.name)
+                resolved = True
+                for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if "Protection" not in creature_sprite.card.tmp_keyword and "Protection" not in creature_sprite.card.keyword:
+                        resolved = False
+
+                if "opponent" in card.targets and "Protection" not in opponent.state:
+                    resolved = False
+
+
+                current_player.hand.remove(card)
+                self.response(opponent, current_player, gameBoard)
+                if "creature" in card.targets and len(opponent.battlefield) > 0:
+                    for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in creature_sprite.card.tmp_keyword and "Protection" not in creature_sprite.card.keyword:
+                            if (self.damage_creature(creature_sprite.card, card.value)):
+                                opponent.graveyard.append(creature_sprite.card)
+                                opponent.battlefield.remove(creature_sprite.card)
+                                gameBoard.draw_new_battlefield(opponent)
+                                
+
+                elif "opponent" in card.targets:
+                    time.sleep(1)
+                    print("Youve been hit by ", card.name)
+                    opponent.life -= int(card.value)
+
+                    gameBoard.draw_board(self.phase)
+                    self.check_life()
+                        
+
+
+
+
+
+    def check_card_cost(self, card):
         cards_cost = card.mana_cost
         cards_cost = cards_cost.split()
         cost_as_integer = 0
@@ -551,6 +736,7 @@ class Game():
     def play_a_sorcery_or_instant(self, card, player, opponent, gameBoard):
         playable = self.check_mana(player, card)
         if playable == True:
+            self.response(opponent, player, gameBoard)
             i = 0
             while i < len(player.hand):
                 if player.hand[i] == card:
@@ -1097,7 +1283,6 @@ class Game():
                                         opponent.graveyard.append(card.card)
                                         opponent.battlefield.remove(card.card)
                                         gameBoard.draw_new_battlefield(opponent)
-                                        #gameBoard.draw_graveyard(opponent)
                                         resolved = True
                     if event.type == pygame.QUIT:
                         self.my_quit()
@@ -1213,9 +1398,8 @@ class Game():
     def play_a_creature(self,card, current_player,next_player, gameBoard):
         playable = self.check_mana(current_player, card)
         if playable == True:
+            self.response(next_player, current_player, gameBoard)
             indx = current_player.hand.index(card)
-            copy.copy(current_player.hand[indx])
-            next_player.battlefield.append(copy.copy(current_player.hand[indx]))
             current_player.battlefield.append(current_player.hand.pop(indx))
             gameBoard.draw_hand()
             gameBoard.draw_new_battlefield(current_player)
