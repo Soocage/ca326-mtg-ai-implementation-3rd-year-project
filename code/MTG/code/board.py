@@ -79,18 +79,19 @@ class ButtonSprite(pygame.sprite.Sprite):
 
 class BoardSection():
 
-    def __init__(self, x, y, w, h, colour, is_border=True):
+    def __init__(self, x, y, w, h, colour, is_border=True, border_colour = (0,0,0)):
         self.colour = colour
         self.x = int(x)
         self.y = int(y)
         self.w = int(w)
         self.h = int(h)
         self.is_border = is_border
+        self.border_colour = border_colour
         self.border_size = int(screen_res.gameDisplay.get_width()*0.002)
 
     def draw(self):
         if self.is_border:
-            pygame.draw.rect(screen_res.gameDisplay, (0,0,0), [self.x, self.y, self.w , self.h])
+            pygame.draw.rect(screen_res.gameDisplay, self.border_colour, [self.x, self.y, self.w , self.h])
             pygame.draw.rect(screen_res.gameDisplay, self.colour, [self.x + self.border_size, self.y + self.border_size, self.w - (2*self.border_size), self.h - (2* self.border_size)])
 
         else:
@@ -703,8 +704,9 @@ class Board():
         card_box_x = screen_res.display_width - card_box_w
         card_box_y = self.player_1_play_sec.y - card_box_h/2
         card_box_colour = (177,177,177)
+        border_colour = (255,255,255)
 
-        stack_display_section = BoardSection(card_box_x, card_box_y, card_box_w, card_box_h, card_box_colour)
+        stack_display_section = BoardSection(card_box_x, card_box_y, card_box_w, card_box_h, card_box_colour, True, border_colour)
 
         self.stack_display_section = stack_display_section
 
