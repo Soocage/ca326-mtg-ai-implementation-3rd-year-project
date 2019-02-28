@@ -76,8 +76,10 @@ class Game():
             ########### TURNS LOGIC ################
             gameBoard.draw_indicator(self.player_1)
             self.untap(self.player_1, gameBoard)
+            time.sleep(0.5)
             if turn_counter != 1:
                 self.draw(self.player_1, gameBoard)
+            time.sleep(0.5)
             self.main_phase(self.player_1, self.player_2, gameBoard)
             self.combat_phase(self.player_1, self.player_2, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
@@ -85,9 +87,9 @@ class Game():
 
 
             gameBoard.draw_indicator(self.player_2)
-            self.draw(self.player_2, gameBoard)
-            time.sleep(0.5)
             self.untap(self.player_2,gameBoard)
+            time.sleep(0.5)
+            self.draw(self.player_2, gameBoard)
             time.sleep(0.5)
             self.main_phase(self.player_2, self.player_1, gameBoard)
             time.sleep(0.5)
@@ -205,7 +207,7 @@ class Game():
 
     def deck_selection(self, player):
 
-        f = open("./personal_decks/deck_5", "rb")
+        f = open("./personal_decks/deck_1", "rb")
         player_deck = pickle.load(f)
         f.close()
 

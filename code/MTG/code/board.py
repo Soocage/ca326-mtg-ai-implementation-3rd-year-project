@@ -211,11 +211,10 @@ class Board():
         screen_res.gameDisplay.blit(button_text, button_rec)
 
     def draw_discard(self):
-        w = self.player_1_play_sec.w * (1/4)
-
+        DISCARD_BUTTONS.empty()
         disc_w = 2*(self.player_1_play_sec.w * (1/4))
         disc_h = self.player_1_play_sec.h * (1/4)
-        disc_x = self.player_1_play_sec.x + self.player_1_play_sec.w/2 -w - w*(1/10)
+        disc_x = self.player_1_play_sec.x + self.player_1_play_sec.w/2 - (disc_w/2) - (disc_w/2)*(1/10)
         disc_y = ((self.player_1_play_sec.y) - disc_h/2)- disc_h - disc_h*(1/10)
 
         disc_question = ButtonSprite(disc_x, disc_y, disc_w, disc_h, "disc_question")
