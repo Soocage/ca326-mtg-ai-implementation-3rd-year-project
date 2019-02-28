@@ -67,17 +67,17 @@ class Game():
         self.current_player = random.choice([self.player_1, self.player_2])
 
 
-
-        self.game_loop(gameBoard)
-
-    def game_loop(self, gameBoard):
+        turn_counter = 1
+        self.game_loop(gameBoard, turn_counter)
+    def game_loop(self, gameBoard, turn_counter):
         while self.check_game_status():
 
 
             ########### TURNS LOGIC ################
             gameBoard.draw_indicator(self.player_1)
             self.untap(self.player_1, gameBoard)
-            self.draw(self.player_1, gameBoard)
+            if turn_counter != 1:
+                self.draw(self.player_1, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
             self.combat_phase(self.player_1, self.player_2, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
@@ -86,9 +86,14 @@ class Game():
 
             gameBoard.draw_indicator(self.player_2)
             self.draw(self.player_2, gameBoard)
+            time.sleep(0.5)
             self.untap(self.player_2,gameBoard)
+            time.sleep(0.5)
             self.main_phase(self.player_2, self.player_1, gameBoard)
+            time.sleep(0.5)
             self.end_step(gameBoard, self.player_2)
+            time.sleep(0.5)
+            turn_counter += 1
 
 ############################# UPDATING SCREEN ######################################
 
@@ -160,8 +165,10 @@ class Game():
             self.discard_down(player, gameBoard)
 
     def discard_down(self, player, gameBoard):
-        if player.name != "Ai_Dusty":
+        if player.name != "AI_Dusty":
             resolved = False
+            gameBoard.draw_discard()
+            pygame.display.update()
             while not resolved:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -198,7 +205,7 @@ class Game():
 
     def deck_selection(self, player):
 
-        f = open("./personal_decks/deck_1", "rb")
+        f = open("./personal_decks/deck_5", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -695,12 +702,12 @@ class Game():
                             pygame.display.update()
 
                         if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
-                            pass_phase = True
+                            resolved = True
 
 
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                if card.card.combat_state != "attacking" and card.card.summon_sick != True:
+                                if card.card.combat_state != "attacking" and (card.card.summon_sick != True or card.card.keyword == "Haste"):
                                     card.card.combat_state = "attacking"
                                     if "Vigiliance" not in card.card.keyword and "Vigiliance" not in card.card.tmp_keyword:
                                         card.card.tapped = True
