@@ -38,6 +38,7 @@ class Game():
         self.turn = 0
         self.current_player = None
         self.quit = False
+        self.stacked_card = None
 
     def run_game(self):
         player_1_deck_list = self.deck_selection(self.player_1)
@@ -187,6 +188,8 @@ class Game():
     def draw(self, player, gameBoard):
         self.phase = "draw"
         gameBoard.draw_phase_section(self.phase)
+        if self.stacked_card != None:
+            gameBoard.stacked_card(self.stacked_card)
         pygame.display.update()
 
 
@@ -198,6 +201,8 @@ class Game():
     def untap(self, player, gameBoard):
         self.phase = "untap"
         gameBoard.draw_phase_section(self.phase)
+        if self.stacked_card != None:
+            gameBoard.stacked_card(self.stacked_card)
         pygame.display.update()
 
 
@@ -226,6 +231,8 @@ class Game():
         else:
             self.phase = "main_1"
         self.draw_screen(gameBoard)
+        if self.stacked_card != None:
+            gameBoard.stacked_card(self.stacked_card)
         gameBoard.draw_indicator(self.player_1)
         pygame.display.update()
         if self.check_life() and not self.quit:
@@ -291,15 +298,27 @@ class Game():
                                     if ((gameBoard.player_hand_sec.x > card.rect.x) or (card.rect.x > gameBoard.player_hand_sec.x + gameBoard.player_hand_sec.w)) or gameBoard.player_hand_sec.y > card.rect.y:
 
                                         if card.card.card_type == "Land":
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
+                                            pygame.display.update()
                                             self.play_a_land(card.card, current_player, gameBoard)
 
+
                                         if card.card.card_type == "Creature" and self.check_mana(current_player, card.card):
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             self.response(next_player, current_player, gameBoard)
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             gameBoard.draw_indicator(self.player_1)
                                             self.play_a_creature(card.card, current_player,next_player, gameBoard)
 
                                         if (card.card.card_type == "Sorcery" or card.card.card_type == "Instant") and self.check_mana(current_player, card.card):
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard)
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             gameBoard.draw_indicator(self.player_1)
                                             self.response(next_player, current_player, gameBoard)
 
@@ -307,6 +326,7 @@ class Game():
                                             return
 
                                         self.draw_screen(gameBoard)
+                                        gameBoard.stacked_card(self.stacked_card)
                                         gameBoard.draw_indicator(self.player_1)
                                         pygame.display.update()
                                     gameBoard.draw_hand()
@@ -320,36 +340,33 @@ class Game():
                                 pos, card.rect.x, card.rect.y
 
                         self.draw_screen(gameBoard)
+                        if self.stacked_card != None:
+                            gameBoard.stacked_card(self.stacked_card)
                         gameBoard.draw_indicator(self.player_1)
                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
 
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                     clock.tick(60)
@@ -376,6 +393,10 @@ class Game():
 
                             current_player.battlefield.append(card)
                             gameBoard.draw_new_battlefield(current_player)
+                            for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if creature_sprite.card == card:
+                                    self.stacked_card = creature_sprite.card
+                                    gameBoard.stacked_card(self.stacked_card)
                             pygame.display.update()
                             current_player.hand.remove(card)
 
@@ -384,8 +405,6 @@ class Game():
 
     def response(self, current_player, opponent, gameBoard):
         if current_player.name != "AI_Dusty":
-
-
             if self.check_instant(current_player.hand):
                 pass_phase = False
                 while not pass_phase:
@@ -442,6 +461,7 @@ class Game():
                             for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                 if card.clicked == True:
                                     self.draw_screen(gameBoard)
+                                    gameBoard.stacked_card(self.stacked_card)
                                     gameBoard.draw_indicator(self.player_1, True)
                                     card.clicked = False
 
@@ -449,7 +469,11 @@ class Game():
 
 
                                         if card.card.card_type == "Instant" and self.check_mana(current_player, card.card):
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             self.response(opponent, current_player, gameBoard)
+                                            self.stacked_card = card.card
+                                            gameBoard.stacked_card(self.stacked_card)
                                             self.play_a_sorcery_or_instant(card.card, current_player, opponent, gameBoard)
 
                                             pass_phase = True
@@ -458,6 +482,7 @@ class Game():
                                             return
 
                                         self.draw_screen(gameBoard)
+                                        gameBoard.stacked_card(self.stacked_card)
                                         gameBoard.draw_indicator(self.player_1, True)
                                         pygame.display.update()
                                     gameBoard.draw_hand()
@@ -471,36 +496,32 @@ class Game():
                                 pos, card.rect.x, card.rect.y
 
                         self.draw_screen(gameBoard)
+                        gameBoard.stacked_card(self.stacked_card)
                         gameBoard.draw_indicator(self.player_1, True)
                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
 
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_1_LAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
                         for card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
-                                gameBoard.view_card(card)
-                                board.VIEWED_CARD.draw(screen_res.gameDisplay)
+                                gameBoard.view_card(card.card)
                                 pygame.display.update()
 
         else:
@@ -515,11 +536,6 @@ class Game():
                     self.response(self.player_1, self.player_2, gameBoard)
                     gameBoard.draw_board(self.phase)
                     self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
-                    print(self.player_2.graveyard[-1].name)
-
-
-
-
 
 
 
@@ -631,6 +647,7 @@ class Game():
 
                             gameBoard.draw_options_menu()
                             gameBoard.calc_board()
+                            gameBoard.stacked_card(self.stacked_card)
                             gameBoard.draw_board(self.phase)
                             gameBoard.draw_hand()
                             gameBoard.draw_land(player)
@@ -657,6 +674,7 @@ class Game():
                         resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
                 pygame.display.update()
         return list_of_attackers
@@ -844,6 +862,7 @@ class Game():
                             resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
                 pygame.display.update()
 
@@ -889,6 +908,7 @@ class Game():
                                         resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -947,6 +967,7 @@ class Game():
                                         resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1027,6 +1048,7 @@ class Game():
                                 resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1083,6 +1105,7 @@ class Game():
                                 player.life += int(value)
                                 resolved = True
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 if "player" in list_of_targets and "Protection" not in player.state:
@@ -1168,6 +1191,7 @@ class Game():
                             resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 if len(attacker) == 0:
@@ -1206,6 +1230,7 @@ class Game():
                                 resolved = True
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1240,6 +1265,7 @@ class Game():
 
 
                     self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
                     gameBoard.draw_indicator(self.player_1)
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1290,6 +1316,7 @@ class Game():
                             self.my_quit()
 
                     self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
                     gameBoard.draw_indicator(self.player_1)
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1352,6 +1379,7 @@ class Game():
                     self.my_quit()
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
 
                 for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
@@ -1391,6 +1419,7 @@ class Game():
                     self.my_quit()
 
                 self.draw_screen(gameBoard)
+                gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
                 self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
                 pygame.display.update()

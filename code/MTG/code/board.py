@@ -22,6 +22,7 @@ PLAYER_1_SEARCH_SPRITES = pygame.sprite.Group()
 PLAYER_2_SEARCH_SPRITES = pygame.sprite.Group()
 VIEWED_CARD = pygame.sprite.Group()
 MULLIGAN_BUTTONS = pygame.sprite.Group()
+STACKED_CARD = pygame.sprite.Group()
 
 
 
@@ -442,9 +443,9 @@ class Board():
         return LAND_CARD_SPRITE_GROUP
 
 
-    def view_card(self, card_sprite):
+    def view_card(self, card):
         VIEWED_CARD.empty()
-        card_copy = copy.copy(card_sprite.card)
+        card_copy = copy.copy(card)
         card_texture = pygame.image.load(card_copy.texture)
         x = self.card_display_sec.x
         y = self.card_display_sec.y
@@ -452,6 +453,20 @@ class Board():
         h = self.card_display_sec.h
         viewed_sprite = CardSprite(card_copy, x, y, w, h)
         VIEWED_CARD.add(viewed_sprite)
+        VIEWED_CARD.draw(screen_res.gameDisplay)
+
+    def stacked_card(self, card):
+        STACKED_CARD.empty()
+
+        card_copy = copy.copy(card)
+        card_texture = pygame.image.load(card_copy.texture)
+        x = self.stack_display_section.x
+        y = self.stack_display_section.y
+        w = self.stack_display_section.w
+        h = self.stack_display_section.h
+        stacked_card_sprite = CardSprite(card_copy, x, y, w, h)
+        STACKED_CARD.add(stacked_card_sprite)
+        STACKED_CARD.draw(screen_res.gameDisplay)
 
 
 
