@@ -573,7 +573,7 @@ class Game():
                     gameBoard.draw_board(self.phase)
                     self.stacked_card = card
                     gameBoard.stacked_card(self.stacked_card)
-                    self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
+                    #self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
 
 
 
