@@ -344,11 +344,14 @@ class Game():
                                         if (card.card.card_type == "Sorcery" or card.card.card_type == "Instant") and self.check_mana(current_player, card.card):
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
+                                            current_player.hand.remove(card.card) #####
+                                            current_player.graveyard.append(card.card)######
+                                            gameBoard.draw_hand()
+                                            self.response(next_player, current_player, gameBoard)
                                             self.play_a_sorcery_or_instant(card.card, current_player, next_player, gameBoard)
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
                                             gameBoard.draw_indicator(self.player_1)
-                                            self.response(next_player, current_player, gameBoard)
 
                                         if self.check_life() == False:
                                             return
@@ -499,6 +502,9 @@ class Game():
                                         if card.card.card_type == "Instant" and self.check_mana(current_player, card.card):
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
+                                            current_player.hand.remove(card.card) #####
+                                            current_player.graveyard.append(card.card)######
+                                            gameBoard.draw_hand()
                                             self.response(opponent, current_player, gameBoard)
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
@@ -561,8 +567,14 @@ class Game():
 
                 if self.check_lands(card, gameBoard):
                     self.clear_mana(self.player_2)
+                    self.stacked_card = card
+                    gameBoard.stacked_card(self.stacked_card)
+                    current_player.hand.remove(card)
+                    current_player.graveyard.append(card)
                     self.response(self.player_1, self.player_2, gameBoard)
                     gameBoard.draw_board(self.phase)
+                    self.stacked_card = card
+                    gameBoard.stacked_card(self.stacked_card)
                     self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
 
 
@@ -819,8 +831,6 @@ class Game():
         elif card.effect == "Reanimate":
             self.effect_reanimate(player, opponent, card.targets, gameBoard)
 
-        player.hand.remove(card)
-        player.graveyard.append(card)
         #gameBoard.draw_graveyard(player)
         gameBoard.draw_hand()
         gameBoard.draw_new_battlefield(player)
