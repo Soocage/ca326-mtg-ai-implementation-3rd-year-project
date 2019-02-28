@@ -81,13 +81,14 @@ class Game():
             self.main_phase(self.player_1, self.player_2, gameBoard)
             self.combat_phase(self.player_1, self.player_2, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
-            self.end_step(gameBoard)
+            self.end_step(gameBoard, self.player_1)
 
 
             gameBoard.draw_indicator(self.player_2)
             self.draw(self.player_2, gameBoard)
             self.untap(self.player_2,gameBoard)
             self.main_phase(self.player_2, self.player_1, gameBoard)
+            self.end_step(gameBoard, self.player_2)
 
 ############################# UPDATING SCREEN ######################################
 
@@ -140,7 +141,7 @@ class Game():
                 gameBoard.draw_hand()
                 pygame.display.update()
 
-    def end_step(self, gameBoard):
+    def end_step(self, gameBoard, player):
         self.phase = "end"
         gameBoard.draw_phase_section(self.phase)
         pygame.display.update()
@@ -154,6 +155,31 @@ class Game():
             card.card.toughness_modifier = 0
             card.card.power_modifier = 0
             card.card.tmp_keyword = ""
+
+        while len(player.hand) > 7:
+            self.discard_down(player, gameBoard)
+
+    def discard_down(self, player, gameBoard):
+        if player.name != "Ai_Dusty":
+            resolved = False
+            while not resolved:
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            pos = pygame.mouse.get_pos()
+
+                            for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos):
+                                    player.graveyard.append(card.card)
+                                    player.hand.remove(card.card)
+                                    gameBoard.draw_board(self.phase)
+                                    gameBoard.draw_hand()
+                                    resolved = True
+        else:
+            player.graveyard.append(player.hand[0])
+            player.hand.remove(player.hand[0])
+            gameBoard.draw_board(self.phase)
+
 
 
     def check_game_status(self):
@@ -686,7 +712,8 @@ class Game():
                         resolved = True
 
                 self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
+                if self.stacked_card != None:
+                    gameBoard.stacked_card(self.stacked_card)
                 gameBoard.draw_indicator(self.player_1)
                 pygame.display.update()
         return list_of_attackers
