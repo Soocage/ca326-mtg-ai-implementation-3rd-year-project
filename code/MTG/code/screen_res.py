@@ -9,4 +9,5 @@ class ScreenRes():
 		self.gameDisplay = gameDisplay
 
 
-screen_res = ScreenRes((1600, 900), pygame.display.set_mode((1600, 900)))
+#screen_res = ScreenRes((1600, 900), pygame.display.set_mode((1600, 900)))
+screen_res = ScreenRes((1024, 768), pygame.display.set_mode((1024, 768)))

@@ -182,12 +182,17 @@ class Game():
                                     player.graveyard.append(card.card)
                                     player.hand.remove(card.card)
                                     gameBoard.draw_board(self.phase)
-                                    gameBoard.draw_hand()
                                     resolved = True
         else:
             player.graveyard.append(player.hand[0])
             player.hand.remove(player.hand[0])
             gameBoard.draw_board(self.phase)
+        gameBoard.draw_hand()
+        gameBoard.draw_land(self.player_1)
+        gameBoard.draw_land(self.player_2)
+        gameBoard.draw_new_battlefield(self.player_1)
+        gameBoard.draw_new_battlefield(self.player_2)
+
 
 
 
@@ -268,7 +273,7 @@ class Game():
         self.draw_screen(gameBoard)
         if self.stacked_card != None:
             gameBoard.stacked_card(self.stacked_card)
-        gameBoard.draw_indicator(self.player_1)
+        gameBoard.draw_indicator(current_player)
         pygame.display.update()
         if self.check_life() and not self.quit:
             if current_player.name != "AI_Dusty":
@@ -413,6 +418,11 @@ class Game():
                 gameBoard.draw_land(current_player)
 
                 for card in self.player_2.hand:
+                    print(card, card.name)
+                print("###############")
+                self.player_2.play_a_creature(gameBoard, next_player)
+                time.sleep(1)
+                for card in self.player_2.hand:
 
                     if card.card_type == "Creature":
                         mana_cost = self.check_card_cost(card)
@@ -430,7 +440,13 @@ class Game():
                                 i += 1
 
                             current_player.battlefield.append(card)
+                            gameBoard.draw_board(self.phase)
+                            gameBoard.draw_hand()
+                            gameBoard.draw_land(self.player_1)
+                            gameBoard.draw_land(self.player_2)
+                            gameBoard.draw_land(current_player)
                             gameBoard.draw_new_battlefield(current_player)
+                            gameBoard.draw_new_battlefield(next_player)
                             for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                                 if creature_sprite.card == card:
                                     self.stacked_card = creature_sprite.card
