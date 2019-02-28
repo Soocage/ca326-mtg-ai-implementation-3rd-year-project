@@ -52,7 +52,7 @@ class Game():
 
         gameBoard = board.Board(self.player_1, self.player_2)
 
-        mulligan_counter = 7
+        mulligan_counter = 10
 
         self.deal_cards(self.player_1, mulligan_counter)
         self.deal_cards(self.player_2, mulligan_counter)
@@ -160,8 +160,10 @@ class Game():
             self.discard_down(player, gameBoard)
 
     def discard_down(self, player, gameBoard):
-        if player.name != "Ai_Dusty":
+        if player.name != "AI_Dusty":
             resolved = False
+            gameBoard.draw_discard()
+            pygame.display.update()
             while not resolved:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:

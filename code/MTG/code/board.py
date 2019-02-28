@@ -23,6 +23,7 @@ PLAYER_2_SEARCH_SPRITES = pygame.sprite.Group()
 VIEWED_CARD = pygame.sprite.Group()
 MULLIGAN_BUTTONS = pygame.sprite.Group()
 STACKED_CARD = pygame.sprite.Group()
+DISCARD_BUTTONS = pygame.sprite.Group()
 
 
 
@@ -206,6 +207,25 @@ class Board():
         button_text = button_font.render("Would you like to Mulligan?", True, (0,0,0))
         button_rec = button_text.get_rect()
         button_rec.center = ((mul_x+(mul_w/2)), (mul_y+(mul_h/2)))
+        screen_res.gameDisplay.blit(button_text, button_rec)
+
+    def draw_discard(self):
+        w = self.player_1_play_sec.w * (1/4)
+
+        disc_w = 2*(self.player_1_play_sec.w * (1/4))
+        disc_h = self.player_1_play_sec.h * (1/4)
+        disc_x = self.player_1_play_sec.x + self.player_1_play_sec.w/2 -w - w*(1/10)
+        disc_y = ((self.player_1_play_sec.y) - disc_h/2)- disc_h - disc_h*(1/10)
+
+        disc_question = ButtonSprite(disc_x, disc_y, disc_w, disc_h, "disc_question")
+        DISCARD_BUTTONS.add(disc_question)
+
+        DISCARD_BUTTONS.draw(screen_res.gameDisplay)
+
+        button_font = pygame.font.Font(pygame.font.get_default_font(), int(disc_h*0.5))
+        button_text = button_font.render("Please Discard down to 7 cards", True, (0,0,0))
+        button_rec = button_text.get_rect()
+        button_rec.center = ((disc_x+(disc_w/2)), (disc_y+(disc_h/2)))
         screen_res.gameDisplay.blit(button_text, button_rec)
 
     def draw_hand(self):
