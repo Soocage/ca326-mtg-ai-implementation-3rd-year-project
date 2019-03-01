@@ -40,4 +40,3 @@ class Land(Card):
 		Card.__init__(self, name, card_type, colour, mana_cost, texture)
 		self.effect = effect
 		self.tapped = tapped
-
