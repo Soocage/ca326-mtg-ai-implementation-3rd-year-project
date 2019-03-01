@@ -44,7 +44,7 @@ clock = pygame.time.Clock()
 def game_intro():
 
     (screen_res.display_width, screen_res.display_height) = screen_res.display_size
-    
+
     logo = pygame.image.load('./images/logo.png')
     logo_width = int(screen_res.display_width/2)
     logo_height = int(screen_res.display_height/4)
@@ -71,7 +71,7 @@ def game_intro():
     exit_game_button_y = (screen_res.display_height/3)*2.25
 
 
-    (screen_res.display_width, screen_res.display_height) = screen_res.display_size 
+    (screen_res.display_width, screen_res.display_height) = screen_res.display_size
     time.sleep(1)
 
     in_intro = True
@@ -82,7 +82,7 @@ def game_intro():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 my_quit()
-            
+
             if event.type == pygame.KEYDOWN:
 
                 if event.key == pygame.K_ESCAPE:
@@ -142,9 +142,9 @@ def option():
 
     change_resolution_button_x = (option_box_x) + option_box_w*(1/20)
     change_resolution_button_y = option_box_y + (option_box_h*(1/6)) - (option_button_height/2)
-     
+
     back_button_x = (screen_res.display_width/2) - option_button_width/2
-    back_button_y = option_box_y + (option_box_h*(5/6)) - (option_button_height/2) 
+    back_button_y = option_box_y + (option_box_h*(5/6)) - (option_button_height/2)
 
     volume_slider_x = (option_box_x + option_box_w - (volume_button_x + option_button_width) * 0.5) + (volume_slider_width/2)
     volume_slider_y = volume_button_y  + (option_button_height/2) - (volume_slider_height/2)
@@ -183,7 +183,7 @@ def option():
     in_option = True
     while in_option:
         (mx, my) = pygame.mouse.get_pos()
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 myquit()
@@ -196,13 +196,13 @@ def option():
         current_vol = str(round(pygame.mixer.music.get_volume(), 1))
 
 
-        screen_res.gameDisplay.fill(bg_colour)     
+        screen_res.gameDisplay.fill(bg_colour)
 
         pygame.draw.rect(screen_res.gameDisplay, black, (option_box_x, option_box_y, option_box_w, option_box_h))
 
         pygame.draw.rect(screen_res.gameDisplay, bright_red, (screen_res.display_width/6, screen_res.display_height/6, (screen_res.display_width/3)*2, (screen_res.display_height/3)*2))
 
-        
+
         change_res = Button("Change resolution",change_resolution_button_x, change_resolution_button_y, option_button_width, option_button_height, button_blue, button_blue)
 
         res_1 = Button("800x600", int(res_1_x), int(res_1_y), res_button_width, res_button_height, grey, white, "change_res")
@@ -215,19 +215,19 @@ def option():
 
         res_5 = Button("1920x1080", int(res_5_x), int(res_5_y), res_button_width, res_button_height, grey, white, "change_res")
 
-        
+
         back = Button("Back", back_button_x, back_button_y, option_button_width, option_button_height, button_blue, hover_button_blue, "back")
 
-                
+
         volume = Button("Volume", volume_button_x, volume_button_y, option_button_width, option_button_height, button_blue, button_blue)
-        
+
         slider = Button(current_vol, volume_slider_x, volume_slider_y, volume_slider_width, volume_slider_height, volume_slider_colour, volume_slider_colour)
 
         plus = Button("+", plus_button_x, plus_button_y, plus_button_width, plus_button_height, grey, white, "plus")
 
         minus = Button("-", minus_button_x, minus_button_y, minus_button_width, minus_button_height, grey, white, "minus")
 
-    
+
         draw_button(change_res)
         draw_button(back)
         draw_button(volume)
@@ -307,10 +307,10 @@ def draw_button(name):
 
     #Take in the co-ordinates of the mouse
     mouse = pygame.mouse.get_pos()
-    
+
     #Check what buttons have been pressed by the mouse
     click = pygame.mouse.get_pressed()
-    
+
     #Check if mouse position is within the boundry of the button
     if (name.x + name.w) > mouse[0] > name.x and (name.y + name.h) > mouse[1] > name.y:
 
@@ -328,7 +328,7 @@ def draw_button(name):
 
             elif name.action == "quit":
                 my_quit()
-            
+
             elif name.action == "options":
                 option()
 
@@ -361,7 +361,7 @@ def draw_button(name):
 
     if  name.msg in res_list:
         smallFont = pygame.font.Font("freesansbold.ttf", int(name.h/7))
-        smallText = smallFont.render(name.msg, False, black)
+        smallText = smallFont.render(name.msg, True, black)
         smallRect = smallText.get_rect()
         smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
         screen_res.gameDisplay.blit(smallText, smallRect)
@@ -372,7 +372,7 @@ def draw_button(name):
         else:
             font_size = name.w/4
         smallFont = pygame.font.Font("freesansbold.ttf", int(font_size))
-        smallText = smallFont.render(name.msg, False, black)
+        smallText = smallFont.render(name.msg, True, black)
         smallRect = smallText.get_rect()
         smallRect.center = (name.x + (name.w/2), name.y + (name.h/2))
         screen_res.gameDisplay.blit(smallText, smallRect)
@@ -391,5 +391,3 @@ def decrease_volume():
         curr_vol = pygame.mixer.music.get_volume()
         curr_vol -= 0.1
         pygame.mixer.music.set_volume(curr_vol)
-
-    

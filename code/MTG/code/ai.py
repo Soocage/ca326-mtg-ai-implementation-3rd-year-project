@@ -80,3 +80,4 @@ class Ai():
 
 
     def combination_cost(self, combination, opponent):
+        return 1
