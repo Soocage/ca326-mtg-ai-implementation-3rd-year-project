@@ -321,7 +321,7 @@ def draw_button(name):
 
             if name.action == "play_vs_ai":
                 player_1 = player.Player("Sean")
-                player_2 = ai.Ai("AI_Dusty")
+                player_2 = ai.Ai("AI_Dusty", "red")
                 game_1 = game.Game(player_1, player_2)
                 game_1.run_game()
                 game_intro()

@@ -1,4 +1,4 @@
-25
+27
 [Mountain,Land,R,0,./images/card_art/mountain.png,mana]
 [Plains,Land,W,0,./images/card_art/plains.png,mana]
 [Swamp,Land,B,0,./images/card_art/swamp.png,mana]

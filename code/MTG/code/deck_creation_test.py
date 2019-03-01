@@ -64,7 +64,7 @@ for i in range(n):
     with open("../personal_decks/deck_1", "wb") as deck_1:
 
         if ver.colour == "R" and ver.card_type == "Creature":
-            for j in range(0,10):
+            for j in range(0,5):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
 
@@ -73,16 +73,18 @@ for i in range(n):
             for j in range(0,2):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
+                    print(ver.name)
 
 
         if ver.colour == "R" and ver.card_type == "Instant":
             for j in range(0,10):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
+                    print(ver.name)
 
 
         if ver.colour == "R" and ver.card_type == "Land":
-            for j in range(0,24):
+            for j in range(0,10):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
 
@@ -99,7 +101,6 @@ for i in range(n):
             for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
 
         if ver.colour == "B" and ver.card_type == "Sorcery":
@@ -133,7 +134,6 @@ for i in range(n):
             for j in range(0,10):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(tmp)
 
         if ver.colour == "G" and ver.card_type == "Land":
             for j in range(0,10):
@@ -164,25 +164,21 @@ for i in range(n):
             for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "W" and ver.card_type == "Land":
             for j in range(0,15):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "W" and ver.card_type == "Instant":
             for j in range(0,1):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "W" and ver.card_type == "Sorcery":
             for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
 
         pickle.dump(card_deck, deck_4)
@@ -199,25 +195,21 @@ for i in range(n):
             for j in range(0,10):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "U" and ver.card_type == "Land":
             for j in range(0,10):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "U" and ver.card_type == "Instant":
             for j in range(0,1):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
         if ver.colour == "U" and ver.card_type == "Sorcery":
             for j in range(0,5):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
-                print(ver.name)
 
 
         pickle.dump(card_deck, deck_5)
