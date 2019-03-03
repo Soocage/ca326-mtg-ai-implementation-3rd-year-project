@@ -93,7 +93,7 @@ class Game():
             time.sleep(0.5)
             self.main_phase(self.player_2, self.player_1, gameBoard)
             time.sleep(0.5)
-            #self.combat_phase(self.player_2, self.player_1, gameBoard)
+            self.combat_phase(self.player_2, self.player_1, gameBoard)
             #time.sleep(0.5)
             self.end_step(gameBoard, self.player_2)
             time.sleep(0.5)
@@ -418,17 +418,10 @@ class Game():
 
                     clock.tick(60)
             else:
-                for card in current_player.hand:
-                    print(card, card.name)
-                print("##########")
                 self.player_2.play_land()
                 gameBoard.draw_land(current_player)
                 cards_to_be_played = self.player_2.play_a_card(gameBoard, next_player)
                 for card in cards_to_be_played:
-                    print(card, card.name)
-                print("######")
-                for card in cards_to_be_played:
-                    print(current_player.mana)
                     if card.card_type == "Creature" and self.player_2.check_card_playable(card):
                         mana_to_be_tapped = self.player_2.check_card_cost(card)
                         i = 0
@@ -470,40 +463,6 @@ class Game():
                         self.stacked_card = card
                         gameBoard.stacked_card(self.stacked_card)
                         gameBoard.draw_indicator(self.player_2)
-
-
-            #     for card in self.player_2.hand:
-
-            #         if card.card_type == "Creature":
-            #             mana_cost = self.check_card_cost(card)
-
-            #             available_lands = []
-            #             for land_card in board.PLAYER_2_LAND_SPRITE_CARD_GROUP:
-            #                 if land_card.card.tapped == False:
-            #                     available_lands.append(land_card)
-
-            #             if len(available_lands) >= mana_cost:
-            #                 i = 0
-            #                 while i < mana_cost:
-            #                     print(i)
-            #                     self.add_mana(current_player, available_lands[i].card)
-            #                     gameBoard.tap_mana(available_lands[i])
-            #                     i += 1
-
-            #                 current_player.battlefield.append(card)
-            #                 gameBoard.draw_board(self.phase)
-            #                 gameBoard.draw_hand()
-            #                 gameBoard.draw_land(self.player_1)
-            #                 gameBoard.draw_land(self.player_2)
-            #                 gameBoard.draw_land(current_player)
-            #                 gameBoard.draw_new_battlefield(current_player)
-            #                 gameBoard.draw_new_battlefield(next_player)
-            #                 for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-            #                     if creature_sprite.card == card:
-            #                         self.stacked_card = creature_sprite.card
-            #                         gameBoard.stacked_card(self.stacked_card)
-            #                 pygame.display.update()
-            #                 current_player.hand.remove(card)
 
             self.clear_mana(current_player)
 
@@ -719,29 +678,35 @@ class Game():
         if self.check_life() and not self.quit:
             attackers = self.select_attackers(current_player, gameBoard, next_player)
             defenders = self.select_defenders(next_player, attackers, gameBoard)
+
+            print(attackers)
+            print(defenders)
             self.damage_step(attackers, defenders,current_player, next_player, gameBoard)
-            for attacker in attackers:
-                attacker.combat_state = ""
-            for defenders in defenders:
-                combat_state = ""
+            if attackers != None:
+                for attacker in attackers:
+                    attacker.combat_state = ""
+            if defenders != None:
+                for defenders in defenders:
+                    combat_state = ""
 
     def damage_step(self, attackers, defenders, current_player, next_player, gameBoard):
-        i = 0
-        while i < len(attackers):
-            if type(defenders[i]) != int:
-                attackers[i].toughness_modifier -= defenders[i].power
-                defenders[i].toughness_modifier -= attackers[i].power
-                if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
-                    current_player.graveyard.append(attackers[i])
-                    current_player.battlefield.remove(attackers[i])
-                if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
-                    next_player.graveyard.append(defenders[i])
-                    next_player.battlefield.remove(defenders[i])
-            else:
-                next_player.life -= attackers[i].power
-            i += 1
-        gameBoard.draw_new_battlefield(current_player)
-        gameBoard.draw_new_battlefield(next_player)
+        if attackers != None:
+            i = 0
+            while i < len(attackers):
+                if type(defenders[i]) != int:
+                    attackers[i].toughness_modifier -= defenders[i].power
+                    defenders[i].toughness_modifier -= attackers[i].power
+                    if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
+                        current_player.graveyard.append(attackers[i])
+                        current_player.battlefield.remove(attackers[i])
+                    if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
+                        next_player.graveyard.append(defenders[i])
+                        next_player.battlefield.remove(defenders[i])
+                else:
+                    next_player.life -= attackers[i].power
+                i += 1
+            gameBoard.draw_new_battlefield(current_player)
+            gameBoard.draw_new_battlefield(next_player)
 
 
     def select_attackers(self, player, gameBoard, next_player):
@@ -802,44 +767,100 @@ class Game():
             return list_of_attackers
 
         else:
-            list_of_attackers = []
-            ai_combined_toughness = player.calculate_combined_toughness()
-            player_combined_toughness = player.calculate_combined_toughness(opponent)
-            ai_combined_power = player.calculate_combined_power()
-            player_combined_power = player.calculate_combined_power(opponent)
+            list_of_attackers = player.attacker_list(next_player, gameBoard)
+            for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                if creature_sprite.card in list_of_attackers:
+                    gameBoard.tap_creature(creature_sprite)
+                    pygame.display.update()
 
-            for ally_creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                get_through = True
-                for enemy_creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if ally_creature_sprite.card.power < (enemy_creature_sprite.toughness + enemy_creature_sprite.card.toughness_modifier):
-                        get_through = False
-                if get_through:
-                    list_of_attackers.append()
-                else:
-                    if ai_combined_power >= (player_combined_toughness + next_player.life):
-                        list_of_attackers.append(ally_creature_sprite)
-
-
-
-
-
-
+            return list_of_attackers
 
 
     def select_defenders(self, next_player, list_of_attackers, gameBoard):
-        resolved = True
-        list_of_defenders = []
-        if len(list_of_attackers) > 0:
-            list_of_defenders = len(list_of_attackers)*[0]
-            resolved = False
-        while not resolved:
-            i = 0
-            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                if i < len(list_of_attackers):
-                    list_of_defenders[i] = card.card
-                i += 1
+        print(next_player, next_player.name)
+        if next_player.name == "AI_Dusty":
             resolved = True
-        return list_of_defenders
+            list_of_defenders = []
+            if len(list_of_attackers) > 0:
+                list_of_defenders = len(list_of_attackers)*[0]
+                resolved = False
+            while not resolved:
+                i = 0
+                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if i < len(list_of_attackers):
+                        list_of_defenders[i] = card.card
+                    i += 1
+                resolved = True
+            return list_of_defenders
+        else:
+            list_of_defenders = [0]*len(list_of_attackers)
+            chosen_defender = None
+            chosen_attacker = None
+            if len(self.player_1.battlefield) > 0:
+                print("hi")
+                resolved = False
+                while not resolved:
+                    for event in pygame.event.get():
+
+
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_SPACE:
+                                return list_of_defenders
+
+
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            pos = pygame.mouse.get_pos()
+
+                            if event.button == 1:
+
+
+                                if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
+                                    self.quit = True
+                                    resolved = True
+
+                                if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
+
+                                    gameBoard.draw_options_menu()
+                                    gameBoard.calc_board()
+                                    gameBoard.stacked_card(self.stacked_card)
+                                    gameBoard.draw_board(self.phase)
+                                    gameBoard.draw_hand()
+                                    gameBoard.draw_land(player)
+                                    gameBoard.draw_land(next_player)
+                                    gameBoard.draw_new_battlefield(player)
+                                    gameBoard.draw_new_battlefield(next_player)
+                                    pygame.display.update()
+
+                                if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
+                                    return list_of_defenders
+                                
+
+                                for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if creature_sprite.rect.collidepoint(pos):
+                                        if chosen_defender == None:
+                                            chosen_defender = creature_sprite.card
+                                            gameBoard.tap_creature(creature_sprite)
+
+                                for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if creature_sprite.rect.collidepoint(pos) and creature_sprite.card in list_of_attackers:
+                                        if chosen_attacker == None:
+                                            chosen_attacker = creature_sprite.card
+
+                    if chosen_attacker != None and chosen_defender != None:
+                        indx = list_of_attackers.index(chosen_attacker)
+                        list_of_defenders[indx] = chosen_defender
+                        chosen_defender = None
+                        chosen_attacker = None
+
+                    self.draw_screen(gameBoard)
+                    if self.stacked_card != None:
+                        gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
+                    pygame.display.update()
+            else:
+                list_of_defenders.append(0)
+                return list_of_defenders
+
 
 
     def draw_cursor(self, x, y):
