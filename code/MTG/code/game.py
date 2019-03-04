@@ -931,9 +931,6 @@ class Game():
         elif card.effect == "Bounce":
             self.effect_bounce(player, opponent, gameBoard, combinations)
 
-        elif card.effect == "Haste":
-            self.effect_haste(player, gameBoard, value, combinations)
-
         elif card.effect == "Combat_Creature":
             self.effect_combat_creature(player, opponent, gameBoard, combinations)
 
@@ -1376,35 +1373,6 @@ class Game():
                             image_rect.center = card.rect.center
                             screen_res.gameDisplay.blit(image, image_rect)
 
-
-                pygame.display.update()
-
-    def effect_haste(self, player, gameBoard, value, combinations):
-        resolved = True
-        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                resolved = False
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                            if card.rect.collidepoint(pos):
-                                card.card.keyword = "Haste"
-                                resolved = True
-
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
-
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
 
                 pygame.display.update()
 

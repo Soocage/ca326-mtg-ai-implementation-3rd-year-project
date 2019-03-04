@@ -64,7 +64,7 @@ for i in range(n):
     with open("../personal_decks/deck_1", "wb") as deck_1:
 
         if ver.colour == "R" and ver.card_type == "Creature":
-            for j in range(0,5):
+            for j in range(0,2):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
 
@@ -77,7 +77,7 @@ for i in range(n):
 
 
         if ver.colour == "R" and ver.card_type == "Instant":
-            for j in range(0,0):
+            for j in range(0,4):
                     tmp = copy.copy(ver)
                     card_deck.append(tmp)
                     print(ver.name)

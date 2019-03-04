@@ -17,12 +17,61 @@ class Ai():
         self.mana = ""
         self.state = ""
         self.ai_mode = ai_mode
+
         if self.ai_mode == "red":
             self.ai_life_weight = 0.15
             self.ai_battlefield_weight = 0.20 
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
+
+            self.spell_weight = 4/5
+            self.creature_weight = 1 - self.spell_weight
+
+        elif self.ai_mode == "blue":
+            self.ai_life_weight = 0.15
+            self.ai_battlefield_weight = 0.20 
+            self.opponent_battlefield_weight = 0.10
+            self.open_mana_weight = 0.25
+            self.opponent_life_weight = 0.30
+
+            self.spell_weight = 3/5
+            self.creature_weight = 1 - self.spell_weight
+
+
+        elif self.ai_mode == "white":
+            self.ai_life_weight = 0.15
+            self.ai_battlefield_weight = 0.20 
+            self.opponent_battlefield_weight = 0.10
+            self.open_mana_weight = 0.25
+            self.opponent_life_weight = 0.30
+
+            self.spell_weight = 2/5
+            self.creature_weight = 1 - self.spell_weight
+
+        elif self.ai_mode == "black":
+            self.ai_life_weight = 0.15
+            self.ai_battlefield_weight = 0.20 
+            self.opponent_battlefield_weight = 0.10
+            self.open_mana_weight = 0.25
+            self.opponent_life_weight = 0.30
+
+            self.spell_weight = 3/5
+            self.creature_weight = 1 - self.spell_weight
+
+        elif self.ai_mode == "green":
+            self.ai_life_weight = 0.15
+            self.ai_battlefield_weight = 0.20 
+            self.opponent_battlefield_weight = 0.10
+            self.open_mana_weight = 0.25
+            self.opponent_life_weight = 0.30
+
+            self.spell_weight = 1/5
+            self.creature_weight = 1 - self.spell_weight
+
+
+
+
 
     def play_land(self):
         for card in self.hand:
@@ -83,20 +132,11 @@ class Ai():
         list_of_moves = []
         for combination in combinations:
             if self.ai_mode == "red":
-                list_of_moves.append((self.combination_cost_red(combination, opponent), combination))
-            #elif self.ai_mode == "green":
-                #list_of_moves.append((self.combination_cost_green(combination, opponent), combination))
-            #elif self.ai_mode == "black"
-                #list_of_moves.append((self.combination_cost_black(combination, opponent), combination))
-            #elif self.ai_mode ==  "white":
-                #list_of_moves.append((self.combination_cost_white(combination, opponent), combination))
-            #elif self.ai_mode == "blue":
-                #list_of_moves.append((self.combination_cost_blue(combination, opponent), combination))
+                list_of_moves.append((self.combination_cost(combination, opponent), combination))
+        print(list_of_moves)
         list_of_moves = self.sort_combinations(list_of_moves)
-        #chosen_move = list_of_moves[0][1]
-        #order = card_cost(chosen_move)
-        order = list_of_moves[0][1]
-        return order
+        chosen_move = list_of_moves[0][1]
+        return chosen_move
 
 
     def sort_combinations(self, list_of_moves):
@@ -108,6 +148,277 @@ class Ai():
                 j -= 1
             list_of_moves[j+1] = key
         return list_of_moves
+
+
+    
+    def combination_cost(self, combination, opponent):
+
+#        ideal_state = [ai_hp = 20, opponent ==> 0, new_nr_of_creatures > old_number_of_creatures, old_number_of_creatures_oppnent < new_number_of_ceatures_opponent]
+        combination_cost = 1.0
+        ai_combined_toughness = self.calculate_combined_toughness()
+        player_combined_toughness = self.calculate_combined_toughness(opponent)
+        ai_combined_power = self.calculate_combined_power()
+        player_combined_power = self.calculate_combined_power(opponent)
+
+        for card in combination:
+            if card.card_type == "Creature":
+                if "Haste" in card.keyword:
+                    possible_blockers = []
+                    for creature in opponent.battlefield:
+                        if creature.tapped == False:
+                            possible_blockers.append(creature)
+                    if len(possible_blockers) == 0:
+                        combination_cost = combination_cost*((card.power+opponent.life) / opponent.life)
+                    else:
+                        best_blocker = None
+                        for blocker in possible_blockers:
+                            if best_blocker == None:
+                                best_blocker = blocker
+                            else:
+                                if blocker.toughness > best_blocker.toughness:
+                                    best_blocker = blocker
+                        combination_cost = combination_cost*(card.power/best_blocker.toughness + card.power)
+
+                if "Flying" in card.keyword:
+                    possible_blockers = []
+                    for creature in opponent.battlefield:
+                        if "Flying" in creature.keyword or "Flying" in creature.temp_keyword:
+                            if creature.tapped == False:
+                                possible_blockers.append(creature)
+                    if len(possible_blockers) == 0:
+                        combination_cost = combination_cost*((card.power+opponent.life) / opponent.life)
+                    else:
+                        best_blocker = None
+                        for blocker in possible_blockers:
+                            if best_blocker == None:
+                                best_blocker = blocker
+                            else:
+                                if blocker.toughness > best_blocker.toughness:
+                                    best_blocker = blocker
+                        combination_cost = combination_cost*(card.power/best_blocker.toughness + card.power)
+
+                if "Vigiliance" in card.keyword:
+                    possible_blockers = []
+                    for creature in opponent.battlefield:
+                        if creature.tapped == False:
+                            possible_blockers.append(creature)
+                    if len(possible_blockers) == 0:
+                        combination_cost = combination_cost*((card.power+opponent.life) / opponent.life)
+                    else:
+                        best_blocker = None
+                        for blocker in possible_blockers:
+                            if best_blocker == None:
+                                best_blocker = blocker
+                            else:
+                                if blocker.toughness > best_blocker.toughness:
+                                    best_blocker = blocker
+                        combination_cost = combination_cost*(card.power/best_blocker.toughness + card.power)
+
+                        best_attacker = None
+                        for attacker in possible_blockers:
+                            if best_attacker == None:
+                                best_attacker = attacker
+                            else:
+                                if attacker.power > best_attacker.power:
+                                    best_attacker = attacker
+                        combination_cost = combination_cost*(1-(best_attacker.power/card.toughness + best_attacker.power))
+
+                if "LifeLink" in card.keyword:
+                    combination_cost = combination_cost*((card.power + self.life)/self.life)
+
+                if "Trample" in card.keyword:
+                    possible_blockers = []
+                    for creature in opponent.battlefield:
+                        if creature.tapped == False:
+                            possible_blockers.append(creature)
+                    if len(possible_blockers) > 0:
+                        combination_cost = combination_cost*(card.power/(card.power + best_blocker.toughness))
+                        if card.power > best_blocker.toughness:
+                            combination_cost = combination_cost*((card.power - best_blocker.toughness) + opponent.life/opponent.life)
+
+                if "Deathtouch" in card.keyword:
+                    best_attacker = None
+                    for creature in opponent.battlefield:
+                        if best_attacker == None:
+                            best_attacker = creature
+                        else:
+                            if creature.power > best_attacker.power:
+                                best_attacker = creature
+
+                    combination_cost = combination_cost*(1-(best_attacker.power/card.toughness + best_attacker.power))
+                    combination_cost = combination_cost*(card.power / (card.power + best_attacker.toughness))
+
+                if len(opponent.battlefield) > 0:
+                    combination_cost = combination_cost*((ai_combined_power + card.power) / player_combined_toughness)
+                    if player_combined_power > 0:
+                        combination_cost = combination_cost*((ai_combined_toughness + card.toughness) / player_combined_power)
+
+                combination_cost = combination_cost * self.creature_weight
+
+            elif card.card_type == "Sorcery" or card.card_type == "Instant":
+                if card.effect == "Draw":
+                    combination_cost = combination_cost*((len(self.hand))/(len(self.hand)+7))
+
+                if card.effect == "Tap":
+                    best_attacker = None
+                    best_blocker = None
+                    for creature in self.battlefield:
+                        if best_blocker == None:
+                            best_blocker = creature
+                        else:
+                            if creature.toughness > best_blocker.toughness:
+                                best_blocker = creature.toughness
+
+                    for creature in opponent.battlefield:
+                        if best_attacker == None:
+                            best_attacker = creature
+                        else:
+                            if creature.power > best_attacker.power:
+                                best_attacker = creature
+
+                    if best_blocker.toughness <= best_attacker.attacker:
+                        combination_cost = combination_cost*((player_combined_toughness + player_combined_power) - (best_attacker.power + best_attacker.toughness)) / (player_combined_power + player_combined_toughness)
+
+                if card.effect == "Damage":
+                    player_factor = 1 - ((opponent.life - int(card.value))/opponent.life)
+                    potential_targets = []
+                    best_target = None
+                    for creature in opponent.battlefield:
+                        if creature.toughness <= int(card.value):
+                            potential_targets.append(creature)
+
+                    for creature in potential_targets:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            if creature.power > best_target.power:
+                                best_target = creature
+                    
+                    if best_target != None:
+                        if player_combined_power > 0:
+                         creature_factor = 1 -((player_combined_power - best_target.power)/player_combined_power)
+                        else:
+                            creature_factor = 1 -((player_combined_toughness - best_target.toughness) / player_combined_toughness)
+                        combination_cost = combination_cost*((player_factor + creature_factor)/2)
+
+                if card.effect == "Bounce":
+                    best_attacker = None
+                    best_blocker = None
+                    for creature in self.battlefield:
+                        if best_blocker == None:
+                            best_blocker = creature
+                        else:
+                            if creature.toughness > best_blocker.toughness:
+                                best_blocker = creature.toughness
+
+                    for creature in opponent.battlefield:
+                        if best_attacker == None:
+                            best_attacker = creature
+                        else:
+                            if creature.power > best_attacker.power:
+                                best_attacker = creature
+
+                    if best_blocker.toughness <= best_attacker.attacker:
+                        combination_cost = combination_cost*((player_combined_toughness + player_combined_power) - (best_attacker.power + best_attacker.toughness)) / (player_combined_power + player_combined_toughness)
+
+
+                if card.effect == "Combat_Creature":
+                    ranked_creatures = []
+                    opponent_battlefield_copy = opponent.battlefield[:]
+                    while len(ranked_creatures) != len(opponent.battlefield):
+                        best_creature = None
+
+                        for creature in opponent_battlefield_copy:
+                            if best_creature == None:
+                                best_creature = creature
+                            else:
+                                if best_creature.power < creature.power:
+                                    best_creature = creature
+
+                        ranked_creatures.append(best_creature)
+                        opponent_battlefield_copy.remove(best_creature)
+
+                    player_target = None
+                    enemy_target = None
+                    found_targets = False
+                    i = 0
+                    while i < len(ranked_creatures) and found_targets == False:
+                        tmp_target = ranked_creatures[i]
+                        for creature in self.battlefield:
+                            if (creature.power >= tmp_target.toughness) and (creature.toughness > tmp_target.power):
+                                player_target = creature
+                                enemy_target = tmp_target
+                                found_targets = True
+                        i += 1
+
+                    if found_targets:
+                        combination_cost = combination_cost*((player_combined_power - enemy_target.power)/ player_combined_power)
+
+                if card.effect == "search_land":
+
+                    total_mana_cost = 0
+                    for card in self.hand:
+                        total_mana_cost += self.check_card_cost(card)
+
+                    combination_cost = combination_cost*(int(card.value)/(total_mana_cost/len(self.hand)))
+
+                if card.effect == "Gain_life":
+
+                    combination_cost = combination_cost*1-((self.life + int(card.value)) / 20)
+
+                if card.effect == "Exile" and card.effect == "Destroy":
+                    best_attacker = None
+                    for creature in opponent.battlefield:
+                        if best_attacker == None:
+                            best_attacker = creature
+                        else:
+                            if best_attacker.power < creature.power:
+                                best_attacker = creature
+
+                    combination_cost = combination_cost*((player_combined_power - best_attacker.power)/ player_combined_power)
+
+                if card.effect == "Discard":
+                    combination_cost = combination_cost*(len(opponent.hand) / 7)
+
+                if card.effect == "Reanimate":
+                    possible_targets = []
+
+                    for dead_card in self.graveyard:
+                        if dead_card.card_type == "Creature":
+                            possible_targets.append(card)
+
+                    for dead_card in opponent.graveyard:
+                        if dead_card.card_type == "Creature":
+                            possible_targets.append(card)
+
+                    targets = []
+                    for i in range(card.value):
+                        best_target = None
+                        for target in possible_targets:
+
+                            if best_target == None:
+                                best_target = target
+                            else:
+                                if ai_combined_toughness <= player_combined_power:
+                                    if best_target.toughness < target.toughness:
+                                        best_target = target
+                                else:
+                                    if best_target.power < target.power:
+                                        best_target = target
+
+                        targets.append(best_target)
+                    targets_toughness = 0
+                    targets_power = 0
+                    for creature in target:
+                        targets_toughness += creature.toughness
+                        targets_power += creature.power
+
+                    if ai_combined_toughness <= player_combined_power:
+                        combination_cost = combination_cost*(ai_combined_toughness/(ai_combined_toughness+targets_toughness))
+
+                combination_cost = combination_cost*(self.spell_weight)
+
+        return combination_cost
 
 
     def combination_cost_red(self, combination, opponent):
