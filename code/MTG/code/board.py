@@ -166,6 +166,16 @@ class Board():
         self.player_2_indicator = None
         self.stack_display_section = None
 
+    def draw_summon_icon(self, card_sprite):
+        if card_sprite.card.card_type == "Creature" and card_sprite.card.summon_sick == True:
+            w = card_sprite.rect.w*(0.7)
+            h = w
+            image = pygame.image.load("./images/speel_effects/sickness_icon.jpg")
+            image = pygame.transform.smoothscale(image, w, h)
+
+
+
+
 
     def draw_mulligan(self):
         MULLIGAN_BUTTONS.empty()

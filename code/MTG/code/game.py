@@ -753,6 +753,7 @@ class Game():
                                         if "Vigiliance" not in card.card.keyword and "Vigiliance" not in card.card.tmp_keyword:
                                             card.card.tapped = True
                                             gameBoard.tap_creature(card)
+                                            card.card.tapped = True
                                         list_of_attackers.append(card.card)
 
                     if event.type == pygame.KEYDOWN:
@@ -771,6 +772,7 @@ class Game():
             for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                 if creature_sprite.card in list_of_attackers:
                     gameBoard.tap_creature(creature_sprite)
+                    creature_sprite.card.tapped = True
                     pygame.display.update()
 
             return list_of_attackers
@@ -833,14 +835,13 @@ class Game():
 
                                 if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
                                     return list_of_defenders
-                                
+
 
                                 for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                                     if creature_sprite.rect.collidepoint(pos):
                                         if chosen_defender == None:
                                             chosen_defender = creature_sprite.card
                                             gameBoard.tap_creature(creature_sprite)
-
                                 for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                                     if creature_sprite.rect.collidepoint(pos) and creature_sprite.card in list_of_attackers:
                                         if chosen_attacker == None:
@@ -1427,6 +1428,7 @@ class Game():
                                 if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword) or card.card.tapped != True:
                                     card.card.tapped = True
                                     gameBoard.tap_creature(card)
+                                    card.card.tapped = True
                                     resolved = True
 
 
