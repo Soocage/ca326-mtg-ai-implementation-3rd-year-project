@@ -874,6 +874,10 @@ class Game():
         board.PLAYER_2_LAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
         board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
         board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            gameBoard.draw_summon_icon(card)
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            gameBoard.draw_summon_icon(card)
 
     def get_icon(self, w, h, keyword):
         scale_side = h

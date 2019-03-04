@@ -167,14 +167,14 @@ class Board():
         self.stack_display_section = None
 
     def draw_summon_icon(self, card_sprite):
-        if card_sprite.card.card_type == "Creature" and card_sprite.card.summon_sick == True:
-            w = card_sprite.rect.w*(0.7)
+        if card_sprite.card.card_type == "Creature" and (card_sprite.card.summon_sick == True and "Haste" not in card_sprite.card.keyword):
+            w = int(card_sprite.rect.w*(0.7))
             h = w
-            image = pygame.image.load("./images/speel_effects/sickness_icon.jpg")
-            image = pygame.transform.smoothscale(image, w, h)
-
-
-
+            image = pygame.image.load("./images/spell_effects/sickness_icon.png")
+            image = pygame.transform.smoothscale(image, (w, h))
+            x = card_sprite.rect.x + (card_sprite.rect.w*(0.15))
+            y = card_sprite.rect.y + (card_sprite.rect.h*0.4)
+            screen_res.gameDisplay.blit(image, (x, y))
 
 
     def draw_mulligan(self):
@@ -429,6 +429,8 @@ class Board():
                     i += 1
                 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
+            for card_sprite in PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                self.draw_summon_icon(card_sprite)
 
         else:
             PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.empty()
@@ -482,6 +484,9 @@ class Board():
                         battlefield_card_sprite.image = pygame.transform.rotate(battlefield_card_sprite.image, 90)
                     i += 1
                 PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+
+            for card_sprite in PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                self.draw_summon_icon(card_sprite)
 
     def draw_search_land(self, player):
         LAND_CARD_SPRITE_GROUP = pygame.sprite.Group()
