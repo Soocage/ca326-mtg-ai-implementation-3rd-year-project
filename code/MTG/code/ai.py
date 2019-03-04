@@ -17,18 +17,12 @@ class Ai():
         self.mana = ""
         self.state = ""
         self.ai_mode = ai_mode
-
-
-class AiRed(Ai):
-    def __init__(self, name, ai_mode):
-        Ai.__init__(self, name, ai_mode)
-        self.ai_life_weight = 0.15
-        self.ai_battlefield_weight = 0.20
-        self.opponent_battlefield_weight = 0.10
-        self.open_mana_weight = 0.25
-        self.opponent_life_weight = 0.30
-
-
+        if self.ai_mode == "red":
+            self.ai_life_weight = 0.15
+            self.ai_battlefield_weight = 0.20
+            self.opponent_battlefield_weight = 0.10
+            self.open_mana_weight = 0.25
+            self.opponent_life_weight = 0.30
 
     def play_land(self):
         for card in self.hand:
