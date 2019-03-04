@@ -20,7 +20,7 @@ class Ai():
 
         if self.ai_mode == "red":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20 
+            self.ai_battlefield_weight = 0.20
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
@@ -556,18 +556,18 @@ class Ai():
                 else:
                     if len(chosen_move[1][1][3]) <= 0:
                         opp_bat = 1
-                    else: 
+                    else:
                         opp_bat = (len(opponent.battlefield)/len(chosen_move[1][1][3]))
-                
-                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(chosen_move[1][1][2])) + opp_bat) / 4  
 
-                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4  
-                
+                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(chosen_move[1][1][2])) + opp_bat) / 4
+
+                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4
+
                 if move_average_score > chosen_move_average_score:
-                    chosen_move = move 
+                    chosen_move = move
 
         return chosen_move[1][0]
-                
+
 
 
 
@@ -594,18 +594,18 @@ class Ai():
                         temp_list[i] = combi_defenders[i]
                         for perm in itertools.permutations(temp_list, len(temp_list)):
                             list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, perm, opponent)])
-                
+
                 elif len(combi_defenders) == len(combi_attackers):
                     for i in range(len(combi_defenders)):
                         for perm in itertools.permutations(combi_defenders, len(combi_defenders)):
-                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, combi_defenders, opponent)])      
+                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, combi_defenders, opponent)])
 
         for combi_and_board_state in list_of_end_of_battle_board_states:
             after_ai_combined_toughness = self.calculate_combined_toughness(None,combi_and_board_state[1][2])
             after_player_combined_toughness = self.calculate_combined_toughness(opponent,combi_and_board_state[1][2])
             after_ai_combined_power = self.calculate_combined_power(None,combi_and_board_state[1][2])
             after_player_combined_power = self.calculate_combined_power(opponent,combi_and_board_state[1][2])
-        
+
             ai_life_weight = self.ai_life_weight
             ai_battlefield_weight = self.ai_battlefield_weight
             opponent_battlefield_weight = self.opponent_battlefield_weight
@@ -629,9 +629,9 @@ class Ai():
             damage_done = opponent.life - new_opponent_life
             opponent_life_factor = 1 - ((opponent.life - damage_done) / opponent.life)
             opponent_life_weight = opponent_life_weight*opponent_life_factor
-           
+
             value = ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight
- 
+
             cost_of_attacking.append([value, combi_and_board_state])
 
         sorted_cost_of_attacking = self.sort_combinations(cost_of_attacking)
@@ -669,18 +669,3 @@ class Ai():
                 opponent_health -= combi_attackers[i].power
             i += 1
         return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
