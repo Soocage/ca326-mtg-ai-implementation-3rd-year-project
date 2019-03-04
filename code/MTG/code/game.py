@@ -678,9 +678,6 @@ class Game():
         if self.check_life() and not self.quit:
             attackers = self.select_attackers(current_player, gameBoard, next_player)
             defenders = self.select_defenders(next_player, attackers, gameBoard)
-
-            print(attackers)
-            print(defenders)
             self.damage_step(attackers, defenders,current_player, next_player, gameBoard)
             if attackers != None:
                 for attacker in attackers:
@@ -779,27 +776,20 @@ class Game():
 
 
     def select_defenders(self, next_player, list_of_attackers, gameBoard):
-        print(next_player, next_player.name)
         if next_player.name == "AI_Dusty":
-            resolved = True
-            list_of_defenders = []
-            if len(list_of_attackers) > 0:
-                list_of_defenders = len(list_of_attackers)*[0]
-                resolved = False
-            while not resolved:
-                i = 0
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if i < len(list_of_attackers):
-                        list_of_defenders[i] = card.card
-                    i += 1
-                resolved = True
+            available_blockers = []
+            for creature in self.player_2.battlefield:
+                if creature.tapped == False:
+                    available_blockers.append(creature)
+
+            list_of_defenders = (self.player_2.select_defenders(available_blockers, list_of_attackers, next_player))
+            print(list_of_defenders)
             return list_of_defenders
         else:
             list_of_defenders = [0]*len(list_of_attackers)
             chosen_defender = None
             chosen_attacker = None
             if len(self.player_1.battlefield) > 0:
-                print("hi")
                 resolved = False
                 while not resolved:
                     for event in pygame.event.get():
@@ -861,8 +851,6 @@ class Game():
             else:
                 list_of_defenders.append(0)
                 return list_of_defenders
-
-
 
     def draw_cursor(self, x, y):
         screen_res.gameDisplay.blit(cursor, (x, y))

@@ -133,7 +133,6 @@ class Ai():
         for combination in combinations:
             if self.ai_mode == "red":
                 list_of_moves.append((self.combination_cost(combination, opponent), combination))
-        print(list_of_moves)
         list_of_moves = self.sort_combinations(list_of_moves)
         chosen_move = list_of_moves[0][1]
         return chosen_move
@@ -529,7 +528,6 @@ class Ai():
         # [value, [combi, [AI life, Opponent Life, AI battlefield, Opponent Battlefield]]]
         ideal_board_state = [self.life, 0, self.battlefield, []]
         chosen_move = None
-        i = 0
         for move in cost_of_attacking:
             if chosen_move == None:
                 chosen_move = move
@@ -558,7 +556,70 @@ class Ai():
                         opp_bat = 1
                     else:
                         opp_bat = (len(opponent.battlefield)/len(chosen_move[1][1][3]))
+                print(opponent_ideal_life_change)
+                if (len(chosen_move[1][1][2])) > 0:
+                    ai_bat = (len(chosen_move[1][1][2]))
+                else:
+                    ai_bat = len(self.battlefield)
+                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/ai_bat) + opp_bat) / 4
 
+                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4
+
+                if move_average_score > chosen_move_average_score:
+                    chosen_move = move
+
+        return chosen_move[1][0]
+
+    def select_defenders(self, available_blockers, list_of_attackers, opponent ):
+        defender_combinations = []
+        for i in range(len(list_of_attackers) + 1):
+            for comb in itertools.combinations(available_blockers, i):
+                print(comb)
+                defender_combinations.append(comb)
+
+        defender_permutations = []
+        for comb in defender_combinations:
+            sequence = [0]*len(list_of_attackers)
+            if len(comb) > 0:
+                i = 0
+                while i < len(sequence):
+                    sequence[i] = comb[i]
+                    i += 1
+            for perm in itertools.permutations(sequence, len(sequence)):
+                defender_permutations.append(perm)
+
+        cost_of_defending = self.check_cost_of_defending(list_of_attackers, defender_permutations, opponent)
+        ideal_board_state = [self.life, 0, self.battlefield, []]
+        chosen_move = None
+        i = 0
+        for move in cost_of_defending:
+            if chosen_move == None:
+                chosen_move = move
+            else:
+                chosen_move_value = 0
+                chosen_move_ai_life = chosen_move[1][1][0]
+                chosen_move_opponent_life = chosen_move[1][1][1]
+                chosen_move_ai_battlefield = chosen_move[1][1][2]
+                chosen_move_opponent_battlefield = chosen_move[1][1][3]
+
+                move_value = 0
+                move_ai_life = move[1][1][0]
+                move_opponent_life = move[1][1][1]
+                move_ai_battlefield = move[1][1][2]
+                move_opponent_battlefield = move[1][1][3]
+
+                opponent_ideal_life_change  = opponent.life
+
+                chosen_move_opponent_life_change = opponent.life - chosen_move_opponent_life
+                move_opponent_life_change = opponent.life - move_opponent_life
+
+                if len(opponent.battlefield) <= 0:
+                    opp_bat = 1
+                else:
+                    if len(chosen_move[1][1][3]) <= 0:
+                        opp_bat = 1
+                    else:
+                        opp_bat = (len(opponent.battlefield)/len(chosen_move[1][1][3]))
                 chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(chosen_move[1][1][2])) + opp_bat) / 4
 
                 move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4
@@ -567,6 +628,61 @@ class Ai():
                     chosen_move = move
 
         return chosen_move[1][0]
+
+
+    def check_cost_of_defending(self, list_of_attackers, defender_permutations, opponent):
+        ai_combined_toughness = self.calculate_combined_toughness()
+        player_combined_toughness = self.calculate_combined_toughness(opponent)
+        ai_combined_power = self.calculate_combined_power()
+        player_combined_power = self.calculate_combined_power(opponent)
+
+        cost_of_defending = []
+        list_of_end_of_battle_board_states = []
+        
+
+        for permu_defenders in defender_permutations:
+            attackers_copy = list_of_attackers[:]
+            list_of_end_of_battle_board_states.append([permu_defenders, self.simulate_battle(attackers_copy, permu_defenders, opponent, self)])
+
+
+        for permu_and_board_state in list_of_end_of_battle_board_states:
+            after_ai_combined_toughness = self.calculate_combined_toughness(None,permu_and_board_state[1][2])
+            after_player_combined_toughness = self.calculate_combined_toughness(opponent,permu_and_board_state[1][2])
+            after_ai_combined_power = self.calculate_combined_power(None,permu_and_board_state[1][2])
+            after_player_combined_power = self.calculate_combined_power(opponent,permu_and_board_state[1][2])
+
+            ai_life_weight = self.ai_life_weight
+            ai_battlefield_weight = self.ai_battlefield_weight
+            opponent_battlefield_weight = self.opponent_battlefield_weight
+            opponent_life_weight = self.opponent_life_weight
+
+            ai_life_weight = ai_life_weight*((permu_and_board_state[1][0]/self.life))
+
+            if len(self.battlefield) > 0:
+                ai_battlefield_factor = (((after_ai_combined_power/ai_combined_power) + (after_ai_combined_toughness/ai_combined_toughness) + (len(permu_and_board_state[1][2])/len(self.battlefield))) / 3)
+                ai_battlefield_weight = ai_battlefield_weight*ai_battlefield_factor
+            else:
+                ai_battlefield_weight = self.ai_battlefield_weight
+
+            if len(opponent.battlefield) > 0:
+                opponent_battlefield_factor = (((after_player_combined_power/player_combined_power) + (after_player_combined_toughness/player_combined_toughness) + (len(permu_and_board_state[1][3])/len(opponent.battlefield))) / 3)
+                opponent_battlefield_weight = opponent_battlefield_weight*opponent_battlefield_factor
+            else:
+                opponent_battlefield_weight = self.opponent_battlefield_weight
+
+            new_opponent_life = permu_and_board_state[1][1]
+            damage_done = opponent.life - new_opponent_life
+            opponent_life_factor = 1 - ((opponent.life - damage_done) / opponent.life)
+            opponent_life_weight = opponent_life_weight*opponent_life_factor
+
+            value = ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight
+
+            cost_of_defending.append([value, permu_and_board_state])
+
+        sorted_cost_of_defending = self.sort_combinations(cost_of_defending)
+        return sorted_cost_of_defending[:5]
+
+
 
 
 
@@ -586,19 +702,19 @@ class Ai():
 
                 if len(combi_defenders) == 0:
                     temp_list = len(combi_attackers)*[0]
-                    list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, temp_list, opponent)])
+                    list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, temp_list, opponent, opponent)])
 
                 elif len(combi_defenders) < len(combi_attackers):
                     temp_list = len(combi_attackers)*[0]
                     for i in range(len(combi_defenders)):
                         temp_list[i] = combi_defenders[i]
                         for perm in itertools.permutations(temp_list, len(temp_list)):
-                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, perm, opponent)])
+                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, perm, opponent, opponent)])
 
                 elif len(combi_defenders) == len(combi_attackers):
                     for i in range(len(combi_defenders)):
                         for perm in itertools.permutations(combi_defenders, len(combi_defenders)):
-                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, combi_defenders, opponent)])
+                            list_of_end_of_battle_board_states.append([combi_attackers, self.simulate_battle(combi_attackers, combi_defenders, opponent, opponent)])
 
         for combi_and_board_state in list_of_end_of_battle_board_states:
             after_ai_combined_toughness = self.calculate_combined_toughness(None,combi_and_board_state[1][2])
@@ -638,34 +754,58 @@ class Ai():
         return sorted_cost_of_attacking[:5]
 
 
+    def simulate_battle(self, combi_attackers, combi_defenders, opponent, defending_player):
+        print(type(defending_player))
+        if type(defending_player) != Ai:
+            for attacker in combi_attackers:
+                if type(attacker) != int:
+                    attacker.toughness_modifier = 0
+            for defender in combi_defenders:
+                if type(defender) != int:
+                    defender.toughness_modifier = 0
 
+            opponent_health = opponent.life
+            ai_health = self.life
+            current_ai_battlefield = self.battlefield[:]
+            current_player_battlefield = opponent.battlefield[:]
 
+            i = 0
+            while i < len(combi_attackers):
+                if type(combi_defenders[i]) != int:
+                    combi_attackers[i].toughness_modifier -= (combi_defenders[i].power + combi_defenders[i].power_modifier)
+                    combi_defenders[i].toughness_modifier -= (combi_attackers[i].power + combi_attackers[i].power_modifier)
+                    if combi_attackers[i].toughness + combi_attackers[i].toughness_modifier <= 0:
+                        current_ai_battlefield.remove(combi_attackers[i])
+                    if combi_defenders[i].toughness + combi_defenders[i].toughness_modifier <= 0:
+                        current_player_battlefield.remove(combi_defenders[i])
+                else:
+                    opponent_health -= combi_attackers[i].power
+                i += 1
+            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
 
+        else:
+            for attacker in combi_attackers:
+                if type(attacker) != int:
+                    attacker.toughness_modifier = 0
+            for defender in combi_defenders:
+                if type(defender) != int:
+                    defender.toughness_modifier = 0
 
+            opponent_health = opponent.life
+            ai_health = self.life
+            current_ai_battlefield = self.battlefield[:]
+            current_player_battlefield = opponent.battlefield[:]
 
-    def simulate_battle(self, combi_attackers, combi_defenders, opponent):
-        for attacker in combi_attackers:
-            if type(attacker) != int:
-                attacker.toughness_modifier = 0
-        for defender in combi_defenders:
-            if type(defender) != int:
-                defender.toughness_modifier = 0
-
-        opponent_health = opponent.life
-        ai_health = self.life
-        current_ai_battlefield = self.battlefield[:]
-        current_player_battlefield = opponent.battlefield[:]
-
-        i = 0
-        while i < len(combi_attackers):
-            if type(combi_defenders[i]) != int:
-                combi_attackers[i].toughness_modifier -= (combi_defenders[i].power + combi_defenders[i].power_modifier)
-                combi_defenders[i].toughness_modifier -= (combi_attackers[i].power + combi_attackers[i].power_modifier)
-                if combi_attackers[i].toughness + combi_attackers[i].toughness_modifier <= 0:
-                    current_ai_battlefield.remove(combi_attackers[i])
-                if combi_defenders[i].toughness + combi_defenders[i].toughness_modifier <= 0:
-                    current_player_battlefield.remove(combi_defenders[i])
-            else:
-                opponent_health -= combi_attackers[i].power
-            i += 1
-        return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
+            i = 0
+            while i < len(combi_attackers):
+                if type(combi_defenders[i]) != int:
+                    combi_attackers[i].toughness_modifier -= (combi_defenders[i].power + combi_defenders[i].power_modifier)
+                    combi_defenders[i].toughness_modifier -= (combi_attackers[i].power + combi_attackers[i].power_modifier)
+                    if combi_attackers[i].toughness + combi_attackers[i].toughness_modifier <= 0:
+                        current_ai_battlefield.remove(combi_attackers[i])
+                    if combi_defenders[i].toughness + combi_defenders[i].toughness_modifier <= 0:
+                        current_player_battlefield.remove(combi_defenders[i])
+                else:
+                    ai_health -= combi_attackers[i].power
+                i += 1
+            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
