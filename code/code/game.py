@@ -458,7 +458,7 @@ class Game():
                         current_player.hand.remove(card) #####
                         current_player.graveyard.append(card)######
                         self.response(next_player, current_player, gameBoard)
-                        self.play_a_sorcery_or_instant(card, current_player, next_player, gameBoard)
+                        self.play_a_sorcery_or_instant(card, current_player, next_player, gameBoard, cards_to_be_played)
                         self.clear_mana(current_player)
                         self.stacked_card = card
                         gameBoard.stacked_card(self.stacked_card)
@@ -613,7 +613,7 @@ class Game():
                     gameBoard.draw_board(self.phase)
                     self.stacked_card = card
                     gameBoard.stacked_card(self.stacked_card)
-                    #self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
+                    self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
 
 
 
@@ -690,17 +690,22 @@ class Game():
         if attackers != None:
             i = 0
             while i < len(attackers):
-                if type(defenders[i]) != int:
-                    attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
-                    defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
-                    print(attackers[i].toughness_modifier)
-                    print(defenders[i].toughness_modifier)
-                    if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
-                        current_player.graveyard.append(attackers[i])
-                        current_player.battlefield.remove(attackers[i])
-                    if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
-                        next_player.graveyard.append(defenders[i])
-                        next_player.battlefield.remove(defenders[i])
+                if type(defenders[i]) != int and ((defenders[i].keyword != "Flying" and attackers[i].keyword != "Flying") or (defenders[i].keyword == "Flying" and attackers[i].keyword != "Flying") or (defenders[i].keyword == "Flying" and attackers[i].keyword == "Flying")):
+                        attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
+                        defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
+
+                        if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
+                            current_player.graveyard.append(attackers[i])
+                            current_player.battlefield.remove(attackers[i])
+                            if attackers[i].keyword == "Trample":
+                                next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
+                            if attackers[i].keyword == "Life_Link":
+                                current_player.life += (attackers[i].power + attackers[i].power_modifier) 
+                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
+                            next_player.graveyard.append(defenders[i])
+                            next_player.battlefield.remove(defenders[i])
+                            if defenders[i].keyword == "Life_Link":
+                                next_player.life += (defenders[i].power + defenders[i].power_modifier) 
                 else:
                     next_player.life -= attackers[i].power
                 i += 1
@@ -784,8 +789,7 @@ class Game():
                 if creature.tapped == False:
                     available_blockers.append(creature)
 
-            list_of_defenders = (self.player_2.select_defenders(available_blockers, list_of_attackers, next_player))
-            print(list_of_defenders)
+            list_of_defenders = (self.player_2.select_defenders(available_blockers, list_of_attackers, self.player_1))
             return list_of_defenders
         else:
             list_of_defenders = [0]*len(list_of_attackers)
@@ -948,7 +952,7 @@ class Game():
             self.effect_discard(player, opponent, gameBoard, card.targets, card.value, combinations)
 
         elif card.effect == "Reanimate":
-            self.effect_reanimate(player, opponent, card.targets, gameBoard, combinations)
+            self.effect_reanimate(player, opponent, gameBoard, combinations, card)
 
         #gameBoard.draw_graveyard(player)
         gameBoard.draw_hand()
@@ -988,41 +992,55 @@ class Game():
         amt = 0
         clicked_target = ""
 
-
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-
-                        if "player" in list_of_targets:
-                            if clicked_target == "" or clicked_target == "player":
-                                for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
-                                    if card.rect.collidepoint(pos):
-                                        clicked_target = "player"
-                                        player.hand.remove(card.card)
-                                        player.graveyard.append(card.card)
-                                        amt += 1
+        if type(player) != ai.Ai:
+            if len(self.player_1.hand) > 0 or len(self.player_2.hand) > 0:
+                while not resolved:
+                    for event in pygame.event.get():
+                        pos = pygame.mouse.get_pos()
+                        mx, my = pos[0], pos[1]
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if event.button == 1:
 
 
-                        if "opponent" in list_of_targets:
-                            if clicked_target == "" or clicked_target == "opponent":
-                                for card in board.PLAYER_2_HAND_SPRITE_CARD_GROUP:
-                                    if card.rect.collidepoint(pos):
-                                        clicked_target = "opponent"
-                                        opponent.hand.remove(card.card)
-                                        opponent.graveyard.append(card.card)
+                                if "player" in list_of_targets:
+                                    if clicked_target == "" or clicked_target == "player":
+                                        for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
+                                            if card.rect.collidepoint(pos):
+                                                clicked_target = "player"
+                                                player.hand.remove(card.card)
+                                                player.graveyard.append(card.card)
+                                                amt += 1
 
-                                        amt += 1
 
-                        if amt == int(value):
-                            resolved = True
+                                if "opponent" in list_of_targets:
+                                    if clicked_target == "" or clicked_target == "opponent":
+                                        for card in board.PLAYER_2_HAND_SPRITE_CARD_GROUP:
+                                            if card.rect.collidepoint(pos):
+                                                clicked_target = "opponent"
+                                                opponent.hand.remove(card.card)
+                                                opponent.graveyard.append(card.card)
 
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
-                pygame.display.update()
+                                                amt += 1
+
+                                if amt == int(value):
+                                    resolved = True
+
+                        self.draw_screen(gameBoard)
+                        gameBoard.stacked_card(self.stacked_card)
+                        gameBoard.draw_indicator(self.player_1)
+                        pygame.display.update()
+        else:
+            if len(self.player_1.hand) > 0:
+                indx = random.randint(0, len(self.player_1.hand) -1)
+                self.player_1.graveyard.append(self.player_1.hand.pop(indx))
+
+
+            elif len(self.player_2.hand) > 0:
+                indx = random.randint(0, len(self.player_2.hand)-1)
+                self.player_2.graveyard.append(self.player_2.hand.pop(indx))
+
+
+
 
     def effect_destroy(self, player, opponent, gameBoard, list_of_targets, combinations):
         tmp_1 = False
@@ -1041,51 +1059,141 @@ class Game():
         else:
             resolved = True
 
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+        if type(player) != ai.Ai:
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
 
-                        if "creature" in list_of_targets:
-                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
-                                        player.battlefield.remove(card.card)
-                                        player.graveyard.append(card.card)
+                            if "creature" in list_of_targets:
+                                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                            player.battlefield.remove(card.card)
+                                            player.graveyard.append(card.card)
 
-                                        resolved = True
+                                            resolved = True
 
-                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
-                                        opponent.battlefield.remove(card.card)
-                                        opponent.graveyard.append(card.card)
+                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                            opponent.battlefield.remove(card.card)
+                                            opponent.graveyard.append(card.card)
 
-                                        resolved = True
+                                            resolved = True
 
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
+
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    pygame.display.update()
+        else:
+            valid_targets_player = []
+            valid_targets_ai = []
+            for creature in self.player_1.battlefield:
+                if "Protection" not in creature.keyword and "Protection" not in creature.tmp_keyword:
+                    valid_targets_player.append([creature, self.player_1])
+
+            for creature in self.player_2.battlefield:
+                if "Protection" not in creature.keyword and "Protection" not in creature.tmp_keyword:
+                    valid_targets_ai.append([creature, self.player_2])
+
+            ai_combined_toughness = self.player_2.calculate_combined_toughness()
+            ai_combined_power = self.player_2.calculate_combined_power()
+
+            player_combined_toughness = self.player_2.calculate_combined_toughness(self.player_1)
+            player_combined_power = self.player_2.calculate_combined_power(self.player_1)
+
+            if len(valid_targets_player) > 0:
+                if player_combined_toughness >= ai_combined_power:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) < (creature.toughness + creature.toughness_modifier)
+                            best_target = creature
+
+                elif player_combined_power >= ai_combined_toughness:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.power + best_target.power_modifier) < (creature.power + creature.power_modifier)
+                            best_target = creature
+                else:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) < (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
+                            best_target = creature
+                self.player_1.battlefield.remove(best_target)
+                self.player_1.graveyard.append(best_target)
                 self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
+                gameBoard.draw_new_battlefield(self.player_1)
 
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
 
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
 
-                pygame.display.update()
+
+            elif len(valid_targets_ai) > 0:
+                if player_combined_toughness >= ai_combined_power:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.power + best_target.power_modifier) > (creature.power + creature.power_modifier)
+                            best_target = creature
+
+
+                elif player_combined_power >= ai_combined_toughness:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) > (creature.toughness + creature.toughness_modifier)
+                            best_target = creature
+
+                else:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
+                            best_target = creature
+
+                self.player_2.battlefield.remove(best_target)
+                self.player_2.graveyard.append(best_target)
+                self.draw_screen(gameBoard)
+                gameBoard.draw_new_battlefield(self.player_2)
+                
+
+
+
 
     def effect_exile(self, player, opponent, gameBoard, list_of_targets, combinations):
+        print("friends")
         tmp_1 = False
         tmp_2 = False
 
@@ -1102,47 +1210,136 @@ class Game():
         else:
             resolved = True
 
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+        if type(player) != ai.Ai:
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
 
-                        if "creature" in list_of_targets:
-                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
-                                        player.battlefield.remove(card.card)
+                            if "creature" in list_of_targets:
+                                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                            player.battlefield.remove(card.card)
 
-                                        resolved = True
+                                            resolved = True
 
-                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
-                                        opponent.battlefield.remove(card.card)
+                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
+                                            opponent.battlefield.remove(card.card)
 
-                                        resolved = True
+                                            resolved = True
 
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
+
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    pygame.display.update()
+        else:
+            print("friends")
+            valid_targets_player = []
+            valid_targets_ai = []
+            for creature in self.player_1.battlefield:
+                if "Protection" not in creature.keyword and "Protection" not in creature.tmp_keyword:
+                    valid_targets_player.append(creature)
+
+            for creature in self.player_2.battlefield:
+                if "Protection" not in creature.keyword and "Protection" not in creature.tmp_keyword:
+                    valid_targets_ai.append(creature)
+
+            ai_combined_toughness = self.player_2.calculate_combined_toughness()
+            ai_combined_power = self.player_2.calculate_combined_power()
+
+            player_combined_toughness = self.player_2.calculate_combined_toughness(self.player_1)
+            player_combined_power = self.player_2.calculate_combined_power(self.player_1)
+
+            print(valid_targets_player, valid_targets_ai)
+            if len(valid_targets_player) > 0:
+                if player_combined_toughness >= ai_combined_power:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) < (creature.toughness + creature.toughness_modifier)
+                            best_target = creature
+
+                elif player_combined_power >= ai_combined_toughness:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.power + best_target.power_modifier) < (creature.power + creature.power_modifier)
+                            best_target = creature
+                else:
+                    best_target = None
+                    for creature in valid_targets_player:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) < (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
+                            best_target = creature
+                print(best_target)
+                self.player_1.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
+                gameBoard.draw_new_battlefield(self.player_1)
 
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
 
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
 
-                pygame.display.update()
+
+            elif len(valid_targets_ai) > 0:
+                if player_combined_toughness >= ai_combined_power:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.power + best_target.power_modifier) > (creature.power + creature.power_modifier)
+                            best_target = creature
+
+
+                elif player_combined_power >= ai_combined_toughness:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) > (creature.toughness + creature.toughness_modifier)
+                            best_target = creature
+
+                else:
+                    best_target = None
+                    for creature in valid_targets_ai:
+                        if best_target == None:
+                            best_target = creature
+                        else:
+                            (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
+                            best_target = creature
+                print(best_target)
+
+                self.player_2.battlefield.remove(best_target)
+                self.draw_screen(gameBoard)
+                gameBoard.draw_new_battlefield(self.player_2)
+                
+
 
 
     def effect_protection(self, player, opponent, gameBoard, list_of_targets, value, combinations):
@@ -1169,74 +1366,75 @@ class Game():
             resolved = False
         else:
             resolved = True
+        if type(player) != ai.Ai:
+            while not resolved:
+                 for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            if "player" in list_of_targets and tmp_1:
+                                if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
+                                    player.state = "Protection"
+                                    resolved = True
 
-        while not resolved:
-             for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        if "player" in list_of_targets and tmp_1:
-                            if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
-                                player.state = "Protection"
-                                resolved = True
+                            if "opponent" in list_of_targets and tmp_2:
+                                if gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
+                                    opponent.state = "Protection"
+                                    resolved = True
 
-                        if "opponent" in list_of_targets and tmp_2:
-                            if gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
-                                opponent.state = "Protection"
-                                resolved = True
+                            if "creature" in list_of_targets:
+                                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if card.card.tmp_keyword == "":
+                                            card.card.tmp_keyword = "Protection"
+                                        else:
+                                            tmp = card.card.tmp_keyword + "Protection"
+                                            card.card.tmp_keyword = tmp
+                                    resolved = True
 
-                        if "creature" in list_of_targets:
-                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if card.card.tmp_keyword == "":
-                                        card.card.tmp_keyword = "Protection"
-                                    else:
-                                        tmp = card.card.tmp_keyword + "Protection"
-                                        card.card.tmp_keyword = tmp
-                                resolved = True
+                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if card.rect.collidepoint(pos):
+                                        if card.card.tmp_keyword == "":
+                                            card.card.tmp_keyword = "Protection"
+                                        else:
+                                            tmp = card.card.tmp_keyword + "Protection"
+                                            card.card.tmp_keyword = tmp
+                                    resolved = True
 
-                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos):
-                                    if card.card.tmp_keyword == "":
-                                        card.card.tmp_keyword = "Protection"
-                                    else:
-                                        tmp = card.card.tmp_keyword + "Protection"
-                                        card.card.tmp_keyword = tmp
-                                resolved = True
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
 
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
 
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    if "player" in list_of_targets and tmp_1:
+                        image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
                         image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
+                        image_rect.center = ((gameBoard.player_1_player_sec.x + (gameBoard.player_1_player_sec.w/2)), (gameBoard.player_1_player_sec.y + (gameBoard.player_1_player_sec.h/2)))
                         screen_res.gameDisplay.blit(image, image_rect)
 
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
+
+                    if "opponent" in list_of_targets and tmp_2:
+                        image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
                         image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
+                        image_rect.center = ((gameBoard.player_2_player_sec.x + (gameBoard.player_2_player_sec.w/2)), (gameBoard.player_2_player_sec.y + (gameBoard.player_2_player_sec.h/2)))
                         screen_res.gameDisplay.blit(image, image_rect)
 
-                if "player" in list_of_targets and tmp_1:
-                    image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
-                    image_rect = image.get_rect()
-                    image_rect.center = ((gameBoard.player_1_player_sec.x + (gameBoard.player_1_player_sec.w/2)), (gameBoard.player_1_player_sec.y + (gameBoard.player_1_player_sec.h/2)))
-                    screen_res.gameDisplay.blit(image, image_rect)
+                    pygame.display.update()
 
-
-                if "opponent" in list_of_targets and tmp_2:
-                    image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
-                    image_rect = image.get_rect()
-                    image_rect.center = ((gameBoard.player_2_player_sec.x + (gameBoard.player_2_player_sec.w/2)), (gameBoard.player_2_player_sec.y + (gameBoard.player_2_player_sec.h/2)))
-                    screen_res.gameDisplay.blit(image, image_rect)
-
-                pygame.display.update()
 
 
 
@@ -1248,59 +1446,76 @@ class Game():
 
         if "opponent" in list_of_targets and "Protection" not in opponent.state:
             resolved = False
-        while not resolved:
-             for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        if "opponent" in list_of_targets and "Protection" not in opponent.state:
-                            if  gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
-                                opponent.life += int(value)
-                                resolved = True
-                        if "player" in list_of_targets and "Protection" not in player.state:
-                            if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
-                                player.life += int(value)
-                                resolved = True
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
 
-                if "player" in list_of_targets and "Protection" not in player.state:
-                    image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
-                    image_rect = image.get_rect()
-                    image_rect.center = ((gameBoard.player_1_player_sec.x + (gameBoard.player_1_player_sec.w/2)), (gameBoard.player_1_player_sec.y + (gameBoard.player_1_player_sec.h/2)))
-                    screen_res.gameDisplay.blit(image, image_rect)
+        if type(player) != ai.Ai:
+            while not resolved:
+                 for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            if "opponent" in list_of_targets and "Protection" not in opponent.state:
+                                if  gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
+                                    opponent.life += int(value)
+                                    resolved = True
+                            if "player" in list_of_targets and "Protection" not in player.state:
+                                if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
+                                    player.life += int(value)
+                                    resolved = True
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
 
-
-                if "opponent" in list_of_targets and "Protection" not in opponent.state:
-                    image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
-                    image_rect = image.get_rect()
-                    image_rect.center = ((gameBoard.player_2_player_sec.x + (gameBoard.player_2_player_sec.w/2)), (gameBoard.player_2_player_sec.y + (gameBoard.player_2_player_sec.h/2)))
-                    screen_res.gameDisplay.blit(image, image_rect)
+                    if "player" in list_of_targets and "Protection" not in player.state:
+                        image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
+                        image_rect = image.get_rect()
+                        image_rect.center = ((gameBoard.player_1_player_sec.x + (gameBoard.player_1_player_sec.w/2)), (gameBoard.player_1_player_sec.y + (gameBoard.player_1_player_sec.h/2)))
+                        screen_res.gameDisplay.blit(image, image_rect)
 
 
-                pygame.display.update()
+                    if "opponent" in list_of_targets and "Protection" not in opponent.state:
+                        image = self.get_target_icon(gameBoard.player_1_player_sec.w, gameBoard.player_1_player_sec.h)
+                        image_rect = image.get_rect()
+                        image_rect.center = ((gameBoard.player_2_player_sec.x + (gameBoard.player_2_player_sec.w/2)), (gameBoard.player_2_player_sec.y + (gameBoard.player_2_player_sec.h/2)))
+                        screen_res.gameDisplay.blit(image, image_rect)
+
+
+                    pygame.display.update()
+        else:
+            if "player" in list_of_targets and "Protection" not in player.state:
+                player.life += int(value)
+
+            elif "opponent" in list_of_targets and "Protection" not in opponent.state:
+                opponent.life += int(value)
 
 
     def effect_search_land(self, player, gameBoard, combinations):
-        resolved = False
-        while not resolved:
-            card_list = gameBoard.draw_search_land(player)
+        if type(player) != ai.Ai:
+            resolved = False
+            while not resolved:
+                card_list = gameBoard.draw_search_land(player)
 
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
 
-                        for card in card_list:
-                            if card.rect.collidepoint(pos):
-                                player.land_zone.append(card.card)
-                                player.deck.cards.remove(card.card)
-                                gameBoard.draw_land(player)
-                                resolved = True
-
+                            for card in card_list:
+                                if card.rect.collidepoint(pos):
+                                    player.land_zone.append(card.card)
+                                    player.deck.cards.remove(card.card)
+                                    self.shuffle_deck(self.player_1)
+                                    gameBoard.draw_land(player)
+                                    resolved = True
+        else:
+            for card in player.deck.cards:
+                if card.card_type == "Land":
+                    player.land_zone.append(card)
+                    player.deck.cards.remove(card)
+                    self.shuffle_deck(self.player_2)
+                    gameBoard.draw_land(player)
+                    return
 
     def effect_combat_creature(self, player, opponent, gameBoard, combinations):
         tmp_1 = False
@@ -1319,93 +1534,172 @@ class Game():
 
         attacker = []
         defender = []
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
+        if type(player) != ai.Ai:
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    if len(attacker) < 1:
+                                        attacker.append(card.card)
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    if len(defender) < 1:
+                                        defender.append(card.card)
+                            if len(attacker) + len(defender) == 2:
+                                attacker[0].toughness_modifier -= defender[0].power
+                                defender[0].toughness_modifier -= attacker[0].power
+                                if (defender[0].toughness + defender[0].toughness_modifier) <= 0:
+                                    for card in opponent.battlefield:
+                                        if card == defender[0]:
+                                            opponent.graveyard.append(card)
+                                            opponent.battlefield.remove(card)
+                                if (attacker[0].toughness + attacker[0].toughness_modifier) <= 0:
+                                    for card in player.battlefield:
+                                        if card == attacker[0]:
+                                            player.graveyard.append(card)
+                                            player.battlefield.remove(card)
+                                resolved = True
+
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
+
+                    if len(attacker) == 0:
                         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                                if len(attacker) < 1:
-                                    attacker.append(card.card)
+                            if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                image = self.get_target_icon(card.rect.w, card.rect.h)
+                                image_rect = image.get_rect()
+                                image_rect.center = card.rect.center
+                                screen_res.gameDisplay.blit(image, image_rect)
+
+                    if len(defender) == 0:
                         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                                if len(defender) < 1:
-                                    defender.append(card.card)
-                        if len(attacker) + len(defender) == 2:
-                            attacker[0].toughness_modifier -= defender[0].power
-                            defender[0].toughness_modifier -= attacker[0].power
-                            if (defender[0].toughness + defender[0].toughness_modifier) <= 0:
-                                for card in opponent.battlefield:
-                                    if card == defender[0]:
-                                        opponent.graveyard.append(card)
-                                        opponent.battlefield.remove(card)
-                            if (attacker[0].toughness + attacker[0].toughness_modifier) <= 0:
-                                for card in player.battlefield:
-                                    if card == attacker[0]:
-                                        player.graveyard.append(card)
-                                        player.battlefield.remove(card)
-                            resolved = True
-
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
-
-                if len(attacker) == 0:
-                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                            image = self.get_target_icon(card.rect.w, card.rect.h)
-                            image_rect = image.get_rect()
-                            image_rect.center = card.rect.center
-                            screen_res.gameDisplay.blit(image, image_rect)
-
-                if len(defender) == 0:
-                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                            image = self.get_target_icon(card.rect.w, card.rect.h)
-                            image_rect = image.get_rect()
-                            image_rect.center = card.rect.center
-                            screen_res.gameDisplay.blit(image, image_rect)
+                            if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                image = self.get_target_icon(card.rect.w, card.rect.h)
+                                image_rect = image.get_rect()
+                                image_rect.center = card.rect.center
+                                screen_res.gameDisplay.blit(image, image_rect)
 
 
-                pygame.display.update()
+                    pygame.display.update()
+        else:
+            ranked_creatures = []
+            opponent_battlefield_copy = opponent.battlefield[:]
+            while len(ranked_creatures) != len(opponent.battlefield):
+                best_creature = None
+
+                for creature in opponent_battlefield_copy:
+                    if best_creature == None:
+                        best_creature = creature
+                    else:
+                        if best_creature.power < creature.power:
+                            best_creature = creature
+
+                ranked_creatures.append(best_creature)
+                opponent_battlefield_copy.remove(best_creature)
+
+            ai_target = None
+            enemy_target = None
+            found_targets = False
+            print(len(ranked_creatures))
+            i = 0
+            while i < len(ranked_creatures) and found_targets == False:
+                tmp_target = ranked_creatures[i]
+                for creature in self.player_2.battlefield:
+                    print("HI", creature.name)
+                    print(creature.power >= tmp_target.toughness)
+                    print(creature.toughness > tmp_target.power)
+                    if (creature.power >= tmp_target.toughness) and (creature.toughness > tmp_target.power):
+                        ai_target = creature
+                        enemy_target = tmp_target
+                        found_targets = True
+
+                i += 1
+            if ai_target != None and enemy_target != None:
+                ai_target.toughness_modifier -= (enemy_target.power + enemy_target.power_modifier)
+                enemy_target.toughness_modifier -= (ai_target.power + ai_target.power_modifier)
+
+                if ai_target.toughness + ai_target.toughness_modifier <= 0:
+                    self.player_2.battlefield.remove(ai_target)
+                    self.player_2.graveyard.append(ai_target)
+                    self.draw_screen(gameBoard)
+                    gameBoard.draw_new_battlefield(self.player_2)
+                    pygame.display.update()
+
+                if enemy_target.toughness + enemy_target.toughness_modifier <= 0:
+                    self.player_1.battlefield.remove(enemy_target)
+                    self.player_1.graveyard.append(enemy_target)
+                    self.draw_screen(gameBoard)
+                    gameBoard.draw_new_battlefield(self.player_1)
+                    pygame.display.update()
+
+
+
 
     def effect_draw(self, player, gameBoard, value, combinations):
         for i in range (int(value)):
             self.draw(player, gameBoard)
 
     def effect_tap(self, player, opponent, gameBoard, combinations):
+
         resolved = True
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
                 resolved = False
-        while not resolved:
-                for event in pygame.event.get():
-                    pos = pygame.mouse.get_pos()
-                    mx, my = pos[0], pos[1]
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:
-                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword) or card.card.tapped != True:
-                                    card.card.tapped = True
-                                    gameBoard.tap_creature(card)
-                                    card.card.tapped = True
-                                    resolved = True
+
+        if type(player) != ai.Ai:
+            while not resolved:
+                    for event in pygame.event.get():
+                        pos = pygame.mouse.get_pos()
+                        mx, my = pos[0], pos[1]
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if event.button == 1:
+                                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                    if (card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword)) and card.card.tapped != True:
+                                        card.card.tapped = True
+                                        gameBoard.tap_creature(card)
+                                        card.card.tapped = True
+                                        resolved = True
 
 
-                    self.draw_screen(gameBoard)
-                    gameBoard.stacked_card(self.stacked_card)
-                    gameBoard.draw_indicator(self.player_1)
+                        self.draw_screen(gameBoard)
+                        gameBoard.stacked_card(self.stacked_card)
+                        gameBoard.draw_indicator(self.player_1)
 
-                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                            image = self.get_target_icon(card.rect.w, card.rect.h)
-                            image_rect = image.get_rect()
-                            image_rect.center = card.rect.center
-                            screen_res.gameDisplay.blit(image, image_rect)
+                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                                image = self.get_target_icon(card.rect.w, card.rect.h)
+                                image_rect = image.get_rect()
+                                image_rect.center = card.rect.center
+                                screen_res.gameDisplay.blit(image, image_rect)
 
-                    pygame.display.update()
+                        pygame.display.update()
+        else:
+            best_attacker = None
+            best_blocker = None
+            for creature in self.player_2.battlefield:
+                if best_blocker == None:
+                    best_blocker = creature
+                else:
+                    if creature.toughness > best_blocker.toughness:
+                        best_blocker = creature.toughness
+
+            for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                if best_attacker == None:
+                    best_attacker = creature_sprite
+                else:
+                    if creature_sprite.card.power > best_attacker.card.power:
+                        best_attacker = creature_sprite
+            if best_attacker != None and best_blocker != None:
+                if best_blocker.toughness <= best_attacker.card.power:
+                    best_attacker.card.tapped = True
+                    gameBoard.tap_creature(best_attacker)
+                    best_attacker.card.tapped = True
+
 
     def effect_dmg(self, player, opponent, gameBoard, list_of_targets, value, combinations):
         resolved = True
@@ -1516,74 +1810,143 @@ class Game():
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
                 resolved = False
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                                player.hand.append(card.card)
-                                player.battlefield.remove(card.card)
-                                resolved = True
+        if type(player) != ai.Ai:
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    player.hand.append(card.card)
+                                    player.battlefield.remove(card.card)
+                                    resolved = True
 
-                        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                            if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                                opponent.hand.append(card.card)
-                                opponent.battlefield.remove(card.card)
-                                resolved = True
+                            for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                                if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                    opponent.hand.append(card.card)
+                                    opponent.battlefield.remove(card.card)
+                                    resolved = True
 
-                if event.type == pygame.QUIT:
-                    self.my_quit()
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
 
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
 
-                for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
-
-
-                for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                    if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
-                        image = self.get_target_icon(card.rect.w, card.rect.h)
-                        image_rect = image.get_rect()
-                        image_rect.center = card.rect.center
-                        screen_res.gameDisplay.blit(image, image_rect)
-
-                pygame.display.update()
-
-    def effect_reanimate(self, player, opponent, targets, gameBoard, combinations):
-        resolved = False
-        while not resolved:
-            for event in pygame.event.get():
-                pos = pygame.mouse.get_pos()
-                mx, my = pos[0], pos[1]
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        if "opponent" in targets:
-                            if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-
-                                resolved = True
-                        if "player" in targets:
-                            if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
-
-                                resolved = True
-                if event.type == pygame.QUIT:
-                    self.my_quit()
-
-                self.draw_screen(gameBoard)
-                gameBoard.stacked_card(self.stacked_card)
-                gameBoard.draw_indicator(self.player_1)
-                self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
-                pygame.display.update()
+                    for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
 
 
+                    for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+                        if ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                            image = self.get_target_icon(card.rect.w, card.rect.h)
+                            image_rect = image.get_rect()
+                            image_rect.center = card.rect.center
+                            screen_res.gameDisplay.blit(image, image_rect)
+
+                    pygame.display.update()
+        else:
+            best_attacker = None
+            best_blocker = None
+            for creature in self.player_2.battlefield:
+                if best_blocker == None:
+                    best_blocker = creature
+                else:
+                    if creature.toughness > best_blocker.toughness:
+                        best_blocker = creature.toughness
+
+            for creature in self.player_1.battlefield:
+                if best_attacker == None:
+                    best_attacker = creature
+                else:
+                    if creature.power > best_attacke.power:
+                        best_attacker = creature
+            if best_attacker != None and best_blocker != None:
+                if best_blocker.toughness <= best_attacker.power:
+                    self.player_1.battlefield.remove(best_attacker)
+                    self.player_1.hand.append(best_attacker)
+                    self.draw_screen(gameBoard)
+                    gameBoard.draw_hand()
+                    gameBoard.draw_new_battlefield(self.player_1)
+
+
+
+
+    def effect_reanimate(self, player, opponent, gameBoard, combinations, card):
+        if type(player) != ai.Ai:
+            resolved = False
+            while not resolved:
+                for event in pygame.event.get():
+                    pos = pygame.mouse.get_pos()
+                    mx, my = pos[0], pos[1]
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 1:
+                            if "opponent" in card.targets:
+                                if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+
+                                    resolved = True
+                            if "player" in card.targets:
+                                if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+
+                                    resolved = True
+                    if event.type == pygame.QUIT:
+                        self.my_quit()
+
+                    self.draw_screen(gameBoard)
+                    gameBoard.stacked_card(self.stacked_card)
+                    gameBoard.draw_indicator(self.player_1)
+                    self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
+                    pygame.display.update()
+        else:
+            ai_combined_toughness = player.calculate_combined_toughness()
+            player_combined_toughness = player.calculate_combined_toughness(opponent)
+            ai_combined_power = player.calculate_combined_power()
+            player_combined_power = player.calculate_combined_power(opponent)
+
+            if len(player.graveyard) > 0 or len(opponent.graveyard) > 0:
+                possible_targets = []
+
+                for dead_card in player.graveyard:
+                    if dead_card.card_type == "Creature":
+                        possible_targets.append(dead_card)
+
+                for dead_card in opponent.graveyard:
+                    if dead_card.card_type == "Creature":
+                        possible_targets.append(dead_card)
+
+                if len(possible_targets) > 0:
+                    targets = []
+                    for i in range(int(card.value)):
+                        best_target = None
+                        for target in possible_targets:
+
+                            if best_target == None:
+                                best_target = target
+                            else:
+                                if ai_combined_toughness <= player_combined_power:
+                                    if best_target.toughness < target.toughness:
+                                        best_target = target
+                                else:
+                                    if best_target.power < target.power:
+                                        best_target = target
+
+                        targets.append(best_target)
+
+                    targets_toughness = 0
+                    targets_power = 0
+                    for creature in targets:
+                        if creature != None:
+                            player.battlefield.append(creature)
+                            self.draw_screen(gameBoard)
+                            gameBoard.draw_new_battlefield(player)
+                            pygame.display.update()
 
 
 

@@ -1,4 +1,4 @@
-27
+29
 [Mountain,Land,R,0,./images/card_art/mountain.png,mana]
 [Plains,Land,W,0,./images/card_art/plains.png,mana]
 [Swamp,Land,B,0,./images/card_art/swamp.png,mana]
@@ -12,6 +12,7 @@
 [Elf,Creature,G,G,./images/card_art/elf_1.png,1,1]
 [Soldier,Creature,W,W,./images/card_art/soldier_1.png,1,1]
 [Zombie,Creature,B,B,./images/card_art/zombie.png,1,1]
+[Giant Beetle,Creature,G,G,./images/card_art/giant_beetle.png,3,3]
 #####Sorceries#####,###
 [Divination,Sorcery,U,U,./images/card_art/divination.png,player,2,Draw]
 [Lava Axe,Sorcery,R,4R,./images/card_art/lava_axe.png,opponent;creature,4,Damage]
@@ -23,6 +24,7 @@
 [Murder,Sorcery,B,1BB,./images/card_art/murder.png,creature,1,Destroy]
 [Duress,Sorcery,B,B,./images/card_art/duress.png,opponent;player,1,Discard]
 [Cultivate,Sorcery,G,1G,./images/card_art/cultivate.png,player,1,Search_land]
+[Bouncybouncebounce,Sorcery,U,1U,./images/card_art/bounce.png,creature,1,Bounce]
 #####Instant#####,###
 [Shock,Instant,R,R,./images/card_art/shock.png,opponent;creature,2,Damage]
 [Path to Exile,Instant,W,W,./images/card_art/path_to_exile.png,creature,1,Exile]

@@ -425,7 +425,7 @@ class Board():
                         battlefield_sprite.image = pygame.transform.rotate(battlefield_sprite.image, 90)
                     PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.add(battlefield_sprite)
                     if battlefield_cards[i].tapped == True:
-                        battlefield_card_sprite.image = pygame.transform.rotate(battlefield_card_sprite.image, 90)
+                        battlefield_sprite.image = pygame.transform.rotate(battlefield_card_sprite.image, 90)
                     i += 1
                 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
 
