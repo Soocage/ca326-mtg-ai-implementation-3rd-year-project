@@ -30,7 +30,7 @@ class Ai():
 
         elif self.ai_mode == "blue":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20 
+            self.ai_battlefield_weight = 0.20
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
@@ -41,7 +41,7 @@ class Ai():
 
         elif self.ai_mode == "white":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20 
+            self.ai_battlefield_weight = 0.20
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
@@ -51,7 +51,7 @@ class Ai():
 
         elif self.ai_mode == "black":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20 
+            self.ai_battlefield_weight = 0.20
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
@@ -61,7 +61,7 @@ class Ai():
 
         elif self.ai_mode == "green":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20 
+            self.ai_battlefield_weight = 0.20
             self.opponent_battlefield_weight = 0.10
             self.open_mana_weight = 0.25
             self.opponent_life_weight = 0.30
@@ -149,7 +149,7 @@ class Ai():
         return list_of_moves
 
 
-    
+
     def combination_cost(self, combination, opponent):
 
 #        ideal_state = [ai_hp = 20, opponent ==> 0, new_nr_of_creatures > old_number_of_creatures, old_number_of_creatures_oppnent < new_number_of_ceatures_opponent]
@@ -292,7 +292,7 @@ class Ai():
                         else:
                             if creature.power > best_target.power:
                                 best_target = creature
-                    
+
                     if best_target != None:
                         if player_combined_power > 0:
                          creature_factor = 1 -((player_combined_power - best_target.power)/player_combined_power)
@@ -556,14 +556,27 @@ class Ai():
                         opp_bat = 1
                     else:
                         opp_bat = (len(opponent.battlefield)/len(chosen_move[1][1][3]))
-                print(opponent_ideal_life_change)
                 if (len(chosen_move[1][1][2])) > 0:
                     ai_bat = (len(chosen_move[1][1][2]))
                 else:
                     ai_bat = len(self.battlefield)
-                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/ai_bat) + opp_bat) / 4
 
-                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4
+                print("ATTACKERS")
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(chosen_move)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(ideal_board_state[0])
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(opponent_ideal_life_change)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(ai_bat)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                chosen_move_average_score = ()((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield))/(ai_bat + opp_bat)) / 4
+
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(move)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield))/(len(move[1][1][2]) + opp_bat)) / 4
 
                 if move_average_score > chosen_move_average_score:
                     chosen_move = move
@@ -620,9 +633,20 @@ class Ai():
                         opp_bat = 1
                     else:
                         opp_bat = (len(opponent.battlefield)/len(chosen_move[1][1][3]))
-                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(chosen_move[1][1][2])) + opp_bat) / 4
 
-                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield)/len(move[1][1][2])) + opp_bat) / 4
+                print("DEFENDERS")
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(chosen_move)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(chosen_move_ai_life, ideal_board_state[0])
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(chosen_move_opponent_life, opponent_ideal_life_change)
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                print(len(self.battlefield), len(chosen_move[1][1][2]))
+                print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + ((len(self.battlefield))/(len(chosen_move[1][1][2]) + opp_bat))) / 4
+
+                move_average_score = ((move_ai_life/ideal_board_state[0]) + (move_opponent_life_change/opponent_ideal_life_change) + ((len(self.battlefield))/(len(move[1][1][2]) + opp_bat))) / 4
 
                 if move_average_score > chosen_move_average_score:
                     chosen_move = move
@@ -638,7 +662,7 @@ class Ai():
 
         cost_of_defending = []
         list_of_end_of_battle_board_states = []
-        
+
 
         for permu_defenders in defender_permutations:
             attackers_copy = list_of_attackers[:]
@@ -658,15 +682,27 @@ class Ai():
 
             ai_life_weight = ai_life_weight*((permu_and_board_state[1][0]/self.life))
 
+            ai_factor_List = []
+            if (ai_combined_power > 0):
+                ai_factor_List.append(after_ai_combined_power/ai_combined_power)
+            if (ai_combined_toughness > 0):
+                ai_factor_List.append(after_ai_combined_toughness/ai_combined_toughness)
             if len(self.battlefield) > 0:
-                ai_battlefield_factor = (((after_ai_combined_power/ai_combined_power) + (after_ai_combined_toughness/ai_combined_toughness) + (len(permu_and_board_state[1][2])/len(self.battlefield))) / 3)
-                ai_battlefield_weight = ai_battlefield_weight*ai_battlefield_factor
+                ai_factor_List.append(len(permu_and_board_state[1][2])/len(self.battlefield))
+            if (len(ai_factor_List) > 0):
+                ai_battlefield_weight = self.ai_battlefield_weight*(sum(ai_factor_List))/(len(ai_factor_List))
             else:
                 ai_battlefield_weight = self.ai_battlefield_weight
 
+            opponent_factor_list = []
+            if (player_combined_power > 0):
+                opponent_factor_list.append(after_player_combined_power/player_combined_power)
+            if (player_combined_toughness > 0):
+                opponent_factor_list.append(after_player_combined_toughness/player_combined_toughness)
             if len(opponent.battlefield) > 0:
-                opponent_battlefield_factor = (((after_player_combined_power/player_combined_power) + (after_player_combined_toughness/player_combined_toughness) + (len(permu_and_board_state[1][3])/len(opponent.battlefield))) / 3)
-                opponent_battlefield_weight = opponent_battlefield_weight*opponent_battlefield_factor
+                opponent_factor_list.append(len(permu_and_board_state[1][3])/len(opponent.battlefield))
+            if len(opponent_factor_list) > 0:
+                opponent_battlefield_weight = self.opponent_battlefield_weight*(sum(opponent_factor_list)/len(opponent_factor_list))
             else:
                 opponent_battlefield_weight = self.opponent_battlefield_weight
 
@@ -755,7 +791,6 @@ class Ai():
 
 
     def simulate_battle(self, combi_attackers, combi_defenders, opponent, defending_player):
-        print(type(defending_player))
         if type(defending_player) != Ai:
             for attacker in combi_attackers:
                 if type(attacker) != int:
