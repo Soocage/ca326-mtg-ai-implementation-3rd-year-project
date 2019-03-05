@@ -691,8 +691,10 @@ class Game():
             i = 0
             while i < len(attackers):
                 if type(defenders[i]) != int:
-                    attackers[i].toughness_modifier -= defenders[i].power
-                    defenders[i].toughness_modifier -= attackers[i].power
+                    attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
+                    defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
+                    print(attackers[i].toughness_modifier)
+                    print(defenders[i].toughness_modifier)
                     if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
                         current_player.graveyard.append(attackers[i])
                         current_player.battlefield.remove(attackers[i])

@@ -571,7 +571,7 @@ class Ai():
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 print(ai_bat)
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                chosen_move_average_score = ()((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield))/(ai_bat + opp_bat)) / 4
+                chosen_move_average_score = ((chosen_move_ai_life/ideal_board_state[0]) + (chosen_move_opponent_life_change/opponent_ideal_life_change) + (len(self.battlefield))/(ai_bat + opp_bat)) / 4
 
                 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 print(move)
@@ -718,11 +718,6 @@ class Ai():
         sorted_cost_of_defending = self.sort_combinations(cost_of_defending)
         return sorted_cost_of_defending[:5]
 
-
-
-
-
-
     def check_cost_of_attacking(self, potential_attackers, potential_defenders, opponent):
         ai_combined_toughness = self.calculate_combined_toughness()
         player_combined_toughness = self.calculate_combined_toughness(opponent)
@@ -819,6 +814,7 @@ class Ai():
             return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
 
         else:
+            print("here")
             for attacker in combi_attackers:
                 if type(attacker) != int:
                     attacker.toughness_modifier = 0
@@ -837,9 +833,9 @@ class Ai():
                     combi_attackers[i].toughness_modifier -= (combi_defenders[i].power + combi_defenders[i].power_modifier)
                     combi_defenders[i].toughness_modifier -= (combi_attackers[i].power + combi_attackers[i].power_modifier)
                     if combi_attackers[i].toughness + combi_attackers[i].toughness_modifier <= 0:
-                        current_ai_battlefield.remove(combi_attackers[i])
+                        current_player_battlefield.remove(combi_attackers[i])
                     if combi_defenders[i].toughness + combi_defenders[i].toughness_modifier <= 0:
-                        current_player_battlefield.remove(combi_defenders[i])
+                        current_ai_battlefield.remove(combi_defenders[i])
                 else:
                     ai_health -= combi_attackers[i].power
                 i += 1
