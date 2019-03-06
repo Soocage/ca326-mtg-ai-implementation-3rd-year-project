@@ -24,7 +24,8 @@ VIEWED_CARD = pygame.sprite.Group()
 MULLIGAN_BUTTONS = pygame.sprite.Group()
 STACKED_CARD = pygame.sprite.Group()
 DISCARD_BUTTONS = pygame.sprite.Group()
-
+BATTELING_CREATURE_ATT = pygame.sprite.Group()
+BATTELING_CREATURE_DEF = pygame.sprite.Group()
 
 
 
@@ -601,6 +602,21 @@ class Board():
         VIEWED_CARD.add(viewed_sprite)
         VIEWED_CARD.draw(screen_res.gameDisplay)
 
+        if card_copy.card_type == "Creature":
+            view_card_string = ""
+            if card_copy.toughness_modifier != 0 or card_copy.power_modifier != 0:
+                view_card_string = str(card_copy.power_modifier) + " / " + str(card_copy.toughness_modifier)
+
+            view_card_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.2))
+
+            view_card_text = view_card_font.render(view_card_string, True, (255,242,0))
+            view_card_rec = view_card_text.get_rect()
+            view_card_rec.center = (x + (w/2)) , (y + (h*(3/9)))
+            screen_res.gameDisplay.blit(view_card_text, view_card_rec)
+
+
+
+
     def stacked_card(self, card):
         STACKED_CARD.empty()
 
@@ -615,7 +631,9 @@ class Board():
         STACKED_CARD.draw(screen_res.gameDisplay)
 
 
-
+    def add_battle_line(self, attacker, defender):
+        BATTELING_CREATURE_ATT.add(attacker)
+        BATTELING_CREATURE_DEF.add(defender)
 
     def tap_mana(self, land):
         land.image = pygame.transform.rotate(land.image, 90)

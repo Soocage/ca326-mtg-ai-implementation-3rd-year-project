@@ -94,7 +94,9 @@ class Game():
             self.main_phase(self.player_2, self.player_1, gameBoard)
             time.sleep(0.5)
             self.combat_phase(self.player_2, self.player_1, gameBoard)
-            #time.sleep(0.5)
+            board.BATTELING_CREATURE_ATT.empty()
+            board.BATTELING_CREATURE_DEF.empty()
+            time.sleep(0.5)
             self.end_step(gameBoard, self.player_2)
             time.sleep(0.5)
             turn_counter += 1
@@ -700,12 +702,12 @@ class Game():
                             if attackers[i].keyword == "Trample":
                                 next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
                             if attackers[i].keyword == "Life_Link":
-                                current_player.life += (attackers[i].power + attackers[i].power_modifier) 
+                                current_player.life += (attackers[i].power + attackers[i].power_modifier)
                         if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
                             if defenders[i].keyword == "Life_Link":
-                                next_player.life += (defenders[i].power + defenders[i].power_modifier) 
+                                next_player.life += (defenders[i].power + defenders[i].power_modifier)
                 else:
                     next_player.life -= attackers[i].power
                 i += 1
@@ -732,19 +734,6 @@ class Game():
                             if gameBoard.concede_button_sec.x < pos[0] < gameBoard.concede_button_sec.x + gameBoard.concede_button_sec.w and gameBoard.concede_button_sec.y < pos[1] < gameBoard.concede_button_sec.y + gameBoard.concede_button_sec.h:
                                 self.quit = True
                                 resolved = True
-
-                            if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
-
-                                gameBoard.draw_options_menu()
-                                gameBoard.calc_board()
-                                gameBoard.stacked_card(self.stacked_card)
-                                gameBoard.draw_board(self.phase)
-                                gameBoard.draw_hand()
-                                gameBoard.draw_land(player)
-                                gameBoard.draw_land(next_player)
-                                gameBoard.draw_new_battlefield(player)
-                                gameBoard.draw_new_battlefield(next_player)
-                                pygame.display.update()
 
                             if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
                                 resolved = True
@@ -816,40 +805,47 @@ class Game():
                                     self.quit = True
                                     resolved = True
 
-                                if gameBoard.options_button_sec.x < pos[0] < gameBoard.options_button_sec.x + gameBoard.options_button_sec.w and gameBoard.options_button_sec.y < pos[1] < gameBoard.options_button_sec.y + gameBoard.options_button_sec.h:
-
-                                    gameBoard.draw_options_menu()
-                                    gameBoard.calc_board()
-                                    gameBoard.stacked_card(self.stacked_card)
-                                    gameBoard.draw_board(self.phase)
-                                    gameBoard.draw_hand()
-                                    gameBoard.draw_land(player)
-                                    gameBoard.draw_land(next_player)
-                                    gameBoard.draw_new_battlefield(player)
-                                    gameBoard.draw_new_battlefield(next_player)
-                                    pygame.display.update()
-
                                 if gameBoard.pass_button_sec.x < pos[0] < gameBoard.pass_button_sec.x + gameBoard.pass_button_sec.w and gameBoard.pass_button_sec.y < pos[1] < gameBoard.pass_button_sec.y + gameBoard.pass_button_sec.h:
                                     return list_of_defenders
 
 
                                 for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                                    if creature_sprite.rect.collidepoint(pos):
+                                    if creature_sprite.rect.collidepoint(pos) and "Defending" not in creature_sprite.card.combat_state:
                                         if chosen_defender == None:
-                                            chosen_defender = creature_sprite.card
+                                            chosen_defender = creature_sprite
+                                            creature_sprite.card.combat_state = "Defending"
                                             gameBoard.tap_creature(creature_sprite)
                                 for creature_sprite in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                                     if creature_sprite.rect.collidepoint(pos) and creature_sprite.card in list_of_attackers:
                                         if chosen_attacker == None:
-                                            chosen_attacker = creature_sprite.card
+                                            chosen_attacker = creature_sprite
 
+
+                    self.draw_screen(gameBoard)
                     if chosen_attacker != None and chosen_defender != None:
-                        indx = list_of_attackers.index(chosen_attacker)
-                        list_of_defenders[indx] = chosen_defender
+                        indx = list_of_attackers.index(chosen_attacker.card)
+                        if type(list_of_defenders[indx]) == int:
+                            list_of_defenders[indx] = chosen_defender.card
+                            gameBoard.add_battle_line(chosen_attacker, chosen_defender)
                         chosen_defender = None
                         chosen_attacker = None
 
-                    self.draw_screen(gameBoard)
+                    for defender in list_of_defenders:
+                        lst_1 = []
+                        lst_2 = []
+                        for creature in board.BATTELING_CREATURE_ATT:
+                            x1, y1 = creature.rect.center
+                            lst_1.append((x1,y1))
+
+                        for creature in board.BATTELING_CREATURE_DEF:
+                            x2, y2 = creature.rect.center
+                            lst_2.append((x2,y2))
+
+                        i = 0
+                        while i < len(lst_1):
+                            pygame.draw.line(screen_res.gameDisplay, board.BLACK, lst_1[i], lst_2[i], int(screen_res.display_width/60))
+                            i += 1
+
                     if self.stacked_card != None:
                         gameBoard.stacked_card(self.stacked_card)
                     gameBoard.draw_indicator(self.player_1)
@@ -1187,7 +1183,7 @@ class Game():
                 self.player_2.graveyard.append(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_2)
-                
+
 
 
 
@@ -1338,7 +1334,7 @@ class Game():
                 self.player_2.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_2)
-                
+
 
 
 
