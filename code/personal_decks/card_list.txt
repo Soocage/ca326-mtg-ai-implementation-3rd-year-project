@@ -1,4 +1,4 @@
-46
+50
 #######Green####,###
 [Forest,Land,G,0,./images/card_art/forest.png,mana]
 [Elf,Creature,G,G,./images/card_art/elf_1.png,1,1]
@@ -36,11 +36,12 @@
 [Soldier,Creature,W,W,./images/card_art/soldier_1.png,1,1]
 [Lady Hyla,Creature,W,3WW,./images/card_art/lady_hyla.png,5,2,Flying]
 [Wall of light,Creature,W,2W,./images/card_art/wall_of_light.png,0,3]
-[Hyla's Maiden,Creature,W,2W,./images/card_art/hylas_maiden.png,3,2,Vigillance]
+[Hyla's Maiden,Creature,W,2W,./images/card_art/hylas_maiden.png,3,2,Vigilance]
 [Healing Hands,Sorcery,W,W,./images/card_art/healing_hands.png,opponent;player,4,Gain_life]
 [Blessed Breath,Sorcery,W,W,./images/card_art/blessed_breath.png,creature;player;opponent,1,Protection]
 [Path to Exile,Instant,W,W,./images/card_art/path_to_exile.png,creature,1,Exile]
 [Resurrect,Sorcery,W,2W,./images/card_art/resurrect.png,player;opponent,2,Reanimate]
+[Martyr Of Dusk,Creature,W,1W,./images/card_art/martyr_of_dusk.png,2,2,LifeLink]
 #####Black##,###
 [Swamp,Land,B,0,./images/card_art/swamp.png,mana]
 [Zombie,Creature,B,B,./images/card_art/zombie.png,1,1]

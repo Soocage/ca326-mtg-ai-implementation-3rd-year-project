@@ -754,6 +754,7 @@ class Ai():
                 ai_power = ai_combined_power
 
             if len(self.battlefield) > 0:
+                print(ai_power, ai_combined_toughness)
                 ai_battlefield_factor = (((after_ai_combined_power/ai_power) + (after_ai_combined_toughness/ai_combined_toughness) + (len(combi_and_board_state[1][2])/len(self.battlefield))) / 3)
                 ai_battlefield_weight = ai_battlefield_weight*ai_battlefield_factor
             else:

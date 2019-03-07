@@ -715,14 +715,16 @@ class Game():
                             current_player.battlefield.remove(attackers[i])
                         if attackers[i].keyword == "Trample":
                             next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
-                        if attackers[i].keyword == "Life_Link":
+                        if attackers[i].keyword == "LifeLink":
                             current_player.life += (attackers[i].power + attackers[i].power_modifier)
                         if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
-                            if defenders[i].keyword == "Life_Link":
-                                next_player.life += (defenders[i].power + defenders[i].power_modifier)
+                        if defenders[i].keyword == "LifeLink":
+                            next_player.life += (defenders[i].power + defenders[i].power_modifier)
                 else:
+                    if attackers[i].keyword == "LifeLink":
+                        current_player.life += (attackers[i].power + attackers[i].power_modifier)
                     next_player.life -= attackers[i].power
                 i += 1
             gameBoard.draw_new_battlefield(current_player)
@@ -757,7 +759,7 @@ class Game():
                                 if card.rect.collidepoint(pos):
                                     if card.card.combat_state != "attacking" and (card.card.summon_sick != True or card.card.keyword == "Haste"):
                                         card.card.combat_state = "attacking"
-                                        if "Vigiliance" not in card.card.keyword and "Vigiliance" not in card.card.tmp_keyword:
+                                        if "Vigilance" not in card.card.keyword and "Vigilance" not in card.card.tmp_keyword:
                                             card.card.tapped = True
                                             gameBoard.tap_creature(card)
                                             card.card.tapped = True
@@ -1964,6 +1966,10 @@ class Game():
 
                                 for card in card_list:
                                     if card.rect.collidepoint(pos):
+                                        card.card.summon_sick = True
+                                        card.card.tapped = False
+                                        card.card.toughness_modifier = 0
+                                        card.card.power_modifier = 0
                                         if chosen_player == "player":
                                             self.player_1.battlefield.append(card.card)
                                             self.player_1.graveyard.remove(card.card)
@@ -1988,7 +1994,7 @@ class Game():
 
                 if len(player.graveyard) > 0 or len(opponent.graveyard) > 0:
                     possible_targets = []
-
+                    #SPLIT INTO TWO LISTS TO MAKE SURE AI DOESN'T RESURECT FROM BOTH GRAVEYARDS
                     for dead_card in player.graveyard:
                         if dead_card.card_type == "Creature":
                             possible_targets.append(dead_card)
@@ -2024,6 +2030,10 @@ class Game():
                         targets_power = 0
                         for creature in targets:
                             if creature != None:
+                                creature.summon_sick = True
+                                creature.tapped = False
+                                creature.toughness_modifier = 0
+                                creature.power_modifier = 0
                                 player.battlefield.append(creature)
                                 self.draw_screen(gameBoard)
                                 gameBoard.draw_new_battlefield(player)
