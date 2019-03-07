@@ -217,11 +217,15 @@ class Game():
 
 
     def deck_selection(self, player):
+<<<<<<< HEAD
 
         f = open("./personal_decks/deck_2", "rb")
+=======
+        f = open("./personal_decks/deck_4", "rb")
+>>>>>>> 67b4ed3e5867fb4acd974fbd6c6c7afdc204c833
         player_deck = pickle.load(f)
+        print(player_deck)
         f.close()
-
         return player_deck
 
     def shuffle_deck(self, player):
@@ -352,10 +356,11 @@ class Game():
 
                                         if card.card.card_type == "Creature" and self.check_mana(current_player, card.card):
                                             indx = current_player.hand.index(card.card)
-                                            current_player.battlefield.append(current_player.hand.pop(indx))
+                                            current_player.hand.pop(indx)
+                                            self.response(next_player, current_player, gameBoard)
+                                            current_player.battlefield.append(card.card)
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
-                                            self.response(next_player, current_player, gameBoard)
                                             self.stacked_card = card.card
                                             gameBoard.stacked_card(self.stacked_card)
                                             gameBoard.draw_indicator(self.player_1)
@@ -605,19 +610,31 @@ class Game():
             if self.check_instant(current_player.hand):
                 valid_cards = [card for card in self.player_2.hand if card.card_type == "Instant"]
                 card = self.select_card(valid_cards)
-
-
-                if self.check_lands(card, gameBoard):
-                    self.clear_mana(self.player_2)
-                    self.stacked_card = card
-                    gameBoard.stacked_card(self.stacked_card)
-                    current_player.hand.remove(card)
-                    current_player.graveyard.append(card)
-                    self.response(self.player_1, self.player_2, gameBoard)
-                    gameBoard.draw_board(self.phase)
-                    self.stacked_card = card
-                    gameBoard.stacked_card(self.stacked_card)
-                    self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
+                if card.effect == "Exile":
+                    if len(self.player_1.battlefield) > 0:
+                        if self.check_lands(card, gameBoard):
+                            self.clear_mana(self.player_2)
+                            self.stacked_card = card
+                            gameBoard.stacked_card(self.stacked_card)
+                            current_player.hand.remove(card)
+                            current_player.graveyard.append(card)
+                            self.response(self.player_1, self.player_2, gameBoard)
+                            gameBoard.draw_board(self.phase)
+                            self.stacked_card = card
+                            gameBoard.stacked_card(self.stacked_card)
+                            self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
+                else:
+                    if self.check_lands(card, gameBoard):
+                        self.clear_mana(self.player_2)
+                        self.stacked_card = card
+                        gameBoard.stacked_card(self.stacked_card)
+                        current_player.hand.remove(card)
+                        current_player.graveyard.append(card)
+                        self.response(self.player_1, self.player_2, gameBoard)
+                        gameBoard.draw_board(self.phase)
+                        self.stacked_card = card
+                        gameBoard.stacked_card(self.stacked_card)
+                        self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
 
 
 
@@ -698,14 +715,14 @@ class Game():
                         attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
                         defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
 
-                        if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
+                        if attackers[i].toughness + attackers[i].toughness_modifier <= or defenders[i].keyword == "Deatouch":
                             current_player.graveyard.append(attackers[i])
                             current_player.battlefield.remove(attackers[i])
                         if attackers[i].keyword == "Trample":
                             next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
                         if attackers[i].keyword == "Life_Link":
                             current_player.life += (attackers[i].power + attackers[i].power_modifier)
-                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
+                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0 <= or attackers[i].keyword == "Deatouch":
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
                             if defenders[i].keyword == "Life_Link":
@@ -1829,11 +1846,11 @@ class Game():
         print("hi")
         resolved = True
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                 resolved = False
 
         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                 resolved = False
                 print(resolved)
 
