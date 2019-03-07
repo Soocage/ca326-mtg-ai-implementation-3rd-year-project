@@ -218,11 +218,7 @@ class Game():
 
     def deck_selection(self, player):
 
-<<<<<<< HEAD
-        f = open("./personal_decks/deck_5", "rb")
-=======
         f = open("./personal_decks/deck_2", "rb")
->>>>>>> 1de6a37b19506f6a212207cc52b2f60363557927
         player_deck = pickle.load(f)
         f.close()
 
@@ -1337,10 +1333,6 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
-<<<<<<< HEAD
-
-=======
->>>>>>> 1de6a37b19506f6a212207cc52b2f60363557927
 
                 self.player_2.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)

@@ -1,4 +1,4 @@
-37
+45
 #######Green####,###
 [Forest,Land,G,0,./images/card_art/forest.png,mana]
 [Elf,Creature,G,G,./images/card_art/elf_1.png,1,1]
@@ -11,15 +11,15 @@
 [Grasping Vine,Sorcery,G,2G,./images/card_art/grasping_vine.png,creature,2,Tap]
 ######Red####,###
 [Mountain,Land,R,0,./images/card_art/mountain.png,mana]
-[Goblin,Creature,R,R,./images/card_art/goblin_1.png,1,1] 
-[Goblin Rider,Creature,R,1R,./images/card_art/goblin_rider.png,2,2,Haste] 
-[Bomb Enthusiast,Creature,R,3RR,./images/card_art/bomb_enthusiast.png,4,1,Haste] 
-[Wall of fire,Creature,R,3R,./images/card_art/wall_of_fire.png,0,4] 
-[Sparky & Jinks,Creature,R,2R,./images/card_art/sparky_and_jinks.png,2,4,Flying] 
-[Lava Axe,Sorcery,R,4R,./images/card_art/lava_axe.png,opponent;creature,4,Damage] 
-[Burning Rush,Sorcery,R,RR,./images/card_art/burning_rush.png,player,1,Draw] 
-[Shock,Instant,R,R,./images/card_art/shock.png,opponent;creature,2,Damage] 
-[Lightning Strike,Instant,R,1R,./images/card_art/lightning_strike.png,opponent;creature,3,Damage] 
+[Goblin,Creature,R,R,./images/card_art/goblin_1.png,1,1]
+[Goblin Rider,Creature,R,1R,./images/card_art/goblin_rider.png,2,2,Haste]
+[Bomb Enthusiast,Creature,R,3RR,./images/card_art/bomb_enthusiast.png,4,1,Haste]
+[Wall of fire,Creature,R,3R,./images/card_art/wall_of_fire.png,0,4]
+[Sparky & Jinks,Creature,R,2R,./images/card_art/sparky_and_jinks.png,2,4,Flying]
+[Lava Axe,Sorcery,R,4R,./images/card_art/lava_axe.png,opponent;creature,4,Damage]
+[Burning Rush,Sorcery,R,RR,./images/card_art/burning_rush.png,player,1,Draw]
+[Shock,Instant,R,R,./images/card_art/shock.png,opponent;creature,2,Damage]
+[Lightning Strike,Instant,R,1R,./images/card_art/lightning_strike.png,opponent;creature,3,Damage]
 ######Blue###,###
 [Island,Land,U,0,./images/card_art/island.png,mana]
 [Merfolk,Creature,U,U,./images/card_art/merfolk_1.png,1,1]
@@ -40,6 +40,7 @@
 #####Black##,###
 [Swamp,Land,B,0,./images/card_art/swamp.png,mana]
 [Zombie,Creature,B,B,./images/card_art/zombie.png,1,1]
+[Giant Scorpion,Creature,B,2B,./images/card_art/scorpion.jpg,1,3,Deathtouch]
 [Reanimate,Sorcery,B,B,./images/card_art/reanimate.png,opponent;player,1,Reanimate]
 [Murder,Sorcery,B,1BB,./images/card_art/murder.png,creature,1,Destroy]
 [Duress,Sorcery,B,B,./images/card_art/duress.png,opponent;player,1,Discard]
