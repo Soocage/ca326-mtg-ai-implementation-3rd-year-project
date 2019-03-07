@@ -1,4 +1,4 @@
-37
+45
 #######Green####,###
 [Forest,Land,G,0,./images/card_art/forest.png,mana]
 [Elf,Creature,G,G,./images/card_art/elf_1.png,1,1]
@@ -34,6 +34,7 @@
 #####White##,###
 [Plains,Land,W,0,./images/card_art/plains.png,mana]
 [Soldier,Creature,W,W,./images/card_art/soldier_1.png,1,1]
+[Lady Hyla,Creature,W,3WW,./images/card_art/lady_hyla.png,5,2,Flying]
 [Healing Hands,Sorcery,W,W,./images/card_art/healing_hands.png,opponent;player,4,Gain_life]
 [Blessed Breath,Sorcery,W,W,./images/card_art/blessed_breath.png,creature;player;opponent,1,Protection]
 [Path to Exile,Instant,W,W,./images/card_art/path_to_exile.png,creature,1,Exile]
