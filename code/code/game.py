@@ -218,7 +218,11 @@ class Game():
 
     def deck_selection(self, player):
 
+<<<<<<< HEAD
         f = open("./personal_decks/deck_5", "rb")
+=======
+        f = open("./personal_decks/deck_2", "rb")
+>>>>>>> 1de6a37b19506f6a212207cc52b2f60363557927
         player_deck = pickle.load(f)
         f.close()
 
@@ -932,7 +936,7 @@ class Game():
             self.effect_combat_creature(player, opponent, gameBoard, combinations)
 
         elif card.effect == "Search_land":
-            self.effect_search_land(player, gameBoard, combinations)
+            self.effect_search_land(player, gameBoard, card, combinations)
 
         elif card.effect == "Gain_life":
             self.effect_gain_life(player, opponent, gameBoard, card.targets, card.value, combinations)
@@ -950,7 +954,7 @@ class Game():
             self.effect_discard(player, opponent, gameBoard, card.targets, card.value, combinations)
 
         elif card.effect == "Reanimate":
-            self.effect_reanimate(player, opponent, gameBoard, combinations, card)
+            self.effect_reanimate(player, opponent, gameBoard, card, combinations)
 
         gameBoard.draw_hand()
         gameBoard.draw_new_battlefield(player)
@@ -990,16 +994,18 @@ class Game():
         clicked_target = ""
 
         if type(player) != ai.Ai:
+            player_2_cards = []
             if len(self.player_1.hand) > 0 or len(self.player_2.hand) > 0:
                 while not resolved:
+                    if clicked_target == "opponent":
+                        player_2_cards = gameBoard.draw_discard_hand(self.player_2)
                     for event in pygame.event.get():
                         pos = pygame.mouse.get_pos()
                         mx, my = pos[0], pos[1]
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             if event.button == 1:
 
-
-                                if "player" in list_of_targets:
+                                if "player" in list_of_targets and len(self.player_1.hand) > 0:
                                     if clicked_target == "" or clicked_target == "player":
                                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                             if card.rect.collidepoint(pos):
@@ -1008,16 +1014,19 @@ class Game():
                                                 player.graveyard.append(card.card)
                                                 amt += 1
 
+                                if "opponent" in list_of_targets and len(self.player_2.hand) > 0:
+                                    if (gameBoard.player_2_player_sec.x < pos[0] < gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w) and (gameBoard.player_2_player_sec.y < pos[1] < gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h):
+                                        if clicked_target == "":
+                                            clicked_target = "opponent"
 
-                                if "opponent" in list_of_targets:
-                                    if clicked_target == "" or clicked_target == "opponent":
-                                        for card in board.PLAYER_2_HAND_SPRITE_CARD_GROUP:
-                                            if card.rect.collidepoint(pos):
-                                                clicked_target = "opponent"
-                                                opponent.hand.remove(card.card)
-                                                opponent.graveyard.append(card.card)
+                                if clicked_target == "opponent":
+                                    for card in player_2_cards:
+                                        if card.rect.collidepoint(pos):
+                                            self.player_2.hand.remove(card.card)
+                                            self.player_2.graveyard.append(card.card)
+                                            amt += 1
 
-                                                amt += 1
+
 
                                 if amt == int(value):
                                     resolved = True
@@ -1025,7 +1034,9 @@ class Game():
                         self.draw_screen(gameBoard)
                         gameBoard.stacked_card(self.stacked_card)
                         gameBoard.draw_indicator(self.player_1)
-                        pygame.display.update()
+                        if clicked_target == "opponent":
+                            player_2_cards = gameBoard.draw_discard_hand(self.player_2)
+                            pygame.display.update()
         else:
             if len(self.player_1.hand) > 0:
                 indx = random.randint(0, len(self.player_1.hand) -1)
@@ -1326,7 +1337,10 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1de6a37b19506f6a212207cc52b2f60363557927
 
                 self.player_2.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
@@ -1482,7 +1496,13 @@ class Game():
                 opponent.life += int(value)
 
 
-    def effect_search_land(self, player, gameBoard, combinations):
+    def effect_search_land(self, player, gameBoard, spell, combinations):
+        land_cards = []
+        for land_card in player.deck.cards:
+            if land_card.card_type == "Land":
+                land_cards.append(land_card)
+
+        counter = 0
         if type(player) != ai.Ai:
             resolved = False
             while not resolved:
@@ -1498,9 +1518,11 @@ class Game():
                                 if card.rect.collidepoint(pos):
                                     player.land_zone.append(card.card)
                                     player.deck.cards.remove(card.card)
+                                    counter += 1
                                     self.shuffle_deck(self.player_1)
                                     gameBoard.draw_land(player)
-                                    resolved = True
+                                    if (counter == int(spell.value) or (len(land_cards) - counter == 0)):
+                                        resolved = True
         else:
             for card in player.deck.cards:
                 if card.card_type == "Land":
@@ -1895,74 +1917,113 @@ class Game():
 
 
 
-    def effect_reanimate(self, player, opponent, gameBoard, combinations, card):
-        if type(player) != ai.Ai:
-            resolved = False
-            while not resolved:
-                for event in pygame.event.get():
-                    pos = pygame.mouse.get_pos()
-                    mx, my = pos[0], pos[1]
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if event.button == 1:
-                            if "opponent" in card.targets:
-                                if (gameBoard.player_2_graveyard.y + gameBoard.player_2_graveyard.h > my > gameBoard.player_2_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+    def effect_reanimate(self, player, opponent, gameBoard, spell, combinations):
+        creature_cards_player_1 = []
+        for creature_card in self.player_1.graveyard:
+            if creature_card.card_type == "Creature":
+                creature_cards_player_1.append(creature_card)
 
-                                    resolved = True
-                            if "player" in card.targets:
-                                if (gameBoard.player_1_graveyard.y + gameBoard.player_1_graveyard.h > my > gameBoard.player_1_graveyard.y) and (gameBoard.player_2_graveyard.x + gameBoard.player_2_graveyard.w > mx > gameBoard.player_2_graveyard.x):
+        creature_cards_player_2 = []
+        for creature_card in self.player_2.graveyard:
+            if creature_card.card_type == "Creature":
+                creature_cards_player_2.append(creature_card)
 
-                                    resolved = True
-                    if event.type == pygame.QUIT:
-                        self.my_quit()
 
-                    self.draw_screen(gameBoard)
-                    gameBoard.stacked_card(self.stacked_card)
-                    gameBoard.draw_indicator(self.player_1)
-                    self.draw_cursor(mx - (cursor_w/2), my - (cursor_h/2))
-                    pygame.display.update()
-        else:
-            ai_combined_toughness = player.calculate_combined_toughness()
-            player_combined_toughness = player.calculate_combined_toughness(opponent)
-            ai_combined_power = player.calculate_combined_power()
-            player_combined_power = player.calculate_combined_power(opponent)
+        if (len(creature_cards_player_1) > 0) or (len(creature_cards_player_2) > 0):
+            counter = 0
+            if type(player) != ai.Ai:
+                card_list = []
+                chosen_player = None
+                resolved = False
 
-            if len(player.graveyard) > 0 or len(opponent.graveyard) > 0:
-                possible_targets = []
+                while not resolved:
+                    if chosen_player != None:
+                        if chosen_player == "player":
+                            card_list = gameBoard.draw_search_grave(self.player_1)
+                        elif chosen_player == "opponent":
+                            card_list = gameBoard.draw_search_grave(self.player_2)
 
-                for dead_card in player.graveyard:
-                    if dead_card.card_type == "Creature":
-                        possible_targets.append(dead_card)
+                    for event in pygame.event.get():
+                        pos = pygame.mouse.get_pos()
+                        mx, my = pos[0], pos[1]
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            if event.button == 1:
 
-                for dead_card in opponent.graveyard:
-                    if dead_card.card_type == "Creature":
-                        possible_targets.append(dead_card)
+                                if chosen_player == None:
+                                    if gameBoard.player_1_player_sec.y + gameBoard.player_1_player_sec.h > pos[1] > gameBoard.player_1_player_sec.y and gameBoard.player_1_player_sec.x + gameBoard.player_1_player_sec.w > pos[0] > gameBoard.player_1_player_sec.x:
+                                        if len(creature_cards_player_1) > 0:
+                                            chosen_player = "player"
 
-                if len(possible_targets) > 0:
-                    targets = []
-                    for i in range(int(card.value)):
-                        best_target = None
-                        for target in possible_targets:
+                                    if gameBoard.player_2_player_sec.y + gameBoard.player_2_player_sec.h > pos[1] > gameBoard.player_2_player_sec.y and gameBoard.player_2_player_sec.x + gameBoard.player_2_player_sec.w > pos[0] > gameBoard.player_2_player_sec.x:
+                                        if len(creature_cards_player_2) > 0:
+                                            chosen_player = "opponent"
 
-                            if best_target == None:
-                                best_target = target
-                            else:
-                                if ai_combined_toughness <= player_combined_power:
-                                    if best_target.toughness < target.toughness:
-                                        best_target = target
+                                for card in card_list:
+                                    if card.rect.collidepoint(pos):
+                                        if chosen_player == "player":
+                                            self.player_1.battlefield.append(card.card)
+                                            self.player_1.graveyard.remove(card.card)
+                                            gameBoard.draw_new_battlefield(self.player_1)
+                                        elif chosen_player == "opponent":
+                                            self.player_1.battlefield.append(card.card)
+                                            self.player_2.graveyard.remove(card.card)
+                                            gameBoard.draw_new_battlefield(self.player_2)
+                                        counter += 1
+                                        if chosen_player == "player":
+                                            if (counter == int(spell.value) or (len(creature_cards_player_1) - counter == 0)):
+                                                resolved = True
+                                        if chosen_player == "opponent":
+                                            if (counter == int(spell.value) or (len(creature_cards_player_2) - counter == 0)):
+                                                resolved = True
+
+            else:
+                ai_combined_toughness = player.calculate_combined_toughness()
+                player_combined_toughness = player.calculate_combined_toughness(opponent)
+                ai_combined_power = player.calculate_combined_power()
+                player_combined_power = player.calculate_combined_power(opponent)
+
+                if len(player.graveyard) > 0 or len(opponent.graveyard) > 0:
+                    possible_targets = []
+
+                    for dead_card in player.graveyard:
+                        if dead_card.card_type == "Creature":
+                            possible_targets.append(dead_card)
+
+                    for dead_card in opponent.graveyard:
+                        if dead_card.card_type == "Creature":
+                            possible_targets.append(dead_card)
+
+                    if len(possible_targets) > 0:
+                        targets = []
+                        range_val = 0
+                        if len(possible_targets) < int(spell.value):
+                            range_val = len(possible_targets)
+                        else:
+                            range_val = int(spell.value)
+                        for i in range(range_val):
+                            best_target = None
+                            for target in possible_targets:
+
+                                if best_target == None:
+                                    best_target = target
                                 else:
-                                    if best_target.power < target.power:
-                                        best_target = target
+                                    if ai_combined_toughness <= player_combined_power:
+                                        if best_target.toughness < target.toughness:
+                                            best_target = target
+                                    else:
+                                        if best_target.power < target.power:
+                                            best_target = target
 
-                        targets.append(best_target)
+                            targets.append(best_target)
 
-                    targets_toughness = 0
-                    targets_power = 0
-                    for creature in targets:
-                        if creature != None:
-                            player.battlefield.append(creature)
-                            self.draw_screen(gameBoard)
-                            gameBoard.draw_new_battlefield(player)
-                            pygame.display.update()
+                        targets_toughness = 0
+                        targets_power = 0
+                        for creature in targets:
+                            if creature != None:
+                                player.battlefield.append(creature)
+                                self.draw_screen(gameBoard)
+                                gameBoard.draw_new_battlefield(player)
+                                pygame.display.update()
 
 
 

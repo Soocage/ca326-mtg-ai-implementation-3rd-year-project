@@ -14,6 +14,7 @@ pygame.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
 PLAYER_1_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
+PLAYER_2_HAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_2_LAND_SPRITE_CARD_GROUP = pygame.sprite.Group()
 PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP = pygame.sprite.Group()
@@ -488,6 +489,144 @@ class Board():
 
             for card_sprite in PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                 self.draw_summon_icon(card_sprite)
+
+    def draw_discard_hand(self, player_2):
+        PLAYER_2_HAND_SPRITE_CARD_GROUP.empty()
+        pygame.mouse.set_visible(True)
+        (display_width, display_height) = screen_res.display_size
+
+        discard_box_width = int(display_width*(0.9))
+        if len(self.player_2.hand) <= 7:
+            padding_w = (discard_box_width/8)/8
+            card_w = discard_box_width/8
+        else:
+            padding_w = (discard_box_width/(len(self.player_2.hand) + 1))/ (len(self.player_2.hand) + 1)
+            card_w = discard_box_width/ (len(self.player_2.hand) + 1)
+        card_h = card_w *(88/63)
+        discard_box_height = card_h + (2*padding_w)
+        discard_box_x = display_width*(0.05)
+        discard_box_y = self.player_1_play_sec.y - (discard_box_height/2)
+        discard_box_colour = (255, 255, 255)
+
+        discard_box = BoardSection(discard_box_x, discard_box_y, discard_box_width, discard_box_height, discard_box_colour)
+        discard_box.draw()
+
+        temp_sprite_list = []
+        i = 0
+        while i < len(self.player_2.hand):
+            if i == 0:
+                x = (discard_box_x + (discard_box_width/2)) - ((len(self.player_2.hand)-1)*(padding_w/2)) - ((len(self.player_2.hand)-1)*(card_w/2)) - (card_w/2)
+            else:
+                x = temp_sprite_list[i-1].rect.x + card_w + padding_w
+            y = discard_box_y + (discard_box_height/2) - (card_h/2)
+            card_sprite = CardSprite(self.player_2.hand[i] , x, y, card_w, card_h)
+            temp_sprite_list.append(card_sprite)
+            PLAYER_2_HAND_SPRITE_CARD_GROUP.add(card_sprite)
+            i += 1
+
+        PLAYER_2_HAND_SPRITE_CARD_GROUP.draw(screen_res.gameDisplay)
+        lst = copy.copy(PLAYER_2_HAND_SPRITE_CARD_GROUP)
+        return lst
+
+    def draw_search_grave(self, player):
+        GRAVE_CARD_SPRITE_GROUP = pygame.sprite.Group()
+        pygame.mouse.set_visible(True)
+        (display_width, display_height) = screen_res.display_size
+
+
+        #draw_search border
+        draw_search_box_x = (display_width)*(1/20)
+        draw_search_box_y = (display_height)*(1/20)
+        draw_search_box_h = ((display_height)*(18/20))
+        draw_search_box_w = ((display_width)*(18/20))
+
+        padding_w = (draw_search_box_w/11)/11
+        upper_padding_h = (draw_search_box_h/7)/7
+        card_h = (draw_search_box_h/7)
+        card_w = card_h*(63/88)
+
+        in_draw_search = True
+        creature_cards = []
+        for card in player.graveyard:
+            if card.card_type == "Creature":
+                creature_cards.append(card)
+        print(creature_cards, "creature cards")
+        pygame.draw.rect(screen_res.gameDisplay, (255,255,255), (draw_search_box_x, draw_search_box_y, draw_search_box_w, draw_search_box_h))
+
+        row_1 = []
+        row_2 = []
+        row_3 = []
+        row_4 = []
+        row_5 = []
+        row_6 = []
+        for i in range(len(creature_cards)):
+            if i < 10:
+                row_1.append(creature_cards[i])
+            elif 10 < i < 20:
+                row_2.append(creature_cards[i])
+            elif 20 < i < 30:
+                row_3.append(creature_cards[i])
+            elif 30 < i < 40:
+                row_4.append(creature_cards[i])
+            elif 40 < i < 50:
+                row_5.append(creature_cards[i])
+            elif 50 < i < 60:
+                row_6.append(creature_cards[i])
+
+
+        i = 0
+        while i < len(row_1):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h)
+            creature_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.add(creature_sprite)
+            i += 1
+        i = 0
+        while i < len(row_2):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*2) + card_h
+            creature_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.addd(land_sprite)
+            i += 1
+        i = 0
+        while i < len(row_3):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*3) + (card_h*2)
+            creature_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
+        i = 0
+        while i < len(row_4):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*4) + (card_h*3)
+            creature_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
+        i = 0
+        while i < len(row_5):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*5) + (card_h*4)
+            creature_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
+        i = 0
+        while i < len(row_6):
+            creature_card = row_1[i]
+            x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
+            y = draw_search_box_y + (upper_padding_h*5) + (card_h*4)
+            land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
+            GRAVE_CARD_SPRITE_GROUP.add(land_sprite)
+            i += 1
+
+        GRAVE_CARD_SPRITE_GROUP.draw(screen_res.gameDisplay)
+
+        pygame.display.update()
+        return GRAVE_CARD_SPRITE_GROUP
 
     def draw_search_land(self, player):
         LAND_CARD_SPRITE_GROUP = pygame.sprite.Group()

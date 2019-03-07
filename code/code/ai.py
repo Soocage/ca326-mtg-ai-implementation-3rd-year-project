@@ -370,7 +370,6 @@ class Ai():
                         total_mana_cost += self.check_card_cost(playable_card)
 
                     combination_cost = combination_cost*((int(card.value)/(total_mana_cost + int(card.value))))
-                    print(combination_cost)
                 if card.effect == "Gain_life":
 
                     combination_cost = combination_cost*1-((self.life + int(card.value)) / 20)
@@ -700,11 +699,11 @@ class Ai():
             damage_done = opponent.life - new_opponent_life
             opponent_life_factor = 1 - ((opponent.life - damage_done) / opponent.life)
             opponent_life_weight = opponent_life_weight*opponent_life_factor
+            probability = permu_and_board_state[1][-1]
 
-            value = ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight
+            value = (ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight) * probability
 
             cost_of_defending.append([value, permu_and_board_state])
-
         sorted_cost_of_defending = self.sort_combinations(cost_of_defending)
         return sorted_cost_of_defending[:5]
 
@@ -775,21 +774,83 @@ class Ai():
             damage_done = opponent.life - new_opponent_life
             opponent_life_factor = 1 - ((opponent.life - damage_done) / opponent.life)
             opponent_life_weight = opponent_life_weight*opponent_life_factor
+            probability = combi_and_board_state[1][-1]
 
-            value = ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight
-
+            value = (ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight) * probability
             cost_of_attacking.append([value, combi_and_board_state])
 
         sorted_cost_of_attacking = self.sort_combinations(cost_of_attacking)
         return sorted_cost_of_attacking[:5]
 
 
-    def simulate_battle(self, combi_attackers, combi_defenders, opponent, defending_player):
+    def get_blocker_probability(self, combi_attackers, combi_defenders, opponent, defending_player):
+        potential_blockers = []
+        if type(defending_player) == Ai:
+            for creature in self.battlefield:
+                if creature.tapped == False and "Protection" not in creature.keyword:
+                    potential_blockers.append(creature)
 
+        else:
+            for creature in defending_player.battlefield:
+                if creature.tapped == False and "Protection" not in creature.keyword:
+                    potential_blockers.append(creature)
+
+        probable_toughness = 0
+        list_probable_blockers = []
+        i = 0
+        while i < len(combi_attackers) or i < len(potential_blockers):
+            best_blocker = None
+            for blocker in potential_blockers:
+                if blocker not in list_probable_blockers:
+                    if best_blocker == None:
+                        best_blocker = blocker
+
+                    if "Deathtouch" in blocker.keyword and "Deathtouch" not in best_blocker.keyword:
+                        best_blocker = blocker
+
+                    elif (best_blocker.toughness + best_blocker.toughness_modifier) < (blocker.toughness + blocker.toughness_modifier):
+                        best_blocker = blocker
+
+                    elif (best_blocker.toughness + best_blocker.toughness_modifier) == (blocker.toughness + blocker.toughness_modifier):
+                        if (best_blocker.power + best_blocker.power_modifier) < (blocker.power + blocker.power_modifier):
+                            best_blocker = blocker
+
+                if best_blocker != None:
+                    probable_toughness += (best_blocker.toughness + best_blocker.toughness_modifier)
+                    list_probable_blockers.append(best_blocker)
+            i += 1
+
+        if probable_toughness == 0:
+            probability = 1
+            return probability
+        else:
+            combined_combi_toughness = 0
+            for creature in combi_defenders:
+                if type(creature) != int:
+                    combined_combi_toughness += (creature.toughness + creature.toughness_modifier)
+
+            if type(defending_player) == Ai:
+                return combined_combi_toughness/probable_toughness
+
+            else:
+                combined_attacker_power = 0
+                for creature in combi_attackers:
+                    combined_attacker_power += (creature.power + creature.power_modifier)
+
+
+                probability = (combined_attacker_power/probable_toughness) * (combined_combi_toughness/probable_toughness)
+                return probability
+
+
+
+
+
+    def simulate_battle(self, combi_attackers, combi_defenders, opponent, defending_player):
         opponent_health = opponent.life
         ai_health = self.life
         current_ai_battlefield = self.battlefield[:]
         current_player_battlefield = opponent.battlefield[:]
+        probability = self.get_blocker_probability(combi_attackers, combi_defenders, opponent, defending_player)
 
         if type(defending_player) != Ai:
             # AI attacks, Player defends
@@ -809,7 +870,7 @@ class Ai():
                 else:
                     opponent_health -= combi_attackers[i].power
                 i += 1
-            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
+            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield, probability]
 
         else:
             #Ai defends, Player atatcks
@@ -822,7 +883,7 @@ class Ai():
 
                     cop_combi_attackers_toughness_mod -= (combi_defenders[i].power + combi_defenders[i].power_modifier)
                     cop_combi_defenders_toughness_mod -= (combi_attackers[i].power + combi_attackers[i].power_modifier)
-                    
+
                     if combi_attackers[i].toughness + cop_combi_attackers_toughness_mod <= 0:
                         current_player_battlefield.remove(combi_attackers[i])
 
@@ -831,4 +892,5 @@ class Ai():
                 else:
                     ai_health -= combi_attackers[i].power
                 i += 1
-            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield]
+
+            return [ai_health, opponent_health, current_ai_battlefield, current_player_battlefield, probability]
