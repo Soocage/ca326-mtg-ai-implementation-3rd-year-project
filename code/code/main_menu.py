@@ -14,6 +14,7 @@ import game
 import player
 from screen_res import screen_res
 import ai
+import pickle
 
 #Colours
 
@@ -29,6 +30,8 @@ bright_green = (0,255,0)
 blue = (0,0,255)
 bg_colour = grey
 volume_slider_colour = white
+
+PAGE_COUNTER = 0
 
 
 pygame.init()
@@ -266,6 +269,36 @@ def deck_tools():
 
     previous_button_x = back_button_x - deck_tools_button_width - (deck_tools_button_width/10)
     previous_button_y = back_button_y
+
+    creature_list = []
+    land_list = []
+    sorcery_list = []
+    instant_list = []
+
+    f = open("./personal_decks/deck_info", "rb")
+    n = pickle.load(f)
+    card_deck = []
+    for i in range(n):
+        ver = pickle.load(f)
+        if ver.card_type == "Creature":
+            creature_list.append(ver)
+        elif ver.card_type == "Land":
+            land_list.append(ver)
+        elif ver.card_type == "Sorcery":
+            sorcery_list.append(ver)
+        elif ver.card_type == "instant":
+            instant_list.append(ver)
+
+    print(land_list)
+    print("#####")
+    print(creature_list)
+    print("#####")
+    print(sorcery_list)
+    print("#####")
+    print(instant_list)
+    print("#####")
+
+
 
     in_deck_tools = True
     while in_deck_tools:

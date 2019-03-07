@@ -231,6 +231,15 @@ class Ai():
                         if creature.tapped == False:
                             possible_blockers.append(creature)
                     if len(possible_blockers) > 0:
+                        best_blocker = None
+                        for blocker in possible_blockers:
+                            if best_blocker == None:
+                                best_blocker = blocker
+                            else:
+                                if blocker.toughness > best_blocker.toughness:
+                                    best_blocker = blocker
+                        combination_cost = combination_cost*(card.power/best_blocker.toughness + card.power)
+
                         combination_cost = combination_cost*(card.power/(card.power + best_blocker.toughness))
                         if card.power > best_blocker.toughness:
                             combination_cost = combination_cost*((card.power - best_blocker.toughness) + opponent.life/opponent.life)
@@ -266,7 +275,7 @@ class Ai():
                             best_blocker = creature
                         else:
                             if creature.toughness > best_blocker.toughness:
-                                best_blocker = creature.toughness
+                                best_blocker = creature
 
                     for creature in opponent.battlefield:
                         if best_attacker == None:
@@ -308,7 +317,7 @@ class Ai():
                             best_blocker = creature
                         else:
                             if creature.toughness > best_blocker.toughness:
-                                best_blocker = creature.toughness
+                                best_blocker = creature
 
                     for creature in opponent.battlefield:
                         if best_attacker == None:
@@ -317,8 +326,9 @@ class Ai():
                             if creature.power > best_attacker.power:
                                 best_attacker = creature
 
-                    if best_blocker.toughness <= best_attacker.attacker:
-                        combination_cost = combination_cost*((player_combined_toughness + player_combined_power) - (best_attacker.power + best_attacker.toughness)) / (player_combined_power + player_combined_toughness)
+                    if best_blocker != None and best_attacker != None:
+                        if best_blocker.toughness <= best_attacker.power:
+                            combination_cost = combination_cost*((player_combined_toughness + player_combined_power) - (best_attacker.power + best_attacker.toughness)) / (player_combined_power + player_combined_toughness)
 
 
                 if card.effect == "Combat_Creature":
@@ -739,15 +749,24 @@ class Ai():
             opponent_life_weight = self.opponent_life_weight
 
             ai_life_weight = ai_life_weight*((combi_and_board_state[1][0]/self.life))
+            if ai_combined_power == 0:
+                ai_power = 1
+            else:
+                ai_power = ai_combined_power
 
             if len(self.battlefield) > 0:
-                ai_battlefield_factor = (((after_ai_combined_power/ai_combined_power) + (after_ai_combined_toughness/ai_combined_toughness) + (len(combi_and_board_state[1][2])/len(self.battlefield))) / 3)
+                ai_battlefield_factor = (((after_ai_combined_power/ai_power) + (after_ai_combined_toughness/ai_combined_toughness) + (len(combi_and_board_state[1][2])/len(self.battlefield))) / 3)
                 ai_battlefield_weight = ai_battlefield_weight*ai_battlefield_factor
             else:
                 ai_battlefield_weight = self.ai_battlefield_weight
 
             if len(opponent.battlefield) > 0:
-                opponent_battlefield_factor = (((after_player_combined_power/player_combined_power) + (after_player_combined_toughness/player_combined_toughness) + (len(combi_and_board_state[1][3])/len(opponent.battlefield))) / 3)
+                if player_combined_power == 0:
+                    player_power = 1
+                else:
+                    player_power = player_combined_power
+
+                opponent_battlefield_factor = (((after_player_combined_power/player_power) + (after_player_combined_toughness/player_combined_toughness) + (len(combi_and_board_state[1][3])/len(opponent.battlefield))) / 3)
                 opponent_battlefield_weight = opponent_battlefield_weight*opponent_battlefield_factor
             else:
                 opponent_battlefield_weight = self.opponent_battlefield_weight

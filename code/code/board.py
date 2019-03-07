@@ -549,7 +549,7 @@ class Board():
             x = draw_search_box_x + (padding_w*i+1) + (card_w*i)
             y = draw_search_box_y + (upper_padding_h*2) + card_h
             land_sprite = CardSprite(row_1[i], x, y, card_w, card_h)
-            LAND_CARD_SPRITE_GROUP.addd(land_sprite)
+            LAND_CARD_SPRITE_GROUP.add(land_sprite)
             i += 1
         i = 0
         while i < len(row_3):

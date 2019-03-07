@@ -162,10 +162,12 @@ class Game():
             card.card.toughness_modifier = 0
             card.card.power_modifier = 0
             card.card.tmp_keyword = ""
+            card.card.combat_state = ""
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             card.card.toughness_modifier = 0
             card.card.power_modifier = 0
             card.card.tmp_keyword = ""
+            card.card.combat_state = ""
 
         while len(player.hand) > 7:
             self.discard_down(player, gameBoard)
@@ -216,7 +218,7 @@ class Game():
 
     def deck_selection(self, player):
 
-        f = open("./personal_decks/deck_1", "rb")
+        f = open("./personal_decks/deck_5", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -699,10 +701,10 @@ class Game():
                         if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
                             current_player.graveyard.append(attackers[i])
                             current_player.battlefield.remove(attackers[i])
-                            if attackers[i].keyword == "Trample":
-                                next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
-                            if attackers[i].keyword == "Life_Link":
-                                current_player.life += (attackers[i].power + attackers[i].power_modifier)
+                        if attackers[i].keyword == "Trample":
+                            next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
+                        if attackers[i].keyword == "Life_Link":
+                            current_player.life += (attackers[i].power + attackers[i].power_modifier)
                         if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
@@ -918,7 +920,7 @@ class Game():
             self.effect_draw(player, gameBoard, card.value, combinations)
 
         elif card.effect == "Tap":
-            self.effect_tap(player, opponent, gameBoard, combinations)
+            self.effect_tap(player, opponent, gameBoard, combinations, card.value)
 
         elif card.effect == "Damage":
             self.effect_dmg(player, opponent, gameBoard, card.targets, card.value, combinations)
@@ -950,7 +952,6 @@ class Game():
         elif card.effect == "Reanimate":
             self.effect_reanimate(player, opponent, gameBoard, combinations, card)
 
-        #gameBoard.draw_graveyard(player)
         gameBoard.draw_hand()
         gameBoard.draw_new_battlefield(player)
         gameBoard.draw_new_battlefield(opponent)
@@ -1189,7 +1190,6 @@ class Game():
 
 
     def effect_exile(self, player, opponent, gameBoard, list_of_targets, combinations):
-        print("friends")
         tmp_1 = False
         tmp_2 = False
 
@@ -1249,7 +1249,6 @@ class Game():
 
                     pygame.display.update()
         else:
-            print("friends")
             valid_targets_player = []
             valid_targets_ai = []
             for creature in self.player_1.battlefield:
@@ -1266,7 +1265,6 @@ class Game():
             player_combined_toughness = self.player_2.calculate_combined_toughness(self.player_1)
             player_combined_power = self.player_2.calculate_combined_power(self.player_1)
 
-            print(valid_targets_player, valid_targets_ai)
             if len(valid_targets_player) > 0:
                 if player_combined_toughness >= ai_combined_power:
                     best_target = None
@@ -1293,7 +1291,6 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) < (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
-                print(best_target)
                 self.player_1.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_1)
@@ -1329,7 +1326,7 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
-                print(best_target)
+
 
                 self.player_2.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
@@ -1601,14 +1598,10 @@ class Game():
             ai_target = None
             enemy_target = None
             found_targets = False
-            print(len(ranked_creatures))
             i = 0
             while i < len(ranked_creatures) and found_targets == False:
                 tmp_target = ranked_creatures[i]
                 for creature in self.player_2.battlefield:
-                    print("HI", creature.name)
-                    print(creature.power >= tmp_target.toughness)
-                    print(creature.toughness > tmp_target.power)
                     if (creature.power >= tmp_target.toughness) and (creature.toughness > tmp_target.power):
                         ai_target = creature
                         enemy_target = tmp_target
@@ -1640,13 +1633,14 @@ class Game():
         for i in range (int(value)):
             self.draw(player, gameBoard)
 
-    def effect_tap(self, player, opponent, gameBoard, combinations):
-
+    def effect_tap(self, player, opponent, gameBoard, combinations, value):
+        available_targets = []
         resolved = True
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                available_targets.append(card.card)
                 resolved = False
-
+        amt = 0
         if type(player) != ai.Ai:
             while not resolved:
                     for event in pygame.event.get():
@@ -1659,7 +1653,9 @@ class Game():
                                         card.card.tapped = True
                                         gameBoard.tap_creature(card)
                                         card.card.tapped = True
-                                        resolved = True
+                                        amt += 1
+                                        if amt == int(value) or len(available_targets) - amt == 0:
+                                            resolved = True
 
 
                         self.draw_screen(gameBoard)
@@ -1675,26 +1671,39 @@ class Game():
 
                         pygame.display.update()
         else:
-            best_attacker = None
-            best_blocker = None
-            for creature in self.player_2.battlefield:
-                if best_blocker == None:
-                    best_blocker = creature
-                else:
-                    if creature.toughness > best_blocker.toughness:
-                        best_blocker = creature.toughness
+            resolved = False
+            available_targets = []
+            while not resolved:
+                print("hi")
+                best_attacker = None
+                best_blocker = None
+                for creature in self.player_2.battlefield:
+                    if best_blocker == None:
+                        best_blocker = creature
+                    else:
+                        if creature.toughness > best_blocker.toughness:
+                            best_blocker = creature
 
-            for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                if best_attacker == None:
-                    best_attacker = creature_sprite
-                else:
-                    if creature_sprite.card.power > best_attacker.card.power:
+                for creature_sprite in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+                    if creature_sprite.card.tapped != True:
+                        available_targets.append(creature_sprite)
+
+                for creature_sprite in available_targets:
+                    if best_attacker == None:
                         best_attacker = creature_sprite
-            if best_attacker != None and best_blocker != None:
-                if best_blocker.toughness <= best_attacker.card.power:
-                    best_attacker.card.tapped = True
-                    gameBoard.tap_creature(best_attacker)
-                    best_attacker.card.tapped = True
+                    else:
+                        if creature_sprite.card.power > best_attacker.card.power:
+                            best_attacker = creature_sprite
+
+                if best_attacker != None and best_blocker != None:
+                    if best_blocker.toughness <= best_attacker.card.power:
+                        best_attacker.card.tapped = True
+                        gameBoard.tap_creature(best_attacker)
+                        best_attacker.card.tapped = True
+                        amt += 1
+
+                if amt == int(value) or len(available_targets) - amt <= 0:
+                    resolved = True
 
 
     def effect_dmg(self, player, opponent, gameBoard, list_of_targets, value, combinations):
@@ -1781,9 +1790,10 @@ class Game():
                                 potential_creatures.append([0.20, creature_sprite.card])
                             else:
                                 tmp_hp = (creature_sprite.card.toughness + creature_sprite.card.toughness_modifier) - int(value)
-                                for next_card in combinations:
-                                    if (next_card.card_type == "Instant" or next_card.card_type == "Sorcery") and next_card is not card and int(next_card.value) >= tmp_hp:
-                                        potential_creatures.append([0.025,creature_sprite.card])
+                                if combinations != None:
+                                    for next_card in combinations:
+                                        if (next_card.card_type == "Instant" or next_card.card_type == "Sorcery") and next_card is not card and int(next_card.value) >= tmp_hp:
+                                            potential_creatures.append([0.025,creature_sprite.card])
 
                 spell_target = player.calculate_target(opponent,opponent_weight,potential_creatures)
                 if spell_target != self.player_1:
@@ -1802,10 +1812,17 @@ class Game():
 
 
     def effect_bounce(self, player, opponent, gameBoard, combinations):
+        print("hi")
         resolved = True
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
                 resolved = False
+
+        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
+                print(resolved)
+
         if type(player) != ai.Ai:
             while not resolved:
                 for event in pygame.event.get():
@@ -1817,12 +1834,14 @@ class Game():
                                 if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                     player.hand.append(card.card)
                                     player.battlefield.remove(card.card)
+                                    card.card.summon_sick = True
                                     resolved = True
 
                             for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
                                 if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
                                     opponent.hand.append(card.card)
                                     opponent.battlefield.remove(card.card)
+                                    card.card.summon_sick = True
                                     resolved = True
 
                     if event.type == pygame.QUIT:
@@ -1862,12 +1881,13 @@ class Game():
                 if best_attacker == None:
                     best_attacker = creature
                 else:
-                    if creature.power > best_attacke.power:
+                    if creature.power > best_attacker.power:
                         best_attacker = creature
             if best_attacker != None and best_blocker != None:
                 if best_blocker.toughness <= best_attacker.power:
                     self.player_1.battlefield.remove(best_attacker)
                     self.player_1.hand.append(best_attacker)
+                    best_attacker.summon_sick = True
                     self.draw_screen(gameBoard)
                     gameBoard.draw_hand()
                     gameBoard.draw_new_battlefield(self.player_1)
