@@ -490,6 +490,20 @@ class Board():
             for card_sprite in PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
                 self.draw_summon_icon(card_sprite)
 
+    def draw_discard_hand(self, player_2):
+        PLAYER_2_HAND_SPRITE_CARD_GROUP.empty()
+        for card in self.player_2.hand:
+            pygame.mouse.set_visible(True)
+            (display_width, display_height) = screen_res.display_size
+
+        discard_box_width = int(display_width*(0.8)))
+        padding_w = (discard_box_width/(len(self.player_2.hand) + 1))/ (len(self.player_2.hand) + 1)
+        card_w = (discard_box_width/(len(self.player_2.hand) + 1))
+        card_h = card_w *(88/)63)
+        discard_box_height = card_h + (2*padding_w)
+        discard_box_x = display_width*(0.10)
+        discard_box_y =
+
     def draw_search_land(self, player):
         LAND_CARD_SPRITE_GROUP = pygame.sprite.Group()
         pygame.mouse.set_visible(True)
