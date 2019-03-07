@@ -166,28 +166,28 @@ for i in range(n):
     ver = pickle.load(f)
     with open("../personal_decks/deck_4", "wb") as deck_4:
         if ver.colour == "W" and ver.card_type == "Creature":
-            for j in range(0,5):
+            for j in range(0,4):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
 
 
 
         if ver.colour == "W" and ver.card_type == "Land":
-            for j in range(0,15):
+            for j in range(0,24):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
 
 
 
         if ver.colour == "W" and ver.card_type == "Instant":
-            for j in range(0,10):
+            for j in range(0,4):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
 
 
 
         if ver.colour == "W" and ver.card_type == "Sorcery":
-            for j in range(0,5):
+            for j in range(0,4):
                 tmp = copy.copy(ver)
                 card_deck.append(tmp)
 
