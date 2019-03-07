@@ -1,4 +1,4 @@
-50
+54
 #######Green####,###
 [Forest,Land,G,0,./images/card_art/forest.png,mana]
 [Elf,Creature,G,G,./images/card_art/elf_1.png,1,1]
@@ -46,6 +46,10 @@
 [Swamp,Land,B,0,./images/card_art/swamp.png,mana]
 [Zombie,Creature,B,B,./images/card_art/zombie.png,1,1]
 [Giant Scorpion,Creature,B,2B,./images/card_art/scorpion.jpg,1,3,Deathtouch]
+[Sengir Vampire,Creature,B,2BB,./images/card_art/sengir.png,3,3,LifeLink]
+[Vampire Nighthawk,Creature,B,3B,./images/card_art/nighthawk.png,3,2,Flying]
+[Wall of Limbs,Creature,B,1BB,./images/card_art/limbs.png,0,3]
+[Demonic Tutor,Sorcery,B,BB,./images/card_art/tutor.png,player,1,Draw]
 [Reanimate,Sorcery,B,B,./images/card_art/reanimate.png,opponent;player,1,Reanimate]
 [Murder,Sorcery,B,1BB,./images/card_art/murder.png,creature,1,Destroy]
 [Duress,Sorcery,B,B,./images/card_art/duress.png,opponent;player,1,Discard]
