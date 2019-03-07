@@ -1,0 +1,153 @@
+Kacper: The options screen is a small personal configuration menu which allows the end user to lower the in game
+        music volume and change the resolution size to fit their needs. By pressing the back button you will exit
+        back out to the main menu or back to the game since this menu is also accessible from the game screen.
+
+Sean: 	This is the deck creation screen. In here you will be able to create your own personal deck to try out against
+        our Ai. There are 400 cards with varying effects and power for you to explore. By clicking the add new deck
+        button you will be presented with this screen from which you click on a card and then on the amount of that
+        card you would like to have in your deck. Maximum being 4. The deck needs to consist of at least 60 cards
+        but has no upper limit.
+
+Kacper: After you make your deck or if you haven't made a deck and would like to start playing press the Fight vs Ai button.
+        You will then be presented with the deck selection screen from which you can select on of our 5 premade decks or
+        your own personal deck that you have constructed. you will then be launched into the game screen.
+
+	      This screen is broken down into 7 sections. The information box, the Menu buttons, Your hand, Your playing field, the enemy
+        playing field ,Turn indicators and last card played display.
+
+	      The information box stores all relevant information on either player. Their current life total, hand size,
+        graveyard size, and deck size. The information box also has a card display section which displays a card in
+        detail when you hover over one in the game.
+
+        A card consists of the name of the card, The type of card it is, any special effects it may have and what
+        they mean and if it is a creature it will show that creatures power and toughness.
+
+        The menu buttons allow you to either concede this game and head back out to main menu to start again or
+        change the options similarly to the options in the main menu.
+
+        you hand section displays all cards you currently have in your hand.
+
+        Both play sections show the respective players lands and creatures currently out on the battle field.
+
+        The turn Indicator will tell you the player what stage of the turn your on and whose turn it currently is.
+        It will also tell you if your attacking, defending or responding. But we will get into that later.
+
+        The last section on your screen that you need to take note of is the Last card played display. This will
+        display the latest card either player has played.
+
+Sean: 	You start the game by choosing to either Mulligan or not. A mulligan means you put your current hand back into
+        your deck, shuffle it and then draw again but this time with one less card. After that the game begins with
+        you as the player who goes first. During your main phase you have several options of things you can do. to
+        play any of your cards you will need to press the left mouse button and drag it out of the hand section.
+        Then release the button and the card will snap into position. Each card other than Lands require a minimum
+        mana cost. This cost will displayed at the top of you card.
+
+      	A land has no mana cost as is easily identifiable by the distinct difference in the look of the card. A Land
+        has an art work that spans the full length of the card while other cards are divided as explained above.
+        you can only 	play one land per turn
+
+      	To generate mana you need to click on one of your lands that are currently out on the battle field. One land
+        can generate one mana of the appropriate colour. This generated mana is displayed in the info box section
+        underneath the player information. Once a card is played the mana is used up until you can generate it again.
+        If a cards mana cost consists of a number and a coloured symbol this means that the mana cost of that card is
+        1 mana of the appropriate mana color and any other mana that equals that number. for example 2R means one red
+         mana and a combination any 2 mana.
+
+      	Once the mana cost has been paid and creature cast it will appear on the play section in the middle of your
+        screen. It will have a pause symbol on it signifying that it has summoning sickness and until next turn you
+        wont be able to attack with it unless the creature has the Haste ability.
+
+      	If you play either an Instant or Sorcery you will resolve any and all effects of that Instant or Sorcery. An
+        example Shock will deal 2 damage to target creature or Player so when I cast it will disappear from my hand
+        and I will be able to chose my targets. Once a card has been dragged out on to the battlefield its effect must
+        resolve. This means if you play a card that deals 2 damage to target creature and you are the only person with
+        creatures out on the battlefield they you must target your own creature.
+
+      	After playing any card other than land the opponent has a response phase. In that phase the opponent can cast
+        any instant card if he has enough mana to play it. This is the same for the player. Whenever the opponent
+        casts a spell you have the opportunity to cast one of your instant spells if you have enough mana to do so.
+
+      	if your try and cast a spell whose mana cost is higher than the amount of mana you have generated the card
+        you tried to play will snap back into your hand.
+
+      	When your finished casting your creatures, lands and sorceries you can press the pass button or press spacebar
+        to move into the next phase.
+
+Kacper:	The next phase is the combat phase. Inside of this phase you can no longer cast any sorceries or creatures
+        however you still have access to you instant spells. From the current creatures on the battle field you will
+        now select how many creatures you would like to attack the enemy player with. The amount of damage they will
+        do to the player is displayed on the card right here. Once a creature is selected for battle it cannot be
+        deselected. Creatures with summoning sickness cannot attack until the next turn. A selected Creature Becomes
+        tapped until your next untap step. A tapped creature cannot block enemy attacks. A creature who has the
+        Vigilance ability does not tap when attacking.
+
+        After you select your attackers the opponent then selects their blockers. They can chose one of their creatures
+        to block another creatures attack. When that occurs the attacking creatures deals damage to the blocking
+        creature as oppose to the opponent. If a creature isn't blocked the player takes that creatures full power
+        away from their life total. A creature who has the Flying ability can only be blocked by other Flying creatures.
+        A flying creature can block a non flying creature.
+
+        Once blockers have been declared the damage calculation takes place. In this step one by one the creatures battle
+        against their blockers or against the opponent if that particular creature didn't have a blocker. in the battle calculation
+        the blockers power which is displayed on the card is compared against your attackers toughness and the attackers power against
+        the blockers toughness.
+
+        If a creatures power is grater than or equal to the other creatures toughness that creature is dead. They are removed from the
+        battlefield and put into the graveyard. If a creature gains protection from a spell you cast on it. It cannot die from damage from combat.
+        If the attacking creature has the ability trample. Any power that exceeds the blocking creatures toughness will still be dealt to the player.
+        If any creature has the Death touch ability it will automatically kill the creature it fights if it deals at least 1 damage.
+        If any creature has The Life Link ability any damage it will deal to either the opponent or blocking or attacking creature,
+        The owner of that creature will gain life equal to that creatures power.
+
+Sean:   After That you will enter your second Main phase. This phase is exactly the same as the first main phase. You can now cast new creatures
+        and Sorceries and when you're done click the pass phase button to head to last step which is the end step.
+
+        During the end step all creatures toughness's are restored back to their original value. It also checks how many cards does the current player
+        have in their hand. If they have more than 7 they are asked to discard one card from their hand into their graveyard. This is also the last
+        chance opponent has to cast an instant spell before their turn.
+
+        With that the opponents turn begins. All turns begin with the untap step. During this step all lands and creatures
+        that were tapped during the last turn are now untapped.
+        This means creatures that you attacked with last turn can now attack again or be held back as potential blockers.
+        All lands can be tapped again to generate mana.
+        At the end of each phase the opponent enters a response phase. During the opponents turn that will be you and will
+        be indicated to you by the turn indicator. Yet again during this turn you can tap lands to generate mana to play instant
+        spells each with their own effect described on the card.
+
+Kacper: With that the Untap phase ends and the player draws the top card of their deck and adds it to their hand. Then the Ai enters its main phase
+        During The Ai turn we are running calculations to determine its best move. We always play a land if we have a land available to be played.
+        After that we look at all possible combinations of cards that we can play that turn. Using different weights we determine weather the Ai
+        should play a creature, a sorcery or an instant. Each combination is compared to something we call the ideal board state. Based on how
+        close we can get to that ideal board state we decide on what combination of creatures and spells we should play. We have 5 different play
+        styles for our AI which is closely related to what colored deck they play.
+
+        Our red AI is quite aggressive he prioritizes damaging us with spells and creatures over his own survivability
+
+        Our blue AI is controlling he prioritizes disabling your creatures by tapping them so he can attack or
+        tapping them so that they cant attack. removing creatures from your board and hitting you with creatures you cant
+        block.
+
+        Our white AI is more concerned about his creatures than he is about disabling yours. He seeks a bigger board presence while also disabling
+        your creatures and keeping his life above the starting value.
+
+        Our black AI is not as aggressive as our red Ai however it plays out a similar playstyle. He tries to remove big creatures from your side
+        of the battlefield killing them with powerful but costly spells or weak but deadly creatures with death touch.
+
+        Finally Our Green Ai has little concern about such things as sorceries and instances. Although still utilizing them in a small degree, this AI
+        focuses to overwhelm the opponent by sheer numbers on the board.
+
+        All of the Ai listed have a goal of reducing you to 0 life points or lower and each with their own unique playstyle.
+
+Sean:   After the AI Decides which cards it should play it then plays them one by one. With each card the Ai plays you enter a response phase.
+        After all creatures are played the AI enters their combat step. It calculates what possible blockers you as a player will use to
+        achieve the best possible board state for yourself. Using that calculation it will declare attackers and await blockers.
+
+        This is where you the player will be required to select blockers. You can select any number of blockers equal to or less than the number of creatures attacking you
+        you do so by selecting on of your creatures and then selecting on of the opponents attacking creatures. They will then be joined by a black line.
+        After you chose your blockers press the pass phase button to start the damage calculation.
+
+        The Ai then passes his combat phase and enters its end step. This is your last chance to cast any instants before its back to your turn.
+
+        Your turn similarly to the AI Begins with an untap for all of your creatures and lands followed by a draw step. Then back into main phase.
+        You repeat this cycle until of 4 things happen. Either player reaches below 0 hit points. either player has to draw from an empty deck , you concede
+        or you quit out of the game
