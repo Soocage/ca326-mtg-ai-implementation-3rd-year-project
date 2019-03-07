@@ -214,7 +214,7 @@ class Game():
 
     def deck_selection(self, player):
 
-        f = open("./personal_decks/deck_1", "rb")
+        f = open("./personal_decks/deck_2", "rb")
         player_deck = pickle.load(f)
         f.close()
 
@@ -700,12 +700,12 @@ class Game():
                             if attackers[i].keyword == "Trample":
                                 next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
                             if attackers[i].keyword == "Life_Link":
-                                current_player.life += (attackers[i].power + attackers[i].power_modifier) 
+                                current_player.life += (attackers[i].power + attackers[i].power_modifier)
                         if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
                             if defenders[i].keyword == "Life_Link":
-                                next_player.life += (defenders[i].power + defenders[i].power_modifier) 
+                                next_player.life += (defenders[i].power + defenders[i].power_modifier)
                 else:
                     next_player.life -= attackers[i].power
                 i += 1
@@ -934,7 +934,7 @@ class Game():
             self.effect_combat_creature(player, opponent, gameBoard, combinations)
 
         elif card.effect == "Search_land":
-            self.effect_search_land(player, gameBoard, combinations)
+            self.effect_search_land(player, gameBoard, card, combinations)
 
         elif card.effect == "Gain_life":
             self.effect_gain_life(player, opponent, gameBoard, card.targets, card.value, combinations)
@@ -952,7 +952,7 @@ class Game():
             self.effect_discard(player, opponent, gameBoard, card.targets, card.value, combinations)
 
         elif card.effect == "Reanimate":
-            self.effect_reanimate(player, opponent, gameBoard, combinations, card)
+            self.effect_reanimate(player, opponent, gameBoard, card, combinations)
 
         #gameBoard.draw_graveyard(player)
         gameBoard.draw_hand()
@@ -1002,7 +1002,7 @@ class Game():
                             if event.button == 1:
 
 
-                                if "player" in list_of_targets:
+                                if "player" in list_of_targets and len(self.player_1.hand) > 0:
                                     if clicked_target == "" or clicked_target == "player":
                                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                             if card.rect.collidepoint(pos):
@@ -1012,15 +1012,12 @@ class Game():
                                                 amt += 1
 
 
-                                if "opponent" in list_of_targets:
+                                if "opponent" in list_of_targets and len(self.player_1.hand) > 0:
                                     if clicked_target == "" or clicked_target == "opponent":
-                                        for card in board.PLAYER_2_HAND_SPRITE_CARD_GROUP:
-                                            if card.rect.collidepoint(pos):
-                                                clicked_target = "opponent"
-                                                opponent.hand.remove(card.card)
-                                                opponent.graveyard.append(card.card)
+                                        for card in self.player_2.hand:
+                                            print(True)
 
-                                                amt += 1
+                                        amt += 1
 
                                 if amt == int(value):
                                     resolved = True
@@ -1187,13 +1184,12 @@ class Game():
                 self.player_2.graveyard.append(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_2)
-                
+
 
 
 
 
     def effect_exile(self, player, opponent, gameBoard, list_of_targets, combinations):
-        print("friends")
         tmp_1 = False
         tmp_2 = False
 
@@ -1253,7 +1249,6 @@ class Game():
 
                     pygame.display.update()
         else:
-            print("friends")
             valid_targets_player = []
             valid_targets_ai = []
             for creature in self.player_1.battlefield:
@@ -1270,7 +1265,6 @@ class Game():
             player_combined_toughness = self.player_2.calculate_combined_toughness(self.player_1)
             player_combined_power = self.player_2.calculate_combined_power(self.player_1)
 
-            print(valid_targets_player, valid_targets_ai)
             if len(valid_targets_player) > 0:
                 if player_combined_toughness >= ai_combined_power:
                     best_target = None
@@ -1297,7 +1291,6 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) < (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
-                print(best_target)
                 self.player_1.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_1)
@@ -1333,12 +1326,11 @@ class Game():
                         else:
                             (best_target.toughness + best_target.toughness_modifier) + (best_target.power + best_target.power_modifier) > (creature.toughness + creature.toughness_modifier) + (creature.power + creature.power_modifier)
                             best_target = creature
-                print(best_target)
 
                 self.player_2.battlefield.remove(best_target)
                 self.draw_screen(gameBoard)
                 gameBoard.draw_new_battlefield(self.player_2)
-                
+
 
 
 
@@ -1489,7 +1481,13 @@ class Game():
                 opponent.life += int(value)
 
 
-    def effect_search_land(self, player, gameBoard, combinations):
+    def effect_search_land(self, player, gameBoard, spell, combinations):
+        land_cards = []
+        for land_card in player.deck.cards:
+            if land_card.card_type == "Land":
+                land_cards.append(land_card)
+
+        counter = 0
         if type(player) != ai.Ai:
             resolved = False
             while not resolved:
@@ -1505,9 +1503,11 @@ class Game():
                                 if card.rect.collidepoint(pos):
                                     player.land_zone.append(card.card)
                                     player.deck.cards.remove(card.card)
+                                    counter += 1
                                     self.shuffle_deck(self.player_1)
                                     gameBoard.draw_land(player)
-                                    resolved = True
+                                    if (counter == int(spell.value) or (len(land_cards) - counter == 0)):
+                                        resolved = True
         else:
             for card in player.deck.cards:
                 if card.card_type == "Land":
@@ -1605,14 +1605,10 @@ class Game():
             ai_target = None
             enemy_target = None
             found_targets = False
-            print(len(ranked_creatures))
             i = 0
             while i < len(ranked_creatures) and found_targets == False:
                 tmp_target = ranked_creatures[i]
                 for creature in self.player_2.battlefield:
-                    print("HI", creature.name)
-                    print(creature.power >= tmp_target.toughness)
-                    print(creature.toughness > tmp_target.power)
                     if (creature.power >= tmp_target.toughness) and (creature.toughness > tmp_target.power):
                         ai_target = creature
                         enemy_target = tmp_target
@@ -1879,7 +1875,7 @@ class Game():
 
 
 
-    def effect_reanimate(self, player, opponent, gameBoard, combinations, card):
+    def effect_reanimate(self, player, opponent, gameBoard, card, combinations):
         if type(player) != ai.Ai:
             resolved = False
             while not resolved:
