@@ -217,7 +217,7 @@ class Game():
 
 
     def deck_selection(self, player):
-        f = open("./personal_decks/deck_4", "rb")
+        f = open("./personal_decks/deck_2", "rb")
         player_deck = pickle.load(f)
         print(player_deck)
         f.close()
