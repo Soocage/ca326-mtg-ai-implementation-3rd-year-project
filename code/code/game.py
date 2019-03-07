@@ -217,12 +217,8 @@ class Game():
 
 
     def deck_selection(self, player):
-<<<<<<< HEAD
 
         f = open("./personal_decks/deck_2", "rb")
-=======
-        f = open("./personal_decks/deck_4", "rb")
->>>>>>> 67b4ed3e5867fb4acd974fbd6c6c7afdc204c833
         player_deck = pickle.load(f)
         print(player_deck)
         f.close()
@@ -714,15 +710,15 @@ class Game():
                 if type(defenders[i]) != int and ((defenders[i].keyword != "Flying" and attackers[i].keyword != "Flying") or (defenders[i].keyword == "Flying" and attackers[i].keyword != "Flying") or (defenders[i].keyword == "Flying" and attackers[i].keyword == "Flying")):
                         attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
                         defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
-
-                        if attackers[i].toughness + attackers[i].toughness_modifier <= or defenders[i].keyword == "Deatouch":
+                        print(defenders[i].keyword, attackers[i].keyword)
+                        if attackers[i].toughness + attackers[i].toughness_modifier <= 0 or defenders[i].keyword == "Deathtouch":
                             current_player.graveyard.append(attackers[i])
                             current_player.battlefield.remove(attackers[i])
                         if attackers[i].keyword == "Trample":
                             next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
                         if attackers[i].keyword == "Life_Link":
                             current_player.life += (attackers[i].power + attackers[i].power_modifier)
-                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0 <= or attackers[i].keyword == "Deatouch":
+                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0 or attackers[i].keyword == "Deathtouch":
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
                             if defenders[i].keyword == "Life_Link":
