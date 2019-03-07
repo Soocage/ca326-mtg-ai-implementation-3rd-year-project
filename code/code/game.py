@@ -710,14 +710,14 @@ class Game():
                         attackers[i].toughness_modifier -= (defenders[i].power + defenders[i].power_modifier)
                         defenders[i].toughness_modifier -= (attackers[i].power + attackers[i].power_modifier)
 
-                        if attackers[i].toughness + attackers[i].toughness_modifier <= or defenders[i].keyword == "Deatouch":
+                        if attackers[i].toughness + attackers[i].toughness_modifier <= 0:
                             current_player.graveyard.append(attackers[i])
                             current_player.battlefield.remove(attackers[i])
                         if attackers[i].keyword == "Trample":
                             next_player.life += (attackers[i].toughness + attackers[i].toughness_modifier)
                         if attackers[i].keyword == "Life_Link":
                             current_player.life += (attackers[i].power + attackers[i].power_modifier)
-                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0 <= or attackers[i].keyword == "Deatouch":
+                        if defenders[i].toughness + defenders[i].toughness_modifier <= 0:
                             next_player.graveyard.append(defenders[i])
                             next_player.battlefield.remove(defenders[i])
                             if defenders[i].keyword == "Life_Link":
