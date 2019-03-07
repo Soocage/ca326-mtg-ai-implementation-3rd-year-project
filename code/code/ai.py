@@ -694,7 +694,6 @@ class Ai():
             value = (ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight) * probability
 
             cost_of_defending.append([value, permu_and_board_state])
-            print([value, permu_and_board_state], "DEFENDING COST")
         sorted_cost_of_defending = self.sort_combinations(cost_of_defending)
         return sorted_cost_of_defending[:5]
 
@@ -759,7 +758,6 @@ class Ai():
             probability = combi_and_board_state[1][-1]
 
             value = (ai_life_weight + ai_battlefield_weight + opponent_battlefield_weight + opponent_life_weight) * probability
-            print([value, combi_and_board_state], "ATTACKING COST")
             cost_of_attacking.append([value, combi_and_board_state])
 
         sorted_cost_of_attacking = self.sort_combinations(cost_of_attacking)
@@ -767,7 +765,6 @@ class Ai():
 
 
     def get_blocker_probability(self, combi_attackers, combi_defenders, opponent, defending_player):
-        print(defending_player)
         potential_blockers = []
         if type(defending_player) == Ai:
             for creature in self.battlefield:
@@ -804,14 +801,8 @@ class Ai():
                     list_probable_blockers.append(best_blocker)
             i += 1
 
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#")
-        print("defending player", defending_player)
-        print("combi def", combi_defenders)
-        print("COMBI ATTACK", combi_attackers)
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         if probable_toughness == 0:
             probability = 1
-            print("here")
             return probability
         else:
             combined_combi_toughness = 0
