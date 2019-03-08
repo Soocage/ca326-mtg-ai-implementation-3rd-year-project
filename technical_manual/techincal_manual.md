@@ -8,7 +8,7 @@ Each button has an assigned action which will trigger a function call. That func
 
 When you press the Quit button the program will run a quitting function that will close itself.
 
-![alt text](https://gitlab.computing.dcu.ie/mccans32/2019-ca326-mccans32-mtg_ai_implementation/blob/technical_manual/images/intro_screen.png?raw=true "Logo Title Text 1")
+![alt text](../images/intro_screen.png?raw=true "Logo Title Text 1")
 
 
 **Options**
