@@ -5,7 +5,7 @@ import itertools
 import random
 
 class Ai():
-    def __init__(self, name, ai_mode):
+    def __init__(self, name, ai_mode = "red"):
         self.deck = []
         self.name = name
         self.life = 20
