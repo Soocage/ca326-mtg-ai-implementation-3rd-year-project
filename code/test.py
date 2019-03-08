@@ -202,10 +202,34 @@ class test_PlayALand(unittest.TestCase):
 		self.assertTrue(test_Ai.hand == [test_card_1] and test_Ai.land_zone == [])
 
 
+class test_CardPlayable(unittest.TestCase):
+
+	def test_CardPlayable(self):
+		test_Ai = ai.Ai("test_ai", "red")
+		forest = card.Land("forest", "Land", "G", 0, "", "mana")
+
+		test_card_1 = card.Creature("test", "Creature", "G", "G", "", 4, 2)
+		test_Ai.land_zone = [forest]*6
+		self.assertTrue(test_Ai.check_card_playable(test_card_1))
+
+		test_card_1 = card.Creature("test", "Creature", "G", "G", "", 4, 2)
+		test_Ai.land_zone = [forest]*0
+		self.assertFalse(test_Ai.check_card_playable(test_card_1))
+
+		test_card_1 = card.Creature("test", "Creature", "G", "2G", "", 4, 2)
+		test_Ai.land_zone = [forest]*3
+		self.assertTrue(test_Ai.check_card_playable(test_card_1))
+
+		test_card_1 = card.Creature("test", "Creature", "G", "0", "", 4, 2)
+		test_Ai.land_zone = [forest]*0
+		self.assertTrue(test_Ai.check_card_playable(test_card_1))
+
+
+
 
 
 if __name__ == "__main__":
-	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost, test_ClearMana, test_PlayALand]
+	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost, test_ClearMana, test_PlayALand, test_CardPlayable]
 	loader = unittest.TestLoader()
 	suites_list = []
 
