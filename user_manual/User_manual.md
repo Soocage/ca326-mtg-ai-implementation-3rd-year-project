@@ -40,14 +40,14 @@ The Game and Game Rules
 
 **Creatures**
 These cards are Identified by the type shown in the middle of the card and by the power and toughness displayed in the bottom right corner of the card. Some creature cards will have a _Keyword_ giving it some special ability. Each Keyword is described on a card. For a list of all Keywords and their explanation you can also visit the appendix
-
+ ![](./goblin_1.png)
 **Sorcery**
 These cards are Identified by the type show in the middle of the card. They are cards with specific effects which is described on them. For a list of all effects and their full explanation you can also visit the appendix.
-
+ ![](./blessed_breath.png)
 **Instant**
 These cards are Identified by the type shown in the middle of the card.
 They are cards with specific effects similar to those from Sorceries. However these cards can be played during your opponent&#39;s turn. For more information visit the Phase section of combat rules.
-
+ ![](./shock.png)
 **Lands**
 These cards are Identified by the artwork spanning the full length of the card. They are the only type of card that has an atwork the full length of it. They are used to generate mana. More information on mana in playing a card section.
 
