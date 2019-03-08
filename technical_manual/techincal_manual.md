@@ -3,6 +3,8 @@ This is a technical manual for the third year project Magic The Gathering (MTG) 
 
 **Introduction Screen**
 This introduction screen consists of 4 buttons. Each button is constantly beings redraw at every frame of the program running. At each frame the system checks at what coordinates the mouse is. If the mouse ever crosses over one of the buttons the button will then be re-drawn using a lighter colour to signify that it is clickable.
+![alt text](https://gitlab.computing.dcu.ie/mccans32/2019-ca326-mccans32-mtg_ai_implementation/edit/master/technical_manual/techincal/images "Logo Title Text 1")
+
 
 Each button has an assigned action which will trigger a function call. That function will then redraw the screen based on which button has been pressed.
 
