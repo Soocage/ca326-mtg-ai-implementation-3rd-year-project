@@ -224,12 +224,31 @@ class test_CardPlayable(unittest.TestCase):
 		test_Ai.land_zone = [forest]*0
 		self.assertTrue(test_Ai.check_card_playable(test_card_1))
 
+class test_AvailableLands(unittest.TestCase):
+
+	def test_AvailableLands(self):
+		test_Ai = ai.Ai("test_ai", "red")
+		forest = card.Land("forest", "Land", "G", 0, "", "mana")
+		forest.tapped = False
+
+		test_Ai.land_zone = [forest]*6
+		self.assertTrue(test_Ai.check_available_lands() == 6)
+
+		forest.tapped = True
+
+		test_Ai.land_zone = [forest]*6
+		self.assertTrue(test_Ai.check_available_lands() == 0)
+
+		test_Ai.land_zone = [forest]*0
+		self.assertTrue(test_Ai.check_available_lands() == 0)
+
+
 
 
 
 
 if __name__ == "__main__":
-	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost, test_ClearMana, test_PlayALand, test_CardPlayable]
+	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost, test_ClearMana, test_PlayALand, test_CardPlayable, test_AvailableLands]
 	loader = unittest.TestLoader()
 	suites_list = []
 
