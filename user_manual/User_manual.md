@@ -21,16 +21,20 @@ This is a simple quit button that closes the game and kills the process
 
 **Deck Tools**
 This screen allows you to choose which deck you would like to play with and which deck you would like to go against. For the deck list please look at the end of the Manual.
- ![](./deck_toosl.png)
+![](./deck_toosl.png)
+ 
 **Options**
 This is a simple options menu with two options
- ![](./options.png)
+![](./options.png)
+
 **Change resolution**
 This is a simple click and select option which will resize your screen to the resolution displayed. The default resolution of the screen is 1600x900
- ![](./options_resolution.png)
+![](./options_resolution.png)
+
 **Volume**
 This is a simple change volume button. Click on the minus to decrease the volume in game and click on the plus to increase. The maximum volume of the game is 1.0 and the lowest is 0.0. Each click on either the plus or minus will increase or decrease the volume by 0.1.
- ![](./options_volume.png)
+![](./options_volume.png)
+
 Play Vs Ai
 This button will launch the main game and depending on which deck you have chosen you will be assigned said deck.
 
