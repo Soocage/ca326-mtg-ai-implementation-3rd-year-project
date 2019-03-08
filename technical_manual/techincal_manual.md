@@ -1,4 +1,3 @@
-
 # Introduction
 
 # Overview
@@ -32,6 +31,7 @@ Board state = The current amount of cards on each players battlefield combined w
 This is the system as it is now with its interactions from other system
 
 The system is composed of:
+ ![](./New_architecture.png)
 
 - An application running on python being displayed through pygame
 - An Ai application running on python
