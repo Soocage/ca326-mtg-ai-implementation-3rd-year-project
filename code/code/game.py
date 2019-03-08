@@ -678,11 +678,12 @@ class Game():
         cost_as_integer = 0
         i = 0
         while i < len(cards_cost):
-            if cards_cost[0].isdigit():
+            if cards_cost[i].isdigit():
                 cost_as_integer += int(cards_cost[0])
             else:
                 cost_as_integer += 1
             i += 1
+
         return cost_as_integer
 
 
@@ -2057,7 +2058,7 @@ class Game():
     def damage_creature(self, card, damage):
         card.toughness_modifier -= int(damage)
         return ((card.toughness + card.toughness_modifier) <= 0)
-        
+
 
 
 

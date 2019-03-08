@@ -9,7 +9,7 @@ import player
 import deck
 import copy
 from card import Land
-from card import instant
+from card import Instant
 
 class test_Status(unittest.TestCase):
 
@@ -146,21 +146,38 @@ class test_AddMana(unittest.TestCase):
 class test_CardCost(unittest.TestCase):
 
 	def testCardCost(self):
-
 		test_card_1 = card.Creature("test", "Creature", "B", "B", "", 4, 2)
-        test_card_2 = card.Creature("test", "Creature", "W", "W", "", 4, 2)
+		test_card_2 = card.Creature("test", "Creature", "W", "W", "", 4, 2)
 		test_card_3 = card.Creature("test", "Creature", "R", "2R", "", 4, 2)
-		test_card_4 = card.Instant("test", "Creature", "G", "5G", "", 4, 2)
+		test_card_4 = card.Instant("test", "Creature", "G", "5G", "", 4, 2, "")
 
-	    assertTrue(game.Game.check_card_cost(game.Game, test_card_1) == 1)
-		assertTrue(game.Game.check_card_cost(game.Game, test_card_2) == 1)
-		assertTrue(game.Game.check_card_cost(game.Game, test_card_3) == 3)
-		assertTrue(game.Game.check_card_cost(game.Game, test_card_4) == 3)
+		self.assertTrue(game.Game.check_card_cost(game.Game, test_card_1) == 1)
+		self.assertTrue(game.Game.check_card_cost(game.Game, test_card_2) == 1)
+		self.assertTrue(game.Game.check_card_cost(game.Game, test_card_3) == 3)
+		self.assertTrue(game.Game.check_card_cost(game.Game, test_card_4) == 6)
+
+
+class test_ClearMana(unittest.TestCase):
+
+	def test_ClearMana(self):
+		test_player = player.Player("test")
+		game.Game.clear_mana(game.Game, test_player)
+		self.assertTrue(test_player.mana == "")
+
+		test_player.mana = ["BWWWW"]
+		game.Game.clear_mana(game.Game, test_player)
+		self.assertTrue(test_player.mana == "")
+
+		test_player.mana = ["GRWBU"]
+		game.Game.clear_mana(game.Game, test_player)
+		self.assertFalse(test_player.mana == "GRWBU")
+
+
 
 
 
 if __name__ == "__main__":
-	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost]
+	test_classes_to_run = [test_Damage, test_Status, test_DealCards, test_AddMana, test_CardCost, test_ClearMana]
 	loader = unittest.TestLoader()
 	suites_list = []
 
