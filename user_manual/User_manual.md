@@ -15,7 +15,7 @@ Using nay file explorer open the directory where the game has been downloaded. D
 
 **Game Intro Screen**
 When the game is launched you will be met with the intro screen. This screen is divided into 4 buttons
-
+ ![](./intro_screen.png)
 **Quit**
 This is a simple quit button that closes the game and kills the process
 
