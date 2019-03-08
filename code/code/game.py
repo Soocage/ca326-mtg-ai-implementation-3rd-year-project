@@ -31,7 +31,7 @@ cursor = pygame.transform.smoothscale(cursor, (cursor_w, cursor_h))
 
 class Game():
 
-    def __init__(self, player_1, player_2):
+    def __init__(self, player_1, player_2, player_1_deck_path, player_2_deck_path):
         self.player_1 = player_1
         self.player_2 = player_2
         self.phase = "untap"
@@ -39,10 +39,12 @@ class Game():
         self.current_player = None
         self.quit = False
         self.stacked_card = None
+        self.player_1_deck_path = player_1_deck_path
+        self.player_2_deck_path = player_2_deck_path
 
-    def run_game(self):
-        player_1_deck_list = self.deck_selection(self.player_1)
-        player_2_deck_list = self.deck_selection(self.player_2)
+    def run_game(self, player_1_deck_path, player_2_deck_path):
+        player_1_deck_list = self.deck_selection(self.player_1, self.player_1_deck_path)
+        player_2_deck_list = self.deck_selection(self.player_2, self.player_2_deck_path)
 
         self.player_1.deck = deck.Deck("gablins", player_1_deck_list)
         self.player_2.deck = deck.Deck("gibluns", player_2_deck_list)
@@ -216,9 +218,9 @@ class Game():
         return len(player.deck.cards) > 0
 
 
-    def deck_selection(self, player):
+    def deck_selection(self, player, path):
 
-        f = open("./personal_decks/deck_2", "rb")
+        f = open(path, "rb")
 
         player_deck = pickle.load(f)
         print(player_deck)

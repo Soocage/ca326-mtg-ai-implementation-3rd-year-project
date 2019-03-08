@@ -41,8 +41,8 @@ pygame.mixer.music.load('sound/music_1.ogg')
 pygame.mixer.music.play(-1)
 clock = pygame.time.Clock()
 
-player_1_deck = "./personal_decks/deck_1"
-player_1_deck = "./personal_decks/deck_1"
+player_1_d_path = "./personal_decks/deck_1"
+player_2_d_path = "./personal_decks/deck_1"
 
 
 def game_intro():
@@ -396,12 +396,27 @@ def draw_button(name):
         pygame.draw.rect(screen_res.gameDisplay, name.a_colour, (name.x, name.y, name.w, name.h))
 
         if click[0] == 1 and name.action != None:
-
+            global player_1_d_path
+            global player_2_d_path
             if name.action == "play_vs_ai":
                 player_1 = player.Player("Sean")
-                player_2 = ai.Ai("AI_Dusty", "red")
-                game_1 = game.Game(player_1, player_2)
-                game_1.run_game()
+
+                ai_mode = "red"
+                if player_2_d_path == "./personal_decks/deck_1":
+                    ai_mode = "red"
+                elif player_2_d_path == "./personal_decks/deck_2":
+                    ai_mode = "black"
+                elif player_2_d_path == "./personal_decks/deck_3":
+                    ai_mode == "green"
+                elif player_2_d_path == "./personal_decks/deck_4":
+                    ai_mode == "white"
+                elif player_2_d_path == "./personal_decks/deck_5":
+                    ai_mode == "blue"
+
+
+                player_2 = ai.Ai("AI_Dusty", ai_mode)
+                game_1 = game.Game(player_1, player_2, player_1_d_path, player_2_d_path)
+                game_1.run_game(player_1_d_path, player_2_d_path)
                 game_intro()
 
             elif name.action == "quit":
@@ -431,34 +446,34 @@ def draw_button(name):
                 deck_tools()
 
             elif name.action == "green_deck_1":
-                return
+                player_1_d_path = "./personal_decks/deck_3"
 
             elif name.action == "green_deck_2":
-                return
+                player_2_d_path = "./personal_decks/deck_3"
 
             elif name.action == "red_deck_1":
-                return
+                player_1_d_path = "./personal_decks/deck_1"
 
             elif name.action == "red_deck_2":
-                return
+                player_2_d_path = "./personal_decks/deck_1"
 
             elif name.action == "blue_deck_1":
-                return
+                player_1_d_path = "./personal_decks/deck_5"
 
             elif name.action == "blue_deck_2":
-                return
+                player_2_d_path = "./personal_decks/deck_5"
 
             elif name.action == "white_deck_1":
-                return
+                player_1_d_path = "./personal_decks/deck_4"
 
             elif name.action == "white_deck_2":
-                return
+                player_2_d_path= "./personal_decks/deck_4"
 
             elif name.action == "black_deck_1":
-                return
+                player_1_d_path = "./personal_decks/deck_2"
 
             elif name.action == "black_deck_1":
-                return
+                player_2_d_path = "./personal_decks/deck_2"
 
 
 
