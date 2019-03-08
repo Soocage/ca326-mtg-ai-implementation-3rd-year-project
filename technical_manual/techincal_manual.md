@@ -6,7 +6,8 @@ This introduction screen consists of 4 buttons. Each button is constantly beings
 
 Each button has an assigned action which will trigger a function call. That function will then redraw the screen based on which button has been pressed.
 
-When you press the Quit button the program will run a quitting function that will close itself
+When you press the Quit button the program will run a quitting function that will close itself.
+
 ![alt text][screen]
 [screen]: https://gitlab.computing.dcu.ie/mccans32/2019-ca326-mccans32-mtg_ai_implementation/blob/master/technical_manual/images/intro_screen.png
 
