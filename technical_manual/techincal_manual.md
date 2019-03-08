@@ -1,7 +1,7 @@
 **Introduction**
 This is a technical manual for the third year project Magic The Gathering (MTG) Ai Implementation. It will consist of a detailed descriptions of the functions used throughout the system. This system has been built using python 3.7.2 the newest release of the pygame library. This manual expects you to have read the user manual and expects you to be familiar with the rules of MTG.
 
-**Introduction Screen****.**
+**Introduction Screen**
 This introduction screen consists of 4 buttons. Each button is constantly beings redraw at every frame of the program running. At each frame the system checks at what coordinates the mouse is. If the mouse ever crosses over one of the buttons the button will then be re-drawn using a lighter colour to signify that it is clickable.
 
 Each button has an assigned action which will trigger a function call. That function will then redraw the screen based on which button has been pressed.
