@@ -5,7 +5,7 @@ import itertools
 import random
 
 class Ai():
-    def __init__(self, name, ai_mode):
+    def __init__(self, name, ai_mode = "red"):
         self.deck = []
         self.name = name
         self.life = 20
@@ -82,6 +82,7 @@ class Ai():
                 return
 
     def check_card_playable(self,card):
+
         available_lands = self.check_available_lands()
         card_cost = self.check_card_cost(card)
         return available_lands >= card_cost
@@ -110,7 +111,7 @@ class Ai():
     def check_available_lands(self):
         counter = 0
         for card in self.land_zone:
-            if card.tapped != True:
+            if card.tapped == False:
                 counter += 1
         return counter
 
@@ -120,10 +121,11 @@ class Ai():
         cost_as_integer = 0
         i = 0
         while i < len(cards_cost):
-            if cards_cost[0].isdigit():
+            if cards_cost[i].isdigit():
                 cost_as_integer += int(cards_cost[0])
             else:
                 cost_as_integer += 1
+
             i += 1
         return cost_as_integer
 
