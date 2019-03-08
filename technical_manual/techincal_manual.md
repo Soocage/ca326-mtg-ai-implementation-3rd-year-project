@@ -33,9 +33,9 @@ This is the system as it is now with its interactions from other system
 The system is composed of:
  ![](./New_architecture.png)
 
-- An application running on python being displayed through pygame
-- An Ai application running on python
--And a player who interact with the application
+- An application running on python being displayed through pygame.
+- An Ai application running on python.
+- And a player who interact with the application.
 
 # High Level Design
   ![](./highlvldes.png)
