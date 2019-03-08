@@ -114,7 +114,7 @@ class Board():
         self.player_1 = player_1
         self.player_2 = player_2
         self.menu_box_sec = None
-        self.player_hand_sec = None
+        self.player_hand_sec = None 
         self.phase_box_sec = None
         self.info_box_sec = None
         self.player_1_play_sec = None
@@ -744,7 +744,7 @@ class Board():
         if card_copy.card_type == "Creature":
             view_card_string = ""
             if card_copy.toughness_modifier != 0 or card_copy.power_modifier != 0:
-                view_card_string = str(card_copy.power_modifier) + " / " + str(card_copy.toughness_modifier)
+                view_card_string = str(card_copy.power + card_copy.power_modifier) + " / " + str(card_copy.toughness + card_copy.toughness_modifier)
 
             view_card_font = pygame.font.Font(pygame.font.get_default_font(), int(h*0.2))
 

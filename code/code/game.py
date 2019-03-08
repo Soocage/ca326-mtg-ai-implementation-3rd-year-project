@@ -1742,8 +1742,17 @@ class Game():
         for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
                 resolved = False
+
+        for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
+            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                resolved = False
+
         if "opponent" in list_of_targets and "Protection" not in opponent.state:
             resolved = False
+
+        if "player" in list_of_targets and "Protection" not in player.state:
+            resolved = False
+
         while not resolved:
             if player.name != "AI_Dusty":
                 for event in pygame.event.get():
@@ -1765,11 +1774,12 @@ class Game():
                                 for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
 
                                     if card.rect.collidepoint(pos) and ("Protection" not in card.card.keyword and "Protection" not in card.card.tmp_keyword):
+                                        print("friends")
                                         if (self.damage_creature(card.card, value)):
                                             opponent.graveyard.append(card.card)
                                             opponent.battlefield.remove(card.card)
                                             gameBoard.draw_new_battlefield(opponent)
-                                            resolved = True
+                                        resolved = True
                         if event.type == pygame.QUIT:
                             self.my_quit()
 
@@ -2046,7 +2056,8 @@ class Game():
 
     def damage_creature(self, card, damage):
         card.toughness_modifier -= int(damage)
-        return (card.toughness_modifier <= card.toughness)
+        return ((card.toughness + card.toughness_modifier) <= 0)
+        
 
 
 

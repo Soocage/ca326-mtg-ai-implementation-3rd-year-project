@@ -490,7 +490,12 @@ class Ai():
         player_combined_power = self.calculate_combined_power(opponent)
 
         for creature_weight in potential_creatures:
-            centage = (int(creature_weight[1].power)/player_combined_power)
+            if player_combined_power == 0:
+                player_power = 1
+            else:
+                player_power = player_combined_power
+
+            centage = (int(creature_weight[1].power)/player_power)
             if creature_weight[1].tapped == True:
                 creature_weight[0] += (creature_weight[0]*centage)/2
             else:
