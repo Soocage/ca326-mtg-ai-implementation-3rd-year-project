@@ -41,7 +41,8 @@ pygame.mixer.music.load('sound/music_1.ogg')
 pygame.mixer.music.play(-1)
 clock = pygame.time.Clock()
 
-
+player_1_deck = "./personal_decks/deck_1"
+player_1_deck = "./personal_decks/deck_1"
 
 
 def game_intro():
@@ -56,25 +57,20 @@ def game_intro():
     #button dimentions
     button_width = (screen_res.display_width/4)
     button_height = (screen_res.display_height/8)
+    padding_h = button_height*(0.20)
 
     #main menu button positions
-    start_game_button_x = (screen_res.display_width/2)- (button_width + (screen_res.display_width/10))
+    start_game_button_x = (screen_res.display_width/2)- (button_width/2)
     start_game_button_y = (screen_res.display_height/2.5)
 
-    login_button_x = (screen_res.display_width/2) + (screen_res.display_width/10)
-    login_button_y = (screen_res.display_height/2.5)
+    option_button_x = (screen_res.display_width/2) - (button_width/2)
+    option_button_y = start_game_button_y + button_height + padding_h
 
-    option_button_x = (screen_res.display_width/2)- (button_width + (screen_res.display_width/10))
-    option_button_y = (screen_res.display_height/3)*1.75
-
-    deck_button_x = (screen_res.display_width/2) + (screen_res.display_width/10)
-    deck_button_y = (screen_res.display_height/3)*1.75
+    deck_button_x = (screen_res.display_width/2) - (button_width/2)
+    deck_button_y = option_button_y + button_height + padding_h
 
     exit_game_button_x = (screen_res.display_width/2) - (button_width/2)
-    exit_game_button_y = (screen_res.display_height/3)*2.25
-
-
-    (screen_res.display_width, screen_res.display_height) = screen_res.display_size
+    exit_game_button_y = deck_button_y + button_height + padding_h
     time.sleep(1)
 
     in_intro = True
@@ -102,13 +98,12 @@ def game_intro():
 
         deck_tool = Button("Deck Tools", deck_button_x, deck_button_y, button_width, button_height, button_blue, hover_button_blue, "deck tools")
 
-        login = Button("Login",login_button_x, login_button_y, button_width, button_height, button_blue, hover_button_blue, "login")
+
 
         draw_button(fight_vs_ai)
         draw_button(quit)
         draw_button(option)
         draw_button(deck_tool)
-        draw_button(login)
 
         pygame.display.update()
         clock.tick(60)
@@ -256,19 +251,45 @@ def deck_tools():
 
     #deck_tools border
     deck_tools_box_x = (screen_res.display_width)*(1/20)
-    deck_tools_box_y = (screen_res.display_height)*(1/20)
-    deck_tools_box_h = ((screen_res.display_height)*(18/20))
+    deck_tools_box_h = ((screen_res.display_height)*(0.75))
+    deck_tools_box_y =  (screen_res.display_height/2) - (deck_tools_box_h/2)
     deck_tools_box_w = ((screen_res.display_width)*(18/20))
 
     #deck tools button dimentions
+    padding_w = (deck_tools_box_w/6)/6
+
+    green_button_1_x = deck_tools_box_x + (deck_tools_box_w/2) - (deck_tools_button_width/2) - padding_w - deck_tools_button_width - padding_w - deck_tools_button_width
+    green_button_1_y = (deck_tools_box_y) + (deck_tools_box_h*0.35) - (deck_tools_button_height/2)
+
+    red_button_1_x = green_button_1_x + padding_w + deck_tools_button_width
+    red_button_1_y = green_button_1_y
+
+    blue_button_1_x = red_button_1_x + padding_w + deck_tools_button_width
+    blue_button_1_y = red_button_1_y
+
+    white_button_1_x = blue_button_1_x + padding_w + deck_tools_button_width
+    white_button_1_y = blue_button_1_y
+
+    black_button_1_x = white_button_1_x + padding_w + deck_tools_button_width
+    black_button_1_y = white_button_1_y
+
+    green_button_2_x = green_button_1_x
+    green_button_2_y = (deck_tools_box_y) + (deck_tools_box_h*0.75) - (deck_tools_button_height/2)
+
+    red_button_2_x = green_button_2_x + padding_w + deck_tools_button_width
+    red_button_2_y = green_button_2_y
+
+    blue_button_2_x = red_button_2_x + padding_w + deck_tools_button_width
+    blue_button_2_y = red_button_2_y
+
+    white_button_2_x = blue_button_2_x + padding_w + deck_tools_button_width
+    white_button_2_y = blue_button_2_y
+
+    black_button_2_x = white_button_2_x + padding_w + deck_tools_button_width
+    black_button_2_y = white_button_2_y
+
     back_button_x = deck_tools_box_x + (deck_tools_box_w / 2) - (deck_tools_button_width / 2)
     back_button_y = deck_tools_box_y + (deck_tools_box_h*(6/7))
-
-    next_button_x = back_button_x + deck_tools_button_width + (deck_tools_button_width/10)
-    next_button_y = back_button_y
-
-    previous_button_x = back_button_x - deck_tools_button_width - (deck_tools_button_width/10)
-    previous_button_y = back_button_y
 
     creature_list = []
     land_list = []
@@ -312,20 +333,44 @@ def deck_tools():
                     myquit()
 
 
-
-
-
         pygame.draw.rect(screen_res.gameDisplay, white, (deck_tools_box_x, deck_tools_box_y, deck_tools_box_w, deck_tools_box_h))
 
+        green_button_1 = Button("Green Deck", green_button_1_x, green_button_1_y, deck_tools_button_width, deck_tools_button_height, (138,186,54), (173,232,72), "green_deck_1")
+        green_button_2 = Button("Green Deck", green_button_2_x, green_button_2_y, deck_tools_button_width, deck_tools_button_height, (138,186,54), (173,232,72), "green_deck_2")
+        red_button_1 = Button("Red Deck", red_button_1_x, red_button_1_y, deck_tools_button_width, deck_tools_button_height, (199,50,50), (250,74,74), "red_deck_1")
+        red_button_2 = Button("Red Deck", red_button_2_x, red_button_2_y, deck_tools_button_width, deck_tools_button_height, (199,50,50), (250,74,74), "red_deck_2")
+        blue_button_1 = Button("Blue Deck", blue_button_1_x, blue_button_1_y, deck_tools_button_width, deck_tools_button_height, (65,165,195), (98,204,236), "blue_deck_1")
+        blue_button_2 = Button("Blue Deck", blue_button_2_x, blue_button_2_y, deck_tools_button_width, deck_tools_button_height, (65,165,195), (98,204,236), "blue_deck_2")
+        white_button_1 = Button("White Deck", white_button_1_x, white_button_1_y, deck_tools_button_width, deck_tools_button_height, (236,243,141), (254,255,223), "white_deck_1")
+        white_button_2 = Button("White Deck", white_button_2_x, white_button_2_y, deck_tools_button_width, deck_tools_button_height, (236,243,141), (254,255,223), "white_deck_2")
+        black_button_1 = Button("Black Deck", black_button_1_x, black_button_1_y, deck_tools_button_width, deck_tools_button_height, (171,104,239), (210,182,238), "black_deck_1")
+        black_button_2 = Button("Black Deck", black_button_2_x, black_button_2_y, deck_tools_button_width, deck_tools_button_height, (171,104,239), (214,182,238), "black_deck_1")
         exit_button = Button("Exit", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
 
-        next_button = Button("Next", next_button_x, next_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "next")
-
-        previous_button = Button("Previous", previous_button_x, previous_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "previous")
-
+        draw_button(green_button_1)
+        draw_button(green_button_2)
+        draw_button(red_button_1)
+        draw_button(red_button_2)
+        draw_button(blue_button_1)
+        draw_button(blue_button_2)
+        draw_button(white_button_1)
+        draw_button(white_button_2)
+        draw_button(black_button_1)
+        draw_button(black_button_2)
         draw_button(exit_button)
-        draw_button(previous_button)
-        draw_button(next_button)
+
+        font = pygame.font.Font("freesansbold.ttf", int(deck_tools_button_height))
+
+        text_1 = font.render("Choose Player 1 Deck", True, black)
+        rect_1 = text_1.get_rect()
+        rect_1.center = (screen_res.display_width/2, (deck_tools_box_y) + (deck_tools_box_h*0.20))
+        screen_res.gameDisplay.blit(text_1, rect_1)
+
+        text_2 = font.render("Choose Player 2 Deck", True, black)
+        rect_2 = text_2.get_rect()
+        rect_2.center = (screen_res.display_width/2, (deck_tools_box_y) + (deck_tools_box_h*0.60))
+        screen_res.gameDisplay.blit(text_2, rect_2)
+
         pygame.display.update()
 
 
@@ -385,6 +430,35 @@ def draw_button(name):
             elif name.action == "deck tools":
                 deck_tools()
 
+            elif name.action == "green_deck_1":
+                return
+
+            elif name.action == "green_deck_2":
+                return
+
+            elif name.action == "red_deck_1":
+                return
+
+            elif name.action == "red_deck_2":
+                return
+
+            elif name.action == "blue_deck_1":
+                return
+
+            elif name.action == "blue_deck_2":
+                return
+
+            elif name.action == "white_deck_1":
+                return
+
+            elif name.action == "white_deck_2":
+                return
+
+            elif name.action == "black_deck_1":
+                return
+
+            elif name.action == "black_deck_1":
+                return
 
 
 
