@@ -8,8 +8,6 @@ Each button has an assigned action which will trigger a function call. That func
 
 When you press the Quit button the program will run a quitting function that will close itself.
 
-![alt text](../images/intro_screen.png?raw=true "Logo Title Text 1")
-
 
 **Options**
 After clicking the options menu button you will be launched into the options menu screen. This menu consists of 3 sections.
