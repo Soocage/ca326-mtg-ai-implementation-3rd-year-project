@@ -6,7 +6,8 @@ This introduction screen consists of 4 buttons. Each button is constantly beings
 
 Each button has an assigned action which will trigger a function call. That function will then redraw the screen based on which button has been pressed.
 
-When you press the Quit button the program will run a quitting function that will close itself
+When you press the Quit button the program will run a quitting function that will close itself.
+
 
 **Options**
 After clicking the options menu button you will be launched into the options menu screen. This menu consists of 3 sections.
