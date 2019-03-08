@@ -224,22 +224,39 @@ Name = Wall of Limbs, Type = Creature, Power/Toughness = 0/3, Amount = 4
 
 **Effects**
 **Tap** = target creature becomes tapped until that player&#39;s untap step
+
 **Damage** = Deal damage to either player or creature specified on the card
+
 **Bounce** = return target creature from playfield back to controllers hand
+
 **Combat Creature** = target creature you control battles target creature you don&#39;t control
+
 **Search Land** = Look at all available lands in you deck and chose one, put on on the playfield untapped
+
 **Gain Life** = target player gains life equal to what is specified on the card
+
 **Protection** = target creature or player cannot be target by spells or die from damage until end of turn
+
 **Exile** = target creature is removed from the game permanently
+
 **Destroy** = target creature is sent to the graveyard
+
 **Discard** = target player reveals their hand to the opponent and they choose which card is sent to the graveyard.
+
 **Reanimate** = Chose target graveyard, chose x creature cards where x is specified on the card. Those creatures are brought back to your playfield under your control
 
-Keywords
+**Keywords**
+
 **Haste** = Creature doesn&#39;t suffer summoning sickness
+
 **Vigilance** = Creature doesn&#39;t tap during combat
+
 **Flying** = creature can only be blocked by other flying creatures
+
 **Trample** = Any damage that overcomes an enemies blockers toughness during the damage step of combat will still be dealt to the opponent
+
 **LifeLink** = Any combat Damage dealt by this creature is gained in life by its controller.
+
 **DeathTouch** = If this creature battles and deals any damage to another target creature, that creature dies.
+
 **Reach** = This creature can block Flying creatures
