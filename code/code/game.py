@@ -621,20 +621,7 @@ class Game():
             if self.check_instant(current_player.hand):
                 valid_cards = [card for card in self.player_2.hand if card.card_type == "Instant"]
                 card = self.select_card(valid_cards)
-                if card.effect == "Exile":
-                    if len(self.player_1.battlefield) > 0:
-                        if self.check_lands(card, gameBoard):
-                            self.clear_mana(self.player_2)
-                            self.stacked_card = card
-                            gameBoard.stacked_card(self.stacked_card)
-                            current_player.hand.remove(card)
-                            current_player.graveyard.append(card)
-                            self.response(self.player_1, self.player_2, gameBoard)
-                            gameBoard.draw_board(self.phase)
-                            self.stacked_card = card
-                            gameBoard.stacked_card(self.stacked_card)
-                            self.play_a_sorcery_or_instant(card, current_player, opponent, gameBoard)
-                else:
+                if len(self.player_1.battlefield) > 0:
                     if self.check_lands(card, gameBoard):
                         self.clear_mana(self.player_2)
                         self.stacked_card = card
@@ -1272,14 +1259,14 @@ class Game():
                     gameBoard.draw_indicator(self.player_1)
 
                     for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
                             screen_res.gameDisplay.blit(image, image_rect)
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
@@ -1437,14 +1424,14 @@ class Game():
                     gameBoard.draw_indicator(self.player_1)
 
                     for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
                             screen_res.gameDisplay.blit(image, image_rect)
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
@@ -1676,7 +1663,14 @@ class Game():
 
     def effect_draw(self, player, gameBoard, value, combinations):
         for i in range (int(value)):
-            self.draw(player, gameBoard)
+            if self.stacked_card != None:
+                gameBoard.stacked_card(self.stacked_card)
+            pygame.display.update()
+
+            if self.check_not_mill(player):
+                player.hand.append(player.deck.cards.pop(0))
+                gameBoard.draw_hand()
+                gameBoard.draw_player_hand_section()
 
     def effect_tap(self, player, opponent, gameBoard, combinations, value):
         available_targets = []
@@ -1753,18 +1747,12 @@ class Game():
 
     def effect_dmg(self, player, opponent, gameBoard, list_of_targets, value, combinations):
         resolved = True
-        for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-            if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
-                resolved = False
 
         for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
             if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
                 resolved = False
 
         if "opponent" in list_of_targets and "Protection" not in opponent.state:
-            resolved = False
-
-        if "player" in list_of_targets and "Protection" not in player.state:
             resolved = False
 
         while not resolved:

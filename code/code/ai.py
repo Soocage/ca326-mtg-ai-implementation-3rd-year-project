@@ -29,42 +29,41 @@ class Ai():
             self.creature_weight = 1 - self.spell_weight
 
         elif self.ai_mode == "blue":
-            self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20
-            self.opponent_battlefield_weight = 0.10
-            self.open_mana_weight = 0.25
-            self.opponent_life_weight = 0.30
+            self.ai_life_weight = 0.20
+            self.ai_battlefield_weight = 0.15
+            self.opponent_battlefield_weight = 0.3
+            self.open_mana_weight = 0.2
+            self.opponent_life_weight = 0.15
 
             self.spell_weight = 3/5
             self.creature_weight = 1 - self.spell_weight
 
-
         elif self.ai_mode == "white":
-            self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20
-            self.opponent_battlefield_weight = 0.10
-            self.open_mana_weight = 0.25
-            self.opponent_life_weight = 0.30
+            self.ai_life_weight = 0.2
+            self.ai_battlefield_weight = 0.3
+            self.opponent_battlefield_weight = 0.25
+            self.open_mana_weight = 0.1
+            self.opponent_life_weight = 0.15
 
             self.spell_weight = 2/5
             self.creature_weight = 1 - self.spell_weight
 
         elif self.ai_mode == "black":
             self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20
-            self.opponent_battlefield_weight = 0.10
-            self.open_mana_weight = 0.25
-            self.opponent_life_weight = 0.30
+            self.ai_battlefield_weight = 0.2
+            self.opponent_battlefield_weight = 0.3
+            self.open_mana_weight = 0.2
+            self.opponent_life_weight = 0.15
 
             self.spell_weight = 3/5
             self.creature_weight = 1 - self.spell_weight
 
         elif self.ai_mode == "green":
-            self.ai_life_weight = 0.15
-            self.ai_battlefield_weight = 0.20
-            self.opponent_battlefield_weight = 0.10
-            self.open_mana_weight = 0.25
-            self.opponent_life_weight = 0.30
+            self.ai_life_weight = 0.1
+            self.ai_battlefield_weight = 0.35
+            self.opponent_battlefield_weight = 0.25
+            self.open_mana_weight = 0.05
+            self.opponent_life_weight = 0.25
 
             self.spell_weight = 1/5
             self.creature_weight = 1 - self.spell_weight
@@ -133,8 +132,7 @@ class Ai():
         combinations = self.calculate_combinations(gameBoard, opponent)
         list_of_moves = []
         for combination in combinations:
-            if self.ai_mode == "red":
-                list_of_moves.append((self.combination_cost(combination, opponent), combination))
+            list_of_moves.append((self.combination_cost(combination, opponent), combination))
         list_of_moves = self.sort_combinations(list_of_moves)
         chosen_move = list_of_moves[0][1]
         return chosen_move

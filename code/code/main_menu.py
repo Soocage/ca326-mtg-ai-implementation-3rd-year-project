@@ -344,7 +344,7 @@ def deck_tools():
         white_button_1 = Button("White Deck", white_button_1_x, white_button_1_y, deck_tools_button_width, deck_tools_button_height, (236,243,141), (254,255,223), "white_deck_1")
         white_button_2 = Button("White Deck", white_button_2_x, white_button_2_y, deck_tools_button_width, deck_tools_button_height, (236,243,141), (254,255,223), "white_deck_2")
         black_button_1 = Button("Black Deck", black_button_1_x, black_button_1_y, deck_tools_button_width, deck_tools_button_height, (171,104,239), (210,182,238), "black_deck_1")
-        black_button_2 = Button("Black Deck", black_button_2_x, black_button_2_y, deck_tools_button_width, deck_tools_button_height, (171,104,239), (214,182,238), "black_deck_1")
+        black_button_2 = Button("Black Deck", black_button_2_x, black_button_2_y, deck_tools_button_width, deck_tools_button_height, (171,104,239), (214,182,238), "black_deck_2")
         exit_button = Button("Exit", back_button_x, back_button_y, deck_tools_button_width, deck_tools_button_height, button_blue, hover_button_blue, "back")
 
         draw_button(green_button_1)
@@ -472,7 +472,7 @@ def draw_button(name):
             elif name.action == "black_deck_1":
                 player_1_d_path = "./personal_decks/deck_2"
 
-            elif name.action == "black_deck_1":
+            elif name.action == "black_deck_2":
                 player_2_d_path = "./personal_decks/deck_2"
 
 
