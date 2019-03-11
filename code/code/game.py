@@ -60,6 +60,11 @@ class Game():
         self.deal_cards(self.player_2, mulligan_counter)
 
         gameBoard.calc_board()
+        gameBoard.draw_hand()
+        gameBoard.draw_new_battlefield(self.player_1)
+        gameBoard.draw_new_battlefield(self.player_2)
+        gameBoard.draw_land(self.player_1)
+        gameBoard.draw_land(self.player_2)
         self.draw_screen(gameBoard)
         gameBoard.draw_hand()
         self.mulligan(gameBoard, self.player_1, mulligan_counter, self.player_2)
@@ -86,6 +91,7 @@ class Game():
             self.combat_phase(self.player_1, self.player_2, gameBoard)
             self.main_phase(self.player_1, self.player_2, gameBoard)
             self.end_step(gameBoard, self.player_1)
+            self.response(self.player_2, self.player_1, gameBoard)
 
 
             gameBoard.draw_indicator(self.player_2)
@@ -101,6 +107,7 @@ class Game():
             time.sleep(0.5)
             self.end_step(gameBoard, self.player_2)
             time.sleep(0.5)
+            self.response(self.player_1, self.player_2, gameBoard)
             turn_counter += 1
 
 ############################# UPDATING SCREEN ######################################
@@ -170,6 +177,7 @@ class Game():
             card.card.power_modifier = 0
             card.card.tmp_keyword = ""
             card.card.combat_state = ""
+
 
         while len(player.hand) > 7:
             self.discard_down(player, gameBoard)
@@ -473,6 +481,7 @@ class Game():
                         gameBoard.draw_indicator(self.player_2)
 
             self.clear_mana(current_player)
+            self.response(next_player, current_player, gameBoard)
 
 
     def response(self, current_player, opponent, gameBoard):
@@ -706,6 +715,7 @@ class Game():
             if defenders != None:
                 for defenders in defenders:
                     combat_state = ""
+        self.response(next_player, current_player, gameBoard)
 
     def damage_step(self, attackers, defenders, current_player, next_player, gameBoard):
         if attackers != None:
