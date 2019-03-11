@@ -1123,14 +1123,14 @@ class Game():
                     gameBoard.draw_indicator(self.player_1)
 
                     for card in board.PLAYER_1_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
                             screen_res.gameDisplay.blit(image, image_rect)
 
                     for card in board.PLAYER_2_BATTLEFIELD_SPRITE_CARD_GROUP:
-                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword and card.card.tapped == False:
+                        if "Protection" not in card.card.tmp_keyword and "Protection" not in card.card.keyword:
                             image = self.get_target_icon(card.rect.w, card.rect.h)
                             image_rect = image.get_rect()
                             image_rect.center = card.rect.center
