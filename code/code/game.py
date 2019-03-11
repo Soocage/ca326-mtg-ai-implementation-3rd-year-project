@@ -254,13 +254,14 @@ class Game():
             player.hand.append(player.deck.cards.pop(0))
             gameBoard.draw_hand()
             gameBoard.draw_player_hand_section()
+            gameBoard.draw_new_battlefield(player)
+            gameBoard.draw_land(player)
 
     def untap(self, player, gameBoard):
         self.phase = "untap"
         gameBoard.draw_phase_section(self.phase)
         if self.stacked_card != None:
             gameBoard.stacked_card(self.stacked_card)
-        pygame.display.update()
 
 
         for creature in player.battlefield:
@@ -270,12 +271,12 @@ class Game():
         for land in player.land_zone:
             land.tapped = False
 
-
-
         gameBoard.draw_land(player)
         gameBoard.draw_new_battlefield(player)
         player.land_flag = False
         self.clear_mana(player)
+        self.draw_screen(gameBoard)
+        pygame.display.update()
 
     def add_mana(self, player, land):
         land.tapped = True
