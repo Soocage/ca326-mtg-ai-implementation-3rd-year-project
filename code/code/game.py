@@ -547,7 +547,8 @@ class Game():
                             for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                                 if card.clicked == True:
                                     self.draw_screen(gameBoard)
-                                    gameBoard.stacked_card(self.stacked_card)
+                                    if self.stacked_card != None:
+                                        gameBoard.stacked_card(self.stacked_card)
                                     gameBoard.draw_indicator(self.player_1, True)
                                     card.clicked = False
 
@@ -702,7 +703,7 @@ class Game():
 
         self.phase = "combat"
         gameBoard.draw_phase_section(self.phase)
-        gameBoard.draw_indicator(self.player_1)
+        gameBoard.draw_indicator(current_player, False, True)
         pygame.display.update()
 
 
@@ -787,7 +788,7 @@ class Game():
                     self.draw_screen(gameBoard)
                     if self.stacked_card != None:
                         gameBoard.stacked_card(self.stacked_card)
-                    gameBoard.draw_indicator(self.player_1)
+                    gameBoard.draw_indicator(self.player_1,False,True)
                     pygame.display.update()
             return list_of_attackers
 
@@ -879,7 +880,7 @@ class Game():
 
                     if self.stacked_card != None:
                         gameBoard.stacked_card(self.stacked_card)
-                    gameBoard.draw_indicator(self.player_1)
+                    gameBoard.draw_indicator(self.player_2,False,True)
                     pygame.display.update()
             else:
                 list_of_defenders.append(0)

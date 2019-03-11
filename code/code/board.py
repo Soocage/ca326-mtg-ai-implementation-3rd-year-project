@@ -36,16 +36,17 @@ RED = (237, 28, 36)
 GREEN = (34, 177, 76)
 BLUE = (0,162,232)
 ORANGE = (255, 127, 39)
+GREY = (205,205,205)
+BROWN = (185,122,87)
 
 
 button_blue = (125,137,240)
 hover_button_blue = (175, 183, 245)
-grey = (205,205,205)
 dark_red = (200,0,0)
 dark_green = (0,200,0)
 bright_red = (255,0,0)
 bright_green = (0,255,0)
-bg_colour = grey
+bg_colour = GREY
 volume_slider_colour = WHITE
 
 class CardSprite(pygame.sprite.Sprite):
@@ -69,9 +70,9 @@ class ButtonSprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.action = action
         self.image = pygame.Surface([w,h])
-        self.image.fill(grey)
+        self.image.fill(GREY)
         self.image.set_colorkey(WHITE)
-        pygame.draw.rect(self.image, grey, [0,0,w,h])
+        pygame.draw.rect(self.image, GREY, [0,0,w,h])
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -877,7 +878,7 @@ class Board():
         self.draw_pass_button()
         self.most_recent_card_zone()
 
-    def draw_indicator(self, player, response = False):
+    def draw_indicator(self, player, response = False, battle = False):
         indicator_w = screen_res.display_width/8
         indicator_h = screen_res.display_height * (1/16)
 
@@ -891,23 +892,33 @@ class Board():
         player_2_string = ""
 
         if player.name != "AI_Dusty":
-            if response == False:
+            if response == False and battle == False:
                 player_1_indicator_colour = GREEN
                 player_1_string = "Your turn"
                 player_2_indicator_colour = RED
-            else:
+            elif response == True and battle == False:
                 player_1_indicator_colour = BLUE
                 player_1_string = "Your Response"
                 player_2_indicator_colour = ORANGE
+            elif response == False and battle == True:
+                player_1_indicator_colour = GREY 
+                player_1_string = "Attacking"
+                player_2_string = "Defending"
+                player_2_indicator_colour = BROWN
         else:
-            if response == False:
+            if response == False and battle == False:
                 player_1_indicator_colour = RED
                 player_2_indicator_colour = GREEN
                 player_2_string = "Their turn"
-            else:
+            elif response == True and battle == False:
                 player_1_indicator_colour = ORANGE
                 player_2_indicator_colour = BLUE
                 player_2_string = "Their Response"
+            elif response == False and battle == True:
+                player_1_indicator_colour = BROWN
+                player_2_indicator_colour = GREY
+                player_1_string = "Defending"
+                player_2_string = "Attacking"
 
         player_1_indicator = BoardSection(player_1_indicator_x, player_1_indicator_y, indicator_w, indicator_h, player_1_indicator_colour)
         self.player_1_indicator = player_1_indicator
@@ -1914,15 +1925,15 @@ class Board():
 
             change_res = Button("Change resolution",change_resolution_button_x, change_resolution_button_y, option_button_width, option_button_height, button_blue, button_blue)
 
-            res_1 = Button("800x600", int(res_1_x), int(res_1_y), res_button_width, res_button_height, grey, WHITE, "change_res")
+            res_1 = Button("800x600", int(res_1_x), int(res_1_y), res_button_width, res_button_height, GREY, WHITE, "change_res")
 
-            res_2 = Button("1024x768", int(res_2_x), int(res_2_y), res_button_width, res_button_height, grey, WHITE, "change_res")
+            res_2 = Button("1024x768", int(res_2_x), int(res_2_y), res_button_width, res_button_height, GREY, WHITE, "change_res")
 
-            res_3 = Button("1440x900", int(res_3_x), int(res_3_y),res_button_width, res_button_height, grey, WHITE, "change_res")
+            res_3 = Button("1440x900", int(res_3_x), int(res_3_y),res_button_width, res_button_height, GREY, WHITE, "change_res")
 
-            res_4 = Button("1600x900", int(res_4_x), int(res_4_y), res_button_width, res_button_height, grey, WHITE, "change_res")
+            res_4 = Button("1600x900", int(res_4_x), int(res_4_y), res_button_width, res_button_height, GREY, WHITE, "change_res")
 
-            res_5 = Button("1920x1080", int(res_5_x), int(res_5_y), res_button_width, res_button_height, grey, WHITE, "change_res")
+            res_5 = Button("1920x1080", int(res_5_x), int(res_5_y), res_button_width, res_button_height, GREY, WHITE, "change_res")
 
 
             back = Button("Back", back_button_x, back_button_y, option_button_width, option_button_height, button_blue, hover_button_blue, "back")
@@ -1932,9 +1943,9 @@ class Board():
 
             slider = Button(current_vol, volume_slider_x, volume_slider_y, volume_slider_width, volume_slider_height, volume_slider_colour, volume_slider_colour)
 
-            plus = Button("+", plus_button_x, plus_button_y, plus_button_width, plus_button_height, grey, WHITE, "plus")
+            plus = Button("+", plus_button_x, plus_button_y, plus_button_width, plus_button_height, GREY, WHITE, "plus")
 
-            minus = Button("-", minus_button_x, minus_button_y, minus_button_width, minus_button_height, grey, WHITE, "minus")
+            minus = Button("-", minus_button_x, minus_button_y, minus_button_width, minus_button_height, GREY, WHITE, "minus")
 
             self.draw_button(change_res)
             self.draw_button(back)
