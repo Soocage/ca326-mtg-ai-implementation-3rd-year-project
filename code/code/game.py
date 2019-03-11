@@ -585,7 +585,8 @@ class Game():
                                 pos, card.rect.x, card.rect.y
 
                         self.draw_screen(gameBoard)
-                        gameBoard.stacked_card(self.stacked_card)
+                        if self.stacked_card != None:
+                            gameBoard.stacked_card(self.stacked_card)
                         gameBoard.draw_indicator(self.player_1, True)
                         for card in board.PLAYER_1_HAND_SPRITE_CARD_GROUP:
                             if card.rect.collidepoint(pos):
