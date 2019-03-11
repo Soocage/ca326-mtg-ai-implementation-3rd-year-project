@@ -511,5 +511,8 @@ def decrease_volume():
     time.sleep(0.2)
     if pygame.mixer.music.get_volume() > 0:
         curr_vol = pygame.mixer.music.get_volume()
-        curr_vol -= 0.1
-        pygame.mixer.music.set_volume(curr_vol)
+        if curr_vol < 0.1:
+            pygame.mixer.music.set_volume(0)
+        else:
+            curr_vol -= 0.1
+            pygame.mixer.music.set_volume(curr_vol)
